@@ -86,6 +86,11 @@ void getString(char* s)
 	}
 	s[n] = '\0';
 }
+void getString(string& s)
+{
+	cin.get();
+	getline(cin, s);
+}
 bool samestr(char* s1, char* s2)
 {
 	if (strlen(s1) != strlen(s2))
@@ -318,6 +323,7 @@ void userInfoImport(string location)
 	{
 		cout << "Can't find the file in the location provided." << endl;
 		fromfile.close();
+		Sleep(1000);
 	}
 	else
 	{
@@ -334,7 +340,8 @@ void userInfoImport(string location)
 			former.No = user.No;
 		}
 		cout << "Success" << endl;
-		system("pause");
+		getTotalUser();
+		Sleep(1000);
 	}
 }
 
@@ -645,7 +652,7 @@ void adminSystemSettings_StorageSettings_menu()
 	while (!exitflag)
 	{
 		system("cls");
-		cout << "SYSTEM SETTINGS - STORAGE SETTIGNS" << endl;
+		cout << "SYSTEM SETTINGS - STORAGE SETTINGS" << endl;
 		cout << "==============================================" << endl;
 		cout << "Menu:" << endl;
 		cout << "1. Change temp file location" << endl;
@@ -657,7 +664,7 @@ void adminSystemSettings_StorageSettings_menu()
 		{
 		case 1:
 			system("cls");
-			cout << "SYSTEM SETTINGS - STORAGE SETTIGNS" << endl;
+			cout << "SYSTEM SETTINGS - STORAGE SETTINGS" << endl;
 			cout << "==============================================" << endl;
 			cout << "You are changing the temp file location" << endl;
 			cout << "Current: temp file is stored in: ";
@@ -666,7 +673,7 @@ void adminSystemSettings_StorageSettings_menu()
 			cout << "Enter your new file path:" << endl;
 			cin >> FLOC_EDITUSERINFO_TEMP;
 			system("cls");
-			cout << "SYSTEM SETTINGS - STORAGE SETTIGNS" << endl;
+			cout << "SYSTEM SETTINGS - STORAGE SETTINGS" << endl;
 			cout << "==============================================" << endl;
 			cout << "Path changed" << endl;
 			cout << "Current: temp file is stored in: ";
@@ -675,7 +682,7 @@ void adminSystemSettings_StorageSettings_menu()
 			break;
 		case 2:
 			system("cls");
-			cout << "SYSTEM SETTINGS - STORAGE SETTIGNS" << endl;
+			cout << "SYSTEM SETTINGS - STORAGE SETTINGS" << endl;
 			cout << "==============================================" << endl;
 			cout << "You are changing the user basic info file location" << endl;
 			cout << "Current: temp file is stored in: ";
@@ -684,7 +691,7 @@ void adminSystemSettings_StorageSettings_menu()
 			cout << "Enter your new file path:" << endl;
 			cin >> FLOC_USERBASICINFO;
 			system("cls");
-			cout << "SYSTEM SETTINGS - STORAGE SETTIGNS" << endl;
+			cout << "SYSTEM SETTINGS - STORAGE SETTINGS" << endl;
 			cout << "==============================================" << endl;
 			cout << "Path changed" << endl;
 			cout << "Current: temp file is stored in: ";
@@ -724,14 +731,32 @@ void adminSystemSettings_menu()
 			adminSystemSettings_StorageSettings_menu();
 			break;
 		case 3:
-			cout << "SYSTEM SETTINGS" << endl;
+			system("cls");
+			cout << "SYSTEM SETTINGS - IMPORT USER INFORMATION" << endl;
 			cout << "==============================================" << endl;
 			cout << "You wish to import from:" << endl;
 			cout << "----------------------------------------------" << endl;
 			cout << "Location: ";
-			cin >> fileLocation;
-			userInfoImport(fileLocation);
-			break;
+			getString(fileLocation);
+			system("cls");
+			cout << "SYSTEM SETTINGS - IMPORT USER INFORMATION" << endl;
+			cout << "==============================================" << endl;
+			cout << "You wish to import from:" << fileLocation << endl;
+			cout << "----------------------------------------------" << endl;
+			cout << "Are you sure to store it" << endl;
+			cout << "y/n: ";
+			char opt;
+			cin >> opt;
+			if (opt == 'y' || opt == 'Y')
+			{
+				userInfoImport(fileLocation);
+				break;
+			}
+			else
+			{
+				cout << "cancelled";
+				Sleep(1000);
+			}
 		case 4:
 			system("cls");
 			cout << "ARE YOU SURE?" << endl;
@@ -1465,7 +1490,7 @@ void AdminDash(int username)
 		cout << "----------------------------------------------" << endl;
 		cout << "Menu:" << endl;
 		cout << "1. Manage current users" << endl;
-		cout << "2. User Regestration" << endl;
+		cout << "2. User Registration" << endl;
 		cout << "3. System Settings" << endl;
 		cout << "0. Exit" << endl;
 		int opt;
