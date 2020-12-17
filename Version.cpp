@@ -96,6 +96,14 @@ bool samestr(char* s1, char* s2)
 	}
 	return true;
 }
+void dotDotDot(int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << '.';
+		Sleep(0700);
+	}
+}
 
 // Find user and get info
 bool findUser(int username)
@@ -554,6 +562,11 @@ void MRDash(int username)
 			cin >> opt;
 		}
 	}
+	system("cls");
+	cout << "Thanks!" << endl;
+	cout << endl;
+	cout << "Exiting";
+	dotDotDot(3);
 }
 
 
@@ -575,14 +588,6 @@ int genUserNo()
 	tmpf.seekg(-size, ios::end);
 	tmpf.read((char*)&tmp, sizeof(userinfo));
 	return (tmp.No + 1);
-}
-void dotDotDot(int n)
-{
-	for (int i = 0; i < n; i++)
-	{
-		cout << '.';
-		Sleep(0700);
-	}
 }
 void setdefaultPassword(char id[], char passput[])
 {
@@ -1325,7 +1330,7 @@ void adminEditUsers()
 				<< ", " << setw(15) << user.address.city << setw(32) << user.password << endl;
 		}
 		cout << "----------------------------------------------------------------------" << endl;
-		cout << "Input the user's serial number that you wish to see in detail" << endl;
+		cout << "Input the user's serial number that you wish to see in detail (Input -1 to exit)" << endl;
 		cout << "No. ";
 		int userno;
 		cin >> userno;
@@ -1433,6 +1438,11 @@ void AdminDash(int username)
 			cin >> opt;
 		}
 	}
+	system("cls");
+	cout << "Thanks!" << endl;
+	cout << endl;
+	cout << "Exiting";
+	dotDotDot(3);
 }
 void MRManage()
 {
@@ -1474,9 +1484,10 @@ void login()
 	while (!exit)
 	{
 		system("cls");
-		cout << "WELCOME TO ELECTRICITY BILLING SYSTEM" << endl;
-		cout << "----------------------------------------------" << endl;
+		cout << "SYSTEM - LOGIN" << endl;
+		cout << "==============================================" << endl;
 		cout << "To start, please login" << endl;
+		cout << endl;
 		cout << "Username: ";
 		int username;
 		cin >> username;
@@ -1493,8 +1504,9 @@ void login()
 			else
 			{
 				system("cls");
-				cout << "WELCOME TO ELECTRICITY BILLING SYSTEM" << endl;
-				cout << "----------------------------------------------" << endl;
+				cout << "SYSTEM - LOGIN ERROR" << endl;
+				cout << "==============================================" << endl;
+				cout << endl;
 				cout << "**********************************************" << endl;
 				cout << "*     Invalid password, Please try again     *" << endl;
 				cout << "**********************************************" << endl;
@@ -1504,8 +1516,9 @@ void login()
 		else
 		{
 			system("cls");
-			cout << "WELCOME TO ELECTRICITY BILLING SYSTEM" << endl;
-			cout << "----------------------------------------------" << endl;
+			cout << "SYSTEM - LOGIN ERROR" << endl;
+			cout << "==============================================" << endl;
+			cout << endl;
 			cout << "**********************************************" << endl;
 			cout << "*     Invalid username, Please try again     *" << endl;
 			cout << "**********************************************" << endl;
@@ -1537,16 +1550,30 @@ void checkAndGenerate()
 		cout << "*************************************************" << endl;
 		cout << "*                  Almost done                  *" << endl;
 		cout << "*************************************************" << endl;
-		system("cls");
 		Sleep(1000);
+		system("cls");
 		cout << "***********************************************************************" << endl;
 		cout << "* You are the administrator, use the following information to sign in *" << endl;
 		cout << "* Username: 0                                                         *" << endl;
 		cout << "* Password: root                                                      *" << endl;
 		cout << "***********************************************************************" << endl;
 		system("pause");
+		system("cls");
+		cout << "*********************************************" << endl;
+		cout << "*                  Thanks!                  *" << endl;
+		cout << "*********************************************" << endl;
+		Sleep(0700);
+		system("cls");
+		cout << "*********************************************" << endl;
+		cout << "*                   Enjoy!                  *" << endl;
+		cout << "*********************************************" << endl;
+		Sleep(0700);
 	}
-	
+	else
+	{
+		cout << "welcome to electricity billing system" << endl;
+		Sleep(1000);
+	}
 }
 
 int main()
