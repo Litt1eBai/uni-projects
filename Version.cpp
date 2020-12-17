@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <direct.h>
 #include <iomanip>
 #include <Windows.h>
@@ -105,6 +106,8 @@ void dotDotDot(int n)
 	}
 }
 
+
+
 // Find user and get info
 bool findUser(int username)
 {
@@ -164,71 +167,6 @@ int getUserType(int username)
 	userinfo user;
 	user = getUserInfo(username);
 	return user.type;
-}
-
-// Initialising
-void getTotalUser()
-{
-	totalUser = 0;
-	fstream tmp;
-	tmp.open(FLOC_USERBASICINFO, ios::in | ios::binary);
-	tmp.seekg(0, ios::beg);
-	int begin;
-	begin = tmp.tellg();
-	tmp.seekg(0, ios::end);
-	int endFile;
-	endFile = tmp.tellg();
-	totalUser = (endFile - begin) / sizeof(userinfo);
-}
-void getFileLocation()
-{
-	fstream floc;
-	floc.open(FLOC_SYSSET, ios::binary | ios::out);
-	fLoc_sysSet location;
-	floc.seekg(0, ios::beg);
-	floc.read((char*)&location, sizeof(fLoc_sysSet));
-	FLOC_USERBASICINFO = location.userBasicInfo;
-	FLOC_EDITUSERINFO_TEMP = location.editUserBasicInfo_tmp;
-	floc.close();
-}
-
-// System settings - reset
-void resetDatabase_UserBasicInfo()
-{
-	userinfo rootUser;
-	rootUser.No = 0;
-	strcpy_s(rootUser.name, "root");
-	strcpy_s(rootUser.id, "0");
-	rootUser.type = 1;
-	strcpy_s(rootUser.password, "root");
-	strcpy_s(rootUser.address.city, "default");
-	strcpy_s(rootUser.address.district, "default");
-	strcpy_s(rootUser.address.street, "default");
-	strcpy_s(rootUser.address.estate, "default");
-	strcpy_s(rootUser.address.unit, "0");
-	rootUser.address.level = 0;
-	rootUser.address.room = 0;
-	fstream resetFile;
-	resetFile.open(FLOC_USERBASICINFO, ios::binary | ios::out);
-	resetFile.write((char*)&rootUser, sizeof(userinfo));
-	resetFile.close();
-	getTotalUser();
-}
-void resetSystemFileLocation()
-{
-	fstream floc;
-	fLoc_sysSet location;
-	floc.open("E:\\Billing System\\SystemSettings.dat", ios::binary | ios::in);
-	location.userBasicInfo = "E:\\Billing System\\temp_userbasicinfo.dat";
-	location.userBasicInfo = "E:\\Billing System\\userbasicinfo.dat";
-	floc.write((char*)&location, sizeof(fLoc_sysSet));
-	floc.close();
-	getFileLocation();
-}
-void resetDatabase()
-{
-	//resetSystemFileLocation();
-	resetDatabase_UserBasicInfo();
 }
 
 
@@ -291,6 +229,117 @@ void deleteUserInfo(userinfo use)
 	temp.close();
 	origin.close();
 }
+// System
+void getTotalUser()
+{
+	totalUser = 0;
+	fstream tmp;
+	tmp.open(FLOC_USERBASICINFO, ios::in | ios::binary);
+	tmp.seekg(0, ios::beg);
+	int begin;
+	begin = tmp.tellg();
+	tmp.seekg(0, ios::end);
+	int endFile;
+	endFile = tmp.tellg();
+	totalUser = (endFile - begin) / sizeof(userinfo);
+}
+void getFileLocation()
+{
+	fstream floc;
+	floc.open(FLOC_SYSSET, ios::binary | ios::out);
+	fLoc_sysSet location;
+	floc.seekg(0, ios::beg);
+	floc.read((char*)&location, sizeof(fLoc_sysSet));
+	FLOC_USERBASICINFO = location.userBasicInfo;
+	FLOC_EDITUSERINFO_TEMP = location.editUserBasicInfo_tmp;
+	floc.close();
+}
+void changePasswordTo(int username, char* passput)
+{
+	userinfo user;
+	user = getUserInfo(username);
+	strcpy_s(user.password, passput);
+	changeUserInfo(user);
+}
+int genUserNo()
+{
+	fstream tmpf;
+	userinfo tmp;
+	tmpf.open(FLOC_USERBASICINFO, ios::in | ios::app | ios::binary);
+	int size = sizeof(userinfo);
+	tmpf.seekg(-size, ios::end);
+	tmpf.read((char*)&tmp, sizeof(userinfo));
+	return (tmp.No + 1);
+}
+
+// System settings - reset
+void resetDatabase_UserBasicInfo()
+{
+	userinfo rootUser;
+	rootUser.No = 0;
+	strcpy_s(rootUser.name, "root");
+	strcpy_s(rootUser.id, "0");
+	rootUser.type = 1;
+	strcpy_s(rootUser.password, "root");
+	strcpy_s(rootUser.address.city, "default");
+	strcpy_s(rootUser.address.district, "default");
+	strcpy_s(rootUser.address.street, "default");
+	strcpy_s(rootUser.address.estate, "default");
+	strcpy_s(rootUser.address.unit, "0");
+	rootUser.address.level = 0;
+	rootUser.address.room = 0;
+	fstream resetFile;
+	resetFile.open(FLOC_USERBASICINFO, ios::binary | ios::out);
+	resetFile.write((char*)&rootUser, sizeof(userinfo));
+	resetFile.close();
+	getTotalUser();
+}
+void resetSystemFileLocation()
+{
+	fstream floc;
+	fLoc_sysSet location;
+	floc.open("E:\\Billing System\\SystemSettings.dat", ios::binary | ios::in);
+	location.userBasicInfo = "E:\\Billing System\\temp_userbasicinfo.dat";
+	location.userBasicInfo = "E:\\Billing System\\userbasicinfo.dat";
+	floc.write((char*)&location, sizeof(fLoc_sysSet));
+	floc.close();
+	getFileLocation();
+}
+void resetDatabase()
+{
+	//resetSystemFileLocation();
+	resetDatabase_UserBasicInfo();
+}
+void userInfoImport(string location)
+{
+	fstream fromfile;
+	fromfile.open(location, ios::binary | ios::in);
+	if (!fromfile)
+	{
+		cout << "Can't find the file in the location provided." << endl;
+		fromfile.close();
+	}
+	else
+	{
+		fstream tofile;
+		userinfo former;
+		former.No = genUserNo();
+		former.No--;
+		tofile.open(FLOC_USERBASICINFO, ios::binary | ios::app | ios::out);
+		userinfo user;
+		while(fromfile.read((char*)&user, sizeof(userinfo)))
+		{
+			user.No = former.No + 1;
+			tofile.write((char*)&user, sizeof(userinfo));
+			former.No = user.No;
+		}
+		cout << "Success" << endl;
+		system("pause");
+	}
+}
+
+
+
 
 // Apple changes - meter reader info
 void storeMRInfo(MRdef mr)
@@ -572,23 +621,7 @@ void MRDash(int username)
 
 
 // Admin Features
-void changePasswordTo(int username, char* passput)
-{
-	userinfo user;
-	user = getUserInfo(username);
-	strcpy_s(user.password, passput);
-	changeUserInfo(user);
-}
-int genUserNo()
-{
-	fstream tmpf;
-	userinfo tmp;
-	tmpf.open(FLOC_USERBASICINFO, ios::in | ios::app | ios::binary);
-	int size = sizeof(userinfo);
-	tmpf.seekg(-size, ios::end);
-	tmpf.read((char*)&tmp, sizeof(userinfo));
-	return (tmp.No + 1);
-}
+
 void setdefaultPassword(char id[], char passput[])
 {
 	int i;
@@ -677,19 +710,29 @@ void adminSystemSettings_menu()
 		cout << "Menu:" << endl;
 		cout << "1. Change password" << endl;
 		cout << "2. Change file location" << endl;
-		cout << "3. Reset database" << endl;
+		cout << "3. Import user basic information from file" << endl;
+		cout << "4. Reset database" << endl;
 		cout << "0. Exit" << endl;
 		int opt;
 		cin >> opt;
+		string fileLocation;
 		switch (opt)
 		{
 		case 1:
-
 			break;
 		case 2:
 			adminSystemSettings_StorageSettings_menu();
 			break;
 		case 3:
+			cout << "SYSTEM SETTINGS" << endl;
+			cout << "==============================================" << endl;
+			cout << "You wish to import from:" << endl;
+			cout << "----------------------------------------------" << endl;
+			cout << "Location: ";
+			cin >> fileLocation;
+			userInfoImport(fileLocation);
+			break;
+		case 4:
 			system("cls");
 			cout << "ARE YOU SURE?" << endl;
 			cout << "This will wipe out all user data" << endl;
@@ -1116,7 +1159,7 @@ void adminEditUser_Detail(int username)
 			cout << "======================================================================" << endl;
 			cout << "Editing the ID of " << user.name << endl;
 			cout << endl;
-			cout << "ID: " << user.name << endl;
+			cout << "ID: " << user.id << endl;
 			cout << "----------------------------------------------------------------------" << endl;
 			cout << "Change to: ";
 			char newID[18];
