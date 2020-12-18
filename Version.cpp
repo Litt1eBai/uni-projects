@@ -6,6 +6,7 @@
 #include <Windows.h>
 using namespace std;
 
+
 // Basic definiations and functions
 int totalUser = 0;
 char FLOC_FILEFOLDER[18] = { "D:\\Billing System" };
@@ -160,7 +161,7 @@ string rtnType(int typenum)
 	case 1: typ = "Administrator"; break;
 	case 2: typ = "Meter Reader";  break;
 	case 3: typ = "Charger"; break;
-	case 4: typ = "Enterprice User"; break;
+	case 4: typ = "Enterprise User"; break;
 	case 5: typ = "Urban User"; break;
 	case 6: typ = "Common Rural User"; break;
 	case 7: typ = "Rural User in Poverty"; break;
@@ -173,6 +174,7 @@ int getUserType(int username)
 	user = getUserInfo(username);
 	return user.type;
 }
+
 
 
 // Apply changes - user basic info
@@ -234,6 +236,7 @@ void deleteUserInfo(userinfo use)
 	temp.close();
 	origin.close();
 }
+
 // System
 void getTotalUser()
 {
@@ -528,6 +531,7 @@ int getReadTotal(int username, char* unit)
 }
 
 
+// Meter Reader_Menu
 void MRInput()
 {
 	int userread = 0;
@@ -554,8 +558,8 @@ void MRInput()
 }
 void MROverview()
 {
-	int exitflag = 0;
-	while (!exitflag)
+	string place;
+	do
 	{
 		int userread = 0;
 		int userunread = 10;
@@ -578,10 +582,9 @@ void MROverview()
 			<< " Progress: " << (userread / userunread) * 100 << "%" << endl;
 		cout << "----------------------------------------------" << endl;
 		cout << "You wish to input: ";
-		string place;
-		cin >> place;
-
-	}
+		getString(place);
+		cout << "not available" << endl;
+	} while (place != "-1");
 
 }
 void MRDash(int username)
@@ -590,8 +593,8 @@ void MRDash(int username)
 	me = getUserInfo(username);
 	int userread = 0;
 	int totaluser = 10;
-	int exitflag = 0;
-	while (!exitflag)
+	int opt;
+	do
 	{
 		system("cls");
 		cout << "DASHBOARD" << endl;
@@ -605,19 +608,22 @@ void MRDash(int username)
 		cout << "Menu:" << endl;
 		cout << "1. Start Inputing" << endl;
 		cout << "2. Edit bill" << endl;
-		cout << "0. Exit" << endl;
-		int opt;
+		cout << "0. Logout" << endl;
 		cin >> opt;
 		switch (opt)
 		{
 		case 1: MROverview();  break;
 		case 2:; break;
-		case 0: exitflag = 1;
-			break;
+		case 0: 			
+			system("cls");
+			cout << "Thanks!" << endl;
+			cout << endl;
+			cout << "Logging out";
+			dotDotDot(3);
+			return;
 		default: cout << "Invalid input, please try again" << endl;
-			cin >> opt;
 		}
-	}
+	} while (opt != 0);
 	system("cls");
 	cout << "Thanks!" << endl;
 	cout << endl;
@@ -628,7 +634,6 @@ void MRDash(int username)
 
 
 // Admin Features
-
 void setdefaultPassword(char id[], char passput[])
 {
 	int i;
@@ -640,16 +645,11 @@ void setdefaultPassword(char id[], char passput[])
 }
 
 
-
-// Management Process
-
-
-
 // System Settings
 void adminSystemSettings_StorageSettings_menu()
 {
-	int exitflag = 0;
-	while (!exitflag)
+	int opt;
+	do
 	{
 		system("cls");
 		cout << "SYSTEM SETTINGS - STORAGE SETTINGS" << endl;
@@ -658,7 +658,6 @@ void adminSystemSettings_StorageSettings_menu()
 		cout << "1. Change temp file location" << endl;
 		cout << "2. Change user basic info location" << endl;
 		cout << "0. Exit" << endl;
-		int opt;
 		cin >> opt;
 		switch (opt)
 		{
@@ -699,17 +698,16 @@ void adminSystemSettings_StorageSettings_menu()
 			cout << "----------------------------------------------" << endl;
 			break;
 		case 0:
-			exitflag = 1;
-			break;
+			return;
 		default: cout << "Invalid input, please try again" << endl;
 			cin >> opt;
 		}
-	}
+	} while (opt != 0);
 }
 void adminSystemSettings_menu()
 {
-	int exitflag = 0;
-	while (!exitflag)
+	int opt;
+	do
 	{
 		system("cls");
 		cout << "SYSTEM SETTINGS" << endl;
@@ -720,7 +718,6 @@ void adminSystemSettings_menu()
 		cout << "3. Import user basic information from file" << endl;
 		cout << "4. Reset database" << endl;
 		cout << "0. Exit" << endl;
-		int opt;
 		cin >> opt;
 		string fileLocation;
 		switch (opt)
@@ -767,11 +764,10 @@ void adminSystemSettings_menu()
 			if (opt1 == 'y' || opt1 == 'Y')
 				resetDatabase();
 			break;
-		case 0: exitflag = 1; break;
+		case 0: return;
 		default: cout << "Invalid input, please try again" << endl;
-			cin >> opt;
 		}
-	}
+	} while (opt != 0);
 }
 
 
@@ -1074,8 +1070,8 @@ void generateUser()
 }
 void adminEditUser_Detail(int username)
 {
-	int exit = 0;
-	while (!exit)
+	int opt;
+	do
 	{
 		userinfo user;
 		user = getUserInfo(username);
@@ -1087,17 +1083,16 @@ void adminEditUser_Detail(int username)
 		cout << endl;
 		cout << "1. Name: " << user.name << endl;
 		cout << "2. Type: " << rtnType(user.type) << "(" << user.type << ")" << endl;
-		cout << "   User Number: " << user.No << endl;
-		cout << "3. ID: " << user.id << endl;
-		cout << "4. Address: " << user.address.unit << "-" << user.address.level << "-" << user.address.room
+		cout << "3.  User Number: " << user.No << endl;
+		cout << "4. ID: " << user.id << endl;
+		cout << "5. Address: " << user.address.unit << "-" << user.address.level << "-" << user.address.room
 			<< " " << user.address.estate << ", " << user.address.street << ", " << user.address.district << ", " << user.address.city << endl;
-		cout << "5. Password: " << user.password << endl;
+		cout << "6. Password: " << user.password << endl;
 		cout << "----------------------------------------------------------------------" << endl;
-		cout << "What do you want to change about the user: " << endl;
-		cout << "1 - 5 Change the corresponding information" << endl;
-		cout << "6.    Remove user" << endl;
+		cout << "What do you want to change about the user " << user.name << endl;
+		cout << "1 - 6 Change the corresponding information" << endl;
+		cout << "7.    Remove user" << endl;
 		cout << "0.    Exit" << endl;
-		int opt;
 		cin >> opt;
 		if (opt == 1)
 		{
@@ -1180,6 +1175,41 @@ void adminEditUser_Detail(int username)
 		else if (opt == 3)
 		{
 			system("cls");
+			cout << "USER MANAGEMENT - EDIT USER DETAIL - NUMBER EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "Editing the number of " << user.name << endl;
+			cout << endl;
+			cout << "Number: " << user.No << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Change to: ";
+			int newNo;
+			cin >> newNo;
+			
+			system("cls");
+			cout << "USER MANAGEMENT - EDIT USER DETAIL - NUMBER EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "The new type of" << user.name << " is: " << newNo << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Are you sure to store it?" << endl;
+			char choice3;
+			cin >> choice3;
+			if (choice3 == 'y' || choice3 == 'Y')
+			{
+				user.No = newNo;
+				changeUserInfo(user);
+				cout << "Successful" << endl;
+				Sleep(1000);
+			}
+			else
+			{
+				cout << endl;
+				cout << "Cancelled" << endl;
+				Sleep(1000);
+			}
+		}
+		else if (opt == 4)
+		{
+			system("cls");
 			cout << "USER MANAGEMENT - EDIT USER DETAIL - ID EDIT" << endl;
 			cout << "======================================================================" << endl;
 			cout << "Editing the ID of " << user.name << endl;
@@ -1217,12 +1247,12 @@ void adminEditUser_Detail(int username)
 				Sleep(1000);
 			}
 		}
-		else if (opt == 4)
+		else if (opt == 5)
 		{
 			system("cls");
 			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
 			cout << "======================================================================" << endl;
-			cout << "Editing the ID of " << user.name << endl;
+			cout << "Editing the address of " << user.name << endl;
 			cout << endl;
 			cout << "Original Address: " << user.address.unit << "-" << user.address.level << "-" << user.address.room
 				<< " " << user.address.estate << ", " << user.address.street << ", " << user.address.district << ", " << user.address.city << endl;
@@ -1233,7 +1263,7 @@ void adminEditUser_Detail(int username)
 			system("cls");
 			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
 			cout << "======================================================================" << endl;
-			cout << "Editing the ID of " << user.name << endl;
+			cout << "Editing the address of " << user.name << endl;
 			cout << endl;
 			cout << "Address: " << user.address.city << endl;
 			cout << "----------------------------------------------------------------------" << endl;
@@ -1243,7 +1273,7 @@ void adminEditUser_Detail(int username)
 			system("cls");
 			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
 			cout << "======================================================================" << endl;
-			cout << "Editing the ID of " << user.name << endl;
+			cout << "Editing the address of " << user.name << endl;
 			cout << endl;
 			cout << "Address: " << user.address.district << ", " << user.address.city << endl;
 			cout << "----------------------------------------------------------------------" << endl;
@@ -1253,7 +1283,7 @@ void adminEditUser_Detail(int username)
 			system("cls");
 			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
 			cout << "======================================================================" << endl;
-			cout << "Editing the ID of " << user.name << endl;
+			cout << "Editing the address of " << user.name << endl;
 			cout << endl;
 			cout << "Address: " << user.address.street << ", " << user.address.district << ", " << user.address.city << endl;
 			cout << "----------------------------------------------------------------------" << endl;
@@ -1263,7 +1293,7 @@ void adminEditUser_Detail(int username)
 			system("cls");
 			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
 			cout << "======================================================================" << endl;
-			cout << "Editing the ID of " << user.name << endl;
+			cout << "Editing the address of " << user.name << endl;
 			cout << endl;
 			cout << "Address: "<< " " << user.address.estate << ", " << user.address.street << ", " << user.address.district << ", " << user.address.city << endl;
 			cout << "----------------------------------------------------------------------" << endl;
@@ -1273,7 +1303,7 @@ void adminEditUser_Detail(int username)
 			system("cls");
 			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
 			cout << "======================================================================" << endl;
-			cout << "Editing the ID of " << user.name << endl;
+			cout << "Editing the address of " << user.name << endl;
 			cout << endl;
 			cout << "Address: " << user.address.unit << "-" << " " << user.address.estate << ", "
 			<< user.address.street << ", " << user.address.district << ", " << user.address.city << endl;
@@ -1284,7 +1314,7 @@ void adminEditUser_Detail(int username)
 			system("cls");
 			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
 			cout << "======================================================================" << endl;
-			cout << "Editing the ID of " << user.name << endl;
+			cout << "Editing the address of " << user.name << endl;
 			cout << endl;
 			cout << "Address: " << user.address.unit << "-" << user.address.level 
 				<< " " << user.address.estate << ", " << user.address.street << ", " << user.address.district << ", " << user.address.city << endl;
@@ -1308,7 +1338,7 @@ void adminEditUser_Detail(int username)
 			}
 			
 		}
-		else if(opt == 5)
+		else if(opt == 6)
 		{
 		system("cls");
 		cout << "USER MANAGEMENT - EDIT USER DETAIL - PASSWORD CHANGE" << endl;
@@ -1342,7 +1372,7 @@ void adminEditUser_Detail(int username)
 			Sleep(1000);
 		}
 		}
-		else if (opt == 6)
+		else if (opt == 7)
 		{
 			cout << "USER MANAGEMENT - REMOVE USER" << endl;
 			cout << "======================================================================" << endl;
@@ -1366,45 +1396,46 @@ void adminEditUser_Detail(int username)
 		}
 		else if (opt == 0)
 		{
-			exit = 1;
+		return;
 		}
-	}
+	}while (opt != 0);
 }
 void adminEditUsers()
 {
-	int exit = 0;
-	while (!exit)
+	int userno;
+	do
 	{
 		system("cls");
-		getTotalUser();
-		cout << "USER MANAGEMENT" << endl;
-		cout << "======================================================================" << endl;
-		cout << "Total users: " << totalUser << endl;
-		cout << "----------------------------------------------------------------------" << endl;
 		cout << "USER MANAGEMENT - USER LIST" << endl;
-		cout << "=====================================================================================================================================================================================" << endl;
-		cout << "Number            Name	             Type                ID                         Address                                                          Password" << endl;
-		cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
-		cout << endl;
+		cout << "============================================================================================================================================================================================================" << endl;
+		cout << "Number                Name	                Type                      ID                                         Address                                                                    Password" << endl;
+		cout << "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 		userinfo user;
 		fstream readUser(FLOC_USERBASICINFO, ios::in | ios::binary);
 		while (readUser.read((char*)&user, sizeof(userinfo)))
 		{
 			string type;
 			type = rtnType(user.type);
-			cout << setw(10) << user.No << " " << setw(16) << user.name << "  " << setw(21) << type << " " << setw(18) << user.id << '\t' <<
-				setw(5) << user.address.unit << '-' << setw(2) << user.address.level << '-' << setw(2) << user.address.room
-				<< ", " << setw(20) << user.address.estate << ", " << setw(30)<< user.address.street << ", " << setw(10) << user.address.district
-				<< ", " << setw(15) << user.address.city << setw(32) << user.password << endl;
+			cout << setw(11) << right << setfill('0') << user.No << '\t'
+				<< setw(25) << left << setfill(' ') << user.name
+				<< setw(25) << left << type
+				<< setw(20) << left << user.id << '\t'
+				<< setw(5) << right << setfill(' ') << user.address.unit << '-'
+				<< setw(3) << right << setfill('0') << user.address.level << '-'
+				<< setw(4) << right << setfill('0') << user.address.room << ", "
+				<< setw(15) << setfill(' ') << user.address.estate << ", "
+				<< setw(25) << user.address.street << ", "
+				<< setw(15) << user.address.district << ", "
+				<< setw(15) << user.address.city << '\t'
+				<< setw(16) << right << user.password << endl;
 		}
-		cout << "----------------------------------------------------------------------" << endl;
+		cout << "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 		cout << "Input the user's serial number that you wish to see in detail (Input -1 to exit)" << endl;
 		cout << "No. ";
-		int userno;
 		cin >> userno;
 		if (userno == -1)
 		{
-			exit = 1;
+			return;
 		}
 		else if (validUser(userno))
 		{
@@ -1415,42 +1446,41 @@ void adminEditUsers()
 			cout << "Invalid number, please try again";
 			Sleep(0100);
 		}
-	}
+	} while (userno != -1);
 }
 void adminListUsers()
 {
 	system("cls");
 	cout << "USER MANAGEMENT - USER LIST" << endl;
-	cout << "=====================================================================================================================================================================================" << endl;
-	cout << "Number                   Name	             Type                      ID                Address                                                          Password" << endl;
-	cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
-	cout << endl;
+	cout << "============================================================================================================================================================================================================" << endl;
+	cout << "Number                Name	                Type                      ID                                         Address                                                                    Password" << endl;
+	cout << "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 	userinfo user;
 	fstream readUser(FLOC_USERBASICINFO, ios::in | ios::binary);
 	while (readUser.read((char*)&user, sizeof(userinfo)))
 	{
 		string type;
-		switch (user.type)
-		{
-		case 1: type = "Administrator"; break;
-		case 2: type = "Meter Reader"; break;
-		case 3: type = "Charger"; break;
-		case 4: type = "Enterprice User"; break;
-		case 5: type = "Urban User"; break;
-		case 6: type = "Common Rural User"; break;
-		case 7: type = "Rural User in Poverty"; break;
-		}
-		cout << setw(16) << user.No << " " << setw(16) << user.name << "  " << setw(21) << type << " " << setw(18) << user.id << '\t'
-			<< user.address.unit << '-' << user.address.level << '-' << user.address.room
-			<< ", " << user.address.estate << ", " << user.address.street << ", " << user.address.district
-			<< ", " << user.address.city << setw(32) << user.password << endl;	
+		type = rtnType(user.type);
+		cout << setw(11) << right << setfill('0') << user.No << '\t'
+			<< setw(25) << left << setfill(' ') << user.name
+			<< setw(25) << left << type
+			<< setw(20) << left << user.id  << '\t'
+			<< setw(5) << right << setfill(' ') << user.address.unit << '-'
+			<< setw(3) << right << setfill('0') << user.address.level << '-'
+			<< setw(4) << right << setfill('0') << user.address.room << ", "
+			<< setw(15) << setfill(' ') << user.address.estate << ", "
+			<< setw(25) << user.address.street << ", "
+			<< setw(15) << user.address.district << ", "
+			<< setw(15) << user.address.city << '\t'
+			<< setw(16) << right << user.password << endl;
 	}
+	cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 	system("pause");
 }
 void userManage()
 {
-	int exitflag = 0;
-	while (!exitflag)
+	int opt;
+	do
 	{
 		system("cls");
 		getTotalUser();
@@ -1463,23 +1493,22 @@ void userManage()
 		cout << "2. List users" << endl;
 		cout << "3. Assign Meter Reader tasks" << endl;
 		cout << "0. Exit" << endl;
-		int opt;
 		cin >> opt;
 		switch (opt)
 		{
 		case 1: adminEditUsers(); break;
 		case 2: adminListUsers(); break;
-		case 0: exitflag = 1;
-			break;
+		case 0: return;
+		default: cout << "Invalid Input" << endl;
 		}
-	}
+	} while (opt != 0);
 }
 void AdminDash(int username)
 {
 	userinfo me;
 	me = getUserInfo(username);
-	int exitflag = 0;
-	while (!exitflag)
+	int opt;
+	do
 	{
 		system("cls");
 		cout << "DASHBOARD" << endl;
@@ -1492,33 +1521,330 @@ void AdminDash(int username)
 		cout << "1. Manage current users" << endl;
 		cout << "2. User Registration" << endl;
 		cout << "3. System Settings" << endl;
-		cout << "0. Exit" << endl;
-		int opt;
+		cout << "0. Logout" << endl;
 		cin >> opt;
 		switch (opt)
 		{
 		case 1: userManage(); break;
 		case 2: generateUser(); break;
 		case 3: adminSystemSettings_menu(); break;
-		case 0: exitflag = 1;
-			break;
+		case 0:
+			system("cls");
+			cout << "Thanks!" << endl;
+			cout << endl;
+			cout << "Logging out";
+			dotDotDot(3);
+			return;
 		default: cout << "Invalid input, please try again" << endl;
-			cin >> opt;
 		}
-	}
-	system("cls");
-	cout << "Thanks!" << endl;
-	cout << endl;
-	cout << "Exiting";
-	dotDotDot(3);
+	} while (opt != 0);
 }
 void MRManage()
 {
 	cout << "USER MANAGEMENT - MATER READER MANAGEMENT" << endl;
 	cout << "======================================================================" << endl;
-	cout << "Meter readers: " << totalUser << endl;
+	cout << "Not available" << endl;
 	cout << "----------------------------------------------------------------------" << endl;
 	
+}
+
+
+//User_Menu
+void userEditBasicInfo(int username)
+{
+	int opt;
+	do
+	{
+		userinfo me;
+		me = getUserInfo(username);
+		system("cls");
+		getTotalUser();
+		cout << "USER SETTINGS - BASIC INFORMATION EDIT" << endl;
+		cout << "======================================================================" << endl;
+		cout << "Hi, " << me.name << ", Here are things about you:" << endl;
+		cout << endl;
+		cout << "1. Name: " << me.name << endl;
+		cout << "#. Type: " << rtnType(me.type) << "(" << me.type << ")" << endl;
+		cout << "#. User Number: " << me.No << endl;
+		cout << "2. ID: " << me.id << endl;
+		cout << "3. Address: " << me.address.unit << "-" << me.address.level << "-" << me.address.room
+			<< " " << me.address.estate << ", " << me.address.street << ", " << me.address.district << ", " << me.address.city << endl;
+		cout << "4. Password: " << me.password << endl;
+		cout << "----------------------------------------------------------------------" << endl;
+		cout << "What do you want to change about you: " << endl;
+		cout << "1 - 4 Change the corresponding information" << endl;
+		cout << "5.    Deactivate account" << endl;
+		cout << "0.    Exit" << endl;
+		cin >> opt;
+		if (opt == 1)
+		{
+			system("cls");
+			cout << "USER SETTINGS - BASIC INFORMATION EDIT - NAME EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You are changing the name from:" << me.name << endl;
+			cout << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "To: ";
+			char newname[32];
+			getString(newname);
+			cout << "Are you sure to store it?" << endl;
+			char choice1;
+			cin >> choice1;
+			if (choice1 == 'y' || choice1 == 'Y')
+			{
+				strcpy_s(me.name, newname);
+				changeUserInfo(me);
+				cout << "Successful" << endl;
+				Sleep(1000);
+			}
+			else
+			{
+				cout << endl;
+				cout << "Cancelled" << endl;
+				Sleep(1000);
+			}
+		}
+		else if (opt == 2)
+		{
+			system("cls");
+			cout << "USER SETTINGS - EDIT BASIC INFORMATION - ID EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You are changing your ID from: " << me.id << endl;
+			cout << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "To: ";
+			char newID[18];
+			getString(newID);
+			while (strlen(newID) != 18)
+			{
+				cout << "Invalid ID" << endl;
+				cout << "ID: ";
+				getString(newID);
+			}
+			system("cls");
+			cout << "USER SETTINGS - EDIT BASIC INFORMATION - ID EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "Your new ID is: " << newID << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Are you sure to store it?" << endl;
+			char choice3;
+			cin >> choice3;
+			if (choice3 == 'y' || choice3 == 'Y')
+			{
+				strcpy_s(me.id, newID);
+				changeUserInfo(me);
+				cout << "Successful" << endl;
+				Sleep(1000);
+			}
+			else
+			{
+				cout << endl;
+				cout << "Cancelled" << endl;
+				Sleep(1000);
+			}
+		}
+		else if (opt == 3)
+		{
+			system("cls");
+			cout << "USER SETTINGS - EDIT BASIC INFORMATION - ADDRESS EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You are changing your address: " <<endl;
+			cout << endl;
+			cout << "Original Address: " << me.address.unit << "-" << me.address.level << "-" << me.address.room
+				<< " " << me.address.estate << ", " << me.address.street << ", " << me.address.district << ", " << me.address.city << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "City: ";
+			getString(me.address.city);
+
+			system("cls");
+			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You are changing your address: " << endl;
+			cout << endl;
+			cout << "Address: " << me.address.city << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "District: ";
+			getString(me.address.district);
+
+			system("cls");
+			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You are changing your address: " << endl;
+			cout << endl;
+			cout << "Address: " << me.address.district << ", " << me.address.city << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Street: ";
+			getString(me.address.street);
+
+			system("cls");
+			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You are changing your address: " << endl;
+			cout << endl;
+			cout << "Address: " << me.address.street << ", " << me.address.district << ", " << me.address.city << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Estate: ";
+			getString(me.address.estate);
+
+			system("cls");
+			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You are changing your address: " << endl;
+			cout << endl;
+			cout << "Address: " << " " << me.address.estate << ", " << me.address.street << ", " << me.address.district << ", " << me.address.city << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Unit: ";
+			getString(me.address.unit);
+
+			system("cls");
+			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You are changing your address: " << endl;
+			cout << endl;
+			cout << "Address: " << me.address.unit << "-" << " " << me.address.estate << ", "
+				<< me.address.street << ", " << me.address.district << ", " << me.address.city << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Level: ";
+			cin >> me.address.level;
+
+			system("cls");
+			cout << "USER MANAGEMENT - EDIT USER DETAIL - ADDRESS EDIT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You are changing your address: " << endl;
+			cout << endl;
+			cout << "Address: " << me.address.unit << "-" << me.address.level
+				<< " " << me.address.estate << ", " << me.address.street << ", " << me.address.district << ", " << me.address.city << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Room: ";
+			cin >> me.address.room;
+			cout << "Are you sure to store it?" << endl;
+			char choice4;
+			cin >> choice4;
+			if (choice4 == 'y' || choice4 == 'Y')
+			{
+				changeUserInfo(me);
+				cout << "Successful" << endl;
+				Sleep(1000);
+			}
+			else
+			{
+				cout << endl;
+				cout << "Cancelled" << endl;
+				Sleep(1000);
+			}
+
+		}
+		else if (opt == 4)
+		{
+			system("cls");
+			cout << "USER SETTINGS - EDIT BASIC INFORMATION - PASSWORD CHANGE" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You are changing your password" << endl;
+			cout << endl;
+			cout << "Password: " << me.password << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Change to: ";
+			char newPassword[32];
+			getString(newPassword);
+			system("cls");
+			cout << "USER SETTINGS - EDIT BASIC INFORMATION - PASSWORD CHANGE" << endl;
+			cout << "======================================================================" << endl;
+			cout << "Your new password" << " is: " << newPassword << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Are you sure to store it?" << endl;
+			char choice4;
+			cin >> choice4;
+			if (choice4 == 'y' || choice4 == 'Y')
+			{
+				strcpy_s(me.password, newPassword);
+				changeUserInfo(me);
+				cout << "Successful" << endl;
+				Sleep(1000);
+			}
+			else
+			{
+				cout << endl;
+				cout << "Cancelled" << endl;
+				Sleep(1000);
+			}
+		}
+		else if (opt == 5)
+		{
+		system("cls");
+			cout << "USER SETTINGS - EDIT BASIC INFORMATION - DEACTIVATE ACCOUNT" << endl;
+			cout << "======================================================================" << endl;
+			cout << "You account will be removed permanently" << endl;
+			cout << "----------------------------------------------------------------------" << endl;
+			cout << "Are you sure?" << endl;
+			char choice6;
+			cin >> choice6;
+			if (choice6 == 'y' || choice6 == 'Y')
+			{
+				deleteUserInfo(me);
+				cout << "Successful" << endl;
+				Sleep(1000);
+				return;
+			}
+			else
+			{
+				cout << endl;
+				cout << "Cancelled" << endl;
+				Sleep(1000);
+			}
+		}
+		else if (opt == 0)
+		{
+		return;
+		}
+		else
+		{
+		cout << "Invalid Input" << endl;
+		}
+	}while (opt != 0);
+}
+void userDash(int username)
+{
+	userinfo me;
+	me = getUserInfo(username);
+	int opt;
+	do
+	{
+		system("cls");
+		cout << "DASHBOARD" << endl;
+		cout << "==============================================" << endl;
+		cout << me.name << ", greetings!" << endl;
+		cout << "----------------------------------------------" << endl;
+		cout << "Here is your basic information: " << endl;
+		cout << endl;
+		cout << "Name: " << me.name << endl;
+		cout << "Type: " << rtnType(me.type) << "(" << me.type << ")" << endl;
+		cout << "Number: " << me.No << endl;
+		cout << "ID: " << me.id << endl;
+		cout << "Address: " << me.address.unit << "-" << me.address.level << "-" << me.address.room
+			<< " " << me.address.estate << ", " << me.address.street << ", " << me.address.district << ", " << me.address.city << endl;
+		cout << "----------------------------------------------" << endl;
+		cout << "Menu:" << endl;
+		cout << "1. Edit your information" << endl;
+		cout << "2. Check your bill rate" << endl;
+		cout << "3. Check history usage and billing" << endl;
+		cout  << endl;
+		cout << "0. Logout" << endl;
+		cin >> opt;
+		switch (opt)
+		{
+		case 1: userEditBasicInfo(me.No); break;
+		case 2: cout << "Not available" << endl; break;
+		case 3: cout << "Not avaliable"; break;
+		case 0:
+			system("cls");
+			cout << "Thanks!" << endl;
+			cout << endl;
+			cout << "Logging out";
+			dotDotDot(3);
+			return;
+		default: cout << "Invalid input, please try again" << endl;
+		}
+	} while (opt != 0);
 }
 
 
@@ -1539,17 +1865,17 @@ void loginGuide(int username)
 	{
 	case 1: AdminDash(username); break;
 	case 2: MRDash(username); break;
-	case 3:
+	case 3: cout << "Not available" << endl; break;
 	case 4:
 	case 5:
-	case 6:
+	case 6:userDash(username); break;
 	case 7: break;
 	}
 }
 void login()
 {
-	int exit = 0;
-	while (!exit)
+	int username;
+	do
 	{
 		system("cls");
 		cout << "SYSTEM - LOGIN" << endl;
@@ -1557,16 +1883,14 @@ void login()
 		cout << "To start, please login" << endl;
 		cout << endl;
 		cout << "Username: ";
-		int username;
 		cin >> username;
-		cout << "Password: ";
-		char userPass[32];
-		cin >> userPass;
 		if (validUser(username))
 		{
+			cout << "Password: ";
+			char userPass[32];
+			cin >> userPass;
 			if (validPassword(username, userPass))
 			{
-				exit = 1;
 				loginGuide(username);
 			}
 			else
@@ -1592,7 +1916,7 @@ void login()
 			cout << "**********************************************" << endl;
 			Sleep(1000);
 		}
-	}
+	} while (username >= 0);
 }
 
 
