@@ -52,12 +52,12 @@ typedef struct userinfo
 {
 	int balance;
 	bool powercut;
-
+	
 	// Read
 	date last_read;
 	bool read_now;
 	int last_month_usage;
-
+	
 	//basic
 	int No;
 	char name[32];
@@ -344,8 +344,8 @@ void defineUnread()
 	date current_time = getCurrentTime();
 	userinfo basicInfo;
 	fstream user;
-	user.open(FLOC_USERBASICINFO, ios::binary | ios::in | ios::out | ios::trunc);
-	while (user.read((char*)&basicInfo, sizeof(userinfo)))
+	user.open(FLOC_USERBASICINFO, ios::binary | ios::in | ios::app);
+	while(user.read((char*)&basicInfo, sizeof(userinfo)))
 	{
 		cout << current_time.m << " " << basicInfo.last_read.m << '\t';
 		cout << sameMonth(current_time, basicInfo.last_read);
@@ -356,12 +356,14 @@ void defineUnread()
 		}
 		cout << basicInfo.read_now << endl;
 	}
+	cout << "-" << endl;
 	user.close();
 	user.open(FLOC_USERBASICINFO, ios::binary | ios::in);
 	while (user.read((char*)&basicInfo, sizeof(userinfo)))
 	{
 		cout << current_time.m << " " << basicInfo.last_read.m << '\t';
-		cout << sameMonth(current_time, basicInfo.last_read) << '\t';
+		cout << sameMonth(current_time, basicInfo.last_read);
+		cout << basicInfo.read_now << '\t';
 		cout << basicInfo.read_now << endl;
 	}
 	user.close();
@@ -611,7 +613,6 @@ void MRListUnread(int username)
 }
 void MRListUsers()
 {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	system("cls");
 	cout << "USER MANAGEMENT - USER LIST" << endl;
 	cout << "======================================================================================================================================" << endl;
@@ -621,11 +622,6 @@ void MRListUsers()
 	fstream readUser(FLOC_USERBASICINFO, ios::in | ios::binary);
 	while (readUser.read((char*)&user, sizeof(userinfo)))
 	{
-		if (user.read_now == false)
-			SetConsoleTextAttribute(hConsole, 12);
-		else
-			SetConsoleTextAttribute(hConsole, 15);
-		
 		cout << setw(11) << right << setfill('0') << user.No << '\t'
 			<< setw(25) << left << setfill(' ') << user.name << '\t' << setw(4) << fixed << setprecision(3) << user.balance << "\t";
 		if (user.powercut == true)
@@ -641,7 +637,6 @@ void MRListUsers()
 		cout << user.last_read.h << ":" << user.last_read.min << ":" << user.last_read.sec << " "
 			<< user.last_read.d << "/" << user.last_read.m << "/" << user.last_read.y << endl;
 	}
-	SetConsoleTextAttribute(hConsole, 15);
 	readUser.close();
 	system("pause");
 }
