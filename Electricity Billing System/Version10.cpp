@@ -35,12 +35,12 @@ typedef struct address
 }add;
 typedef struct date
 {
+	int sec;
 	int min;
 	int h;
 	int d;
 	int m;
 	int y;
-
 }date;
 typedef struct deviceinfo
 {
@@ -51,6 +51,9 @@ typedef struct deviceinfo
 typedef struct userinfo
 {
 	bool powercut;
+	date last_read;
+	bool read;
+	int last_month_usage;
 	int No;
 	char name[32];
 	char id[19];
@@ -90,8 +93,21 @@ typedef struct MRdef
 
 
 
-
 // Functions
+date getCurrentTime()
+{
+	time_t now = time(0);
+	tm nowLocal;
+	localtime_s(&nowLocal, &now);
+	date currentTime;
+	currentTime.y = nowLocal.tm_year + 1900;
+	currentTime.m = nowLocal.tm_mon + 1;
+	currentTime.d = nowLocal.tm_mday;
+	currentTime.h = nowLocal.tm_hour;
+	currentTime.min = nowLocal.tm_min;
+	currentTime.sec = nowLocal.tm_sec;
+	return currentTime;
+}
 void getString(char* s)
 {
 	int n = 0;
@@ -118,6 +134,11 @@ bool samestr(char* s1, char* s2)
 			return false;
 	}
 	return true;
+}
+bool samemonth(date current, date comp)
+{
+	if (current.y == comp.y && current.m == comp.m) return 1;
+	return 0;
 }
 void dotDotDot(int n)
 {
@@ -211,7 +232,6 @@ MRdef getMRDetail(int username)
 // Apply changes - user basic info
 void storeUserInfo(userinfo use)
 {
-	userinfo user;
 	fstream temp;
 	temp.open(FLOC_USERBASICINFO, ios::binary | ios::app | ios::out);
 	temp.write((char*)&use, sizeof(userinfo));
@@ -319,6 +339,10 @@ void resetDatabase_UserBasicInfo()
 	strcpy_s(rootUser.name, "root");
 	strcpy_s(rootUser.id, "0");
 	rootUser.type = 1;
+	rootUser.powercut = true;
+	rootUser.last_month_usage = 0;
+	rootUser.voltage = 220;
+	rootUser.read = true;
 	strcpy_s(rootUser.password, "root");
 	rootUser.balance = 10000;
 	strcpy_s(rootUser.address.city, "default");
@@ -334,9 +358,27 @@ void resetDatabase_UserBasicInfo()
 	resetFile.close();
 	getTotalUser();
 }
+void resetDatabase_UserBill()
+{
+	userinfo rootUserInfo = getUserInfo(0);
+	userbill rootUser;
+	rootUser.caseNo = 0;
+	rootUser.user_record = rootUserInfo;
+	rootUser.rateNo = 0;
+	rootUser.last_month_usage = 0;
+	rootUser.current_usage = 0;
+	rootUser.read = true;
+	rootUser.pay = 0;
+	rootUser.payment = true;
+	rootUser.payment_date = rootUser.read_date = getCurrentTime();
+	fstream rootBill;
+	rootBill.open(FLOC_BILLDETAIL, ios::binary | ios::out);
+	rootBill.write((char*)&rootUser, sizeof(userbill));
+}
 void resetDatabase()
 {
 	resetDatabase_UserBasicInfo();
+	resetDatabase_UserBill();
 }
 void userInfoImport(string location)
 {
@@ -434,80 +476,28 @@ void deleteMRInfo(MRdef mr)
 
 // Meter Reader Features
 
-//int genCaseNo()
-//{
-//	fstream tmpf;
-//	userbill tmp;
-//	tmpf.open(FLOC_BILLDETAIL, ios::in | ios::app | ios::binary);
-//	int size = sizeof(userinfo);
-//	tmpf.seekg(-size, ios::end);
-//	tmpf.read((char*)&tmp, sizeof(userinfo));
-//	return (tmp.case_no + 1);
-//}
+int genCaseNo()
+{
+	fstream tmpf;
+	userbill tmp;
+	tmpf.open(FLOC_BILLDETAIL, ios::in | ios::app | ios::binary);
+	int size = sizeof(userinfo);
+	tmpf.seekg(-size, ios::end);
+	tmpf.read((char*)&tmp, sizeof(userinfo));
+	return (tmp.caseNo + 1);
+}
 
 // Get work process
-int getStreetRead(int username, char* st)
+int getUnread(int username, char* district)
 {
 	fstream tmp;
-	userbill user;
+	date current = getCurrentTime();
+	userinfo user;
 	int unread = 0;
-	tmp.open(FLOC_BILLDETAIL, ios::binary | ios::app | ios::in);
-	while (tmp.read((char*)&user, sizeof(userbill)))
+	tmp.open(FLOC_USERBASICINFO, ios::binary | ios::app | ios::in);
+	while (tmp.read((char*)&user, sizeof(userinfo)))
 	{
-		if (samestr(user.user_record.address.street, st))
-		{
-			if (user.read == true)
-			{
-				unread++;
-			}
-		}
-	}
-	tmp.close();
-	return unread;
-}
-int getStreetTotal(int username, char* street)
-{
-	fstream tmp;
-	userbill user;
-	int unread = 0;
-	tmp.open(FLOC_BILLDETAIL, ios::binary | ios::app | ios::in);
-	while (tmp.read((char*)&user, sizeof(userbill)))
-	{
-		if (samestr(user.user_record.address.street, street))
-		{
-			unread++;
-		}
-	}
-	return unread;
-}
-int getEstateRead(int username, char* est)
-{
-	fstream tmp;
-	userbill user;
-	int unread = 0;
-	tmp.open(FLOC_BILLDETAIL, ios::binary | ios::app | ios::in);
-	while (tmp.read((char*)&user, sizeof(userbill)))
-	{
-		if (samestr(user.user_record.address.estate, est))
-		{
-			if (user.read == true)
-			{
-				unread++;
-			}
-		}
-	}
-	tmp.close();
-	return unread;
-}
-int getEstateTotal(int username, char* est)
-{
-	fstream tmp;
-	userbill user;
-	int unread = 0;
-	tmp.open(FLOC_BILLDETAIL, ios::binary | ios::app | ios::in);
-	while (tmp.read((char*)&user, sizeof(userbill)))
-	{
-		if (samestr(user.user_record.address.estate, est))
+		if (user.read == false)
 		{
 			unread++;
 		}
@@ -515,41 +505,7 @@ int getEstateTotal(int username, char* est)
 	tmp.close();
 	return unread;
 }
-int getUnitRead(int username, char* unit)
-{
-	fstream tmp;
-	userbill user;
-	int unread = 0;
-	tmp.open(FLOC_BILLDETAIL, ios::binary | ios::app | ios::in);
-	while (tmp.read((char*)&user, sizeof(userbill)))
-	{
-		if (samestr(user.user_record.address.unit, unit))
-		{
-			if (user.read == true)
-			{
-				unread++;
-			}
-		}
-	}
-	tmp.close();
-	return unread;
-}
-int getReadTotal(int username, char* unit)
-{
-	fstream tmp;
-	userbill user;
-	int unread = 0;
-	tmp.open(FLOC_BILLDETAIL, ios::binary | ios::app | ios::in);
-	while (tmp.read((char*)&user, sizeof(userbill)))
-	{
-		if (samestr(user.user_record.address.unit, unit))
-		{
-			unread++;
-		}
-	}
-	tmp.close();
-	return unread;
-}
+
 
 
 // Meter Reader_Menu
@@ -658,6 +614,29 @@ void MRDash(int username)
 	dotDotDot(3);
 }
 
+// Charger_Menu
+void chargerDash(int username)
+{
+	userinfo me;
+	me = getUserInfo(username);
+	int opt;
+	do
+	{
+		system("cls");
+		cout << "DASHBOARD" << endl;
+		cout << "==============================================" << endl;
+		cout << me.name << ", greetings!" << endl;
+		cout << "----------------------------------------------" << endl;
+		cout << "Total users: " << totalUser << endl;
+		cout << "----------------------------------------------" << endl;
+		cout << "Menu:" << endl;
+		cout << "1. Manage current users" << endl;
+		cout << "2. User Registration" << endl;
+		cout << "3. System Settings" << endl;
+		cout << "0. Logout" << endl;
+		cin >> opt;
+	} while (opt != 0);
+}
 
 
 // Admin Features
@@ -976,6 +955,8 @@ void generateUser()
 		setdefaultPassword(newUser.id, newUser.password);
 		newUser.balance = 100;
 		newUser.powercut = false;
+		newUser.read = true;
+		newUser.last_month_usage = 0;
 
 		system("cls");
 		cout << "USER REGISTRATION - FINISH" << endl;
@@ -1006,7 +987,20 @@ void generateUser()
 			}
 			userBasicInfo.write((char*)&newUser, sizeof(userinfo));
 			userBasicInfo.close();
+
+			userbill newUserBill;
+			newUserBill.caseNo = genCaseNo();
+			newUserBill.user_record = newUser;
+			newUserBill.rateNo = 0;
+			newUserBill.last_month_usage = 0;
+			newUserBill.current_usage = 0;
+			newUserBill.pay = 0;
+			newUserBill.read = false;
+			newUserBill.payment = false;
+			newUserBill.read_date = newUserBill.payment_date = getCurrentTime();
 			
+			fstream userBillInfo;
+			userBillInfo.open(FLOC_BILLDETAIL, ios::binary | ios::out);
 			getTotalUser();
 			cout << endl;
 			cout << "Successful" << endl;
