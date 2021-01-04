@@ -50,17 +50,21 @@ typedef struct deviceinfo
 }device;
 typedef struct userinfo
 {
+	int balance;
 	bool powercut;
+
+	// Read
 	date last_read;
-	bool read;
+	bool read_now;
 	int last_month_usage;
+
+	//basic
 	int No;
 	char name[32];
 	char id[19];
 	int type;
 	add address;
 	char password[32];
-	int balance;
 	int voltage;
 }userinfo;
 typedef struct userbill
@@ -90,10 +94,7 @@ typedef struct MRdef
 	float progress;
 }MRdef;
 
-
-
-
-// Functions
+// Functions ===============================================
 date getCurrentTime()
 {
 	time_t now = time(0);
@@ -135,10 +136,19 @@ bool samestr(char* s1, char* s2)
 	}
 	return true;
 }
-bool samemonth(date current, date comp)
+bool sameMonth(date current, date comp)
 {
 	if (current.y == comp.y && current.m == comp.m) return 1;
 	return 0;
+}
+bool eleInArr(string arr[], string ele, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		if (arr[i] == ele)
+			return true;
+	}
+	return false;
 }
 void dotDotDot(int n)
 {
@@ -150,8 +160,7 @@ void dotDotDot(int n)
 }
 
 
-
-// Find user and get info
+// Find user and get info ===================================
 bool findUser(int username)
 {
 	userinfo use;
@@ -229,7 +238,7 @@ MRdef getMRDetail(int username)
 }
 
 
-// Apply changes - user basic info
+// Apply changes - user basic info ===========================
 void storeUserInfo(userinfo use)
 {
 	fstream temp;
@@ -288,7 +297,7 @@ void deleteUserInfo(userinfo use)
 	origin.close();
 }
 
-// System
+// System =====================================================
 void getTotalUser()
 {
 	totalUser = 0;
@@ -330,8 +339,51 @@ int genUserNo()
 	tmpf.read((char*)&tmp, sizeof(userinfo));
 	return (tmp.No + 1);
 }
+void defineUnread()
+{
+	date current_time = getCurrentTime();
+	userinfo basicInfo;
+	fstream user;
+	user.open(FLOC_USERBASICINFO, ios::binary | ios::in | ios::out | ios::trunc);
+	while (user.read((char*)&basicInfo, sizeof(userinfo)))
+	{
+		cout << current_time.m << " " << basicInfo.last_read.m << '\t';
+		cout << sameMonth(current_time, basicInfo.last_read);
+		cout << basicInfo.read_now << '\t';
+		if (!sameMonth(current_time, basicInfo.last_read))
+		{
+			basicInfo.read_now = false;
+		}
+		cout << basicInfo.read_now << endl;
+	}
+	user.close();
+	user.open(FLOC_USERBASICINFO, ios::binary | ios::in);
+	while (user.read((char*)&basicInfo, sizeof(userinfo)))
+	{
+		cout << current_time.m << " " << basicInfo.last_read.m << '\t';
+		cout << sameMonth(current_time, basicInfo.last_read) << '\t';
+		cout << basicInfo.read_now << endl;
+	}
+	user.close();
+}
+int getUnread()
+{
+	int unread = 0;
+	userinfo basicInfo;
+	fstream user;
+	user.open(FLOC_USERBASICINFO, ios::binary | ios::in);
+	while (user.read((char*)&basicInfo, sizeof(userinfo)))
+	{
+		if (basicInfo.read_now == false)
+		{
+			unread++;
+		}
+	}
+	user.close();
+	return unread;
+}
 
-// System settings - reset
+// System settings - reset =====================================
 void resetDatabase_UserBasicInfo()
 {
 	userinfo rootUser;
@@ -342,7 +394,9 @@ void resetDatabase_UserBasicInfo()
 	rootUser.powercut = true;
 	rootUser.last_month_usage = 0;
 	rootUser.voltage = 220;
-	rootUser.read = true;
+	rootUser.read_now = true;
+	rootUser.powercut = false;
+	rootUser.last_read = getCurrentTime();
 	strcpy_s(rootUser.password, "root");
 	rootUser.balance = 10000;
 	strcpy_s(rootUser.address.city, "default");
@@ -411,9 +465,7 @@ void userInfoImport(string location)
 }
 
 
-
-
-// Apple changes - meter reader info
+// Apple changes - meter reader info ===========================
 void storeMRInfo(MRdef mr)
 {
 	MRdef mrtmp;
@@ -474,8 +526,7 @@ void deleteMRInfo(MRdef mr)
 }
 
 
-// Meter Reader Features
-
+// Meter Reader Features ======================================
 int genCaseNo()
 {
 	fstream tmpf;
@@ -487,28 +538,113 @@ int genCaseNo()
 	return (tmp.caseNo + 1);
 }
 
-// Get work process
-int getUnread(int username, char* district)
-{
-	fstream tmp;
-	date current = getCurrentTime();
+// Get Reginal Info
+int getReignalInfo_district(string districts[]) {
+	int n = 0;
 	userinfo user;
-	int unread = 0;
-	tmp.open(FLOC_USERBASICINFO, ios::binary | ios::app | ios::in);
-	while (tmp.read((char*)&user, sizeof(userinfo)))
-	{
-		if (user.read == false)
-		{
-			unread++;
+	fstream temp;
+	temp.open(FLOC_USERBASICINFO, ios::binary | ios::in);
+	while (temp.read((char*)&user, sizeof(userinfo))) {
+		if (!eleInArr(districts, user.address.district, n)) {
+			districts[n + 1] = user.address.district;
+			n++;
 		}
 	}
-	tmp.close();
-	return unread;
+	return n;
+}
+int getReignalInfo_street(string streets[]) {
+	int n = 0;
+	userinfo user;
+	fstream temp;
+	temp.open(FLOC_USERBASICINFO, ios::binary | ios::in);
+	while (temp.read((char*)&user, sizeof(userinfo))) {
+		if (!eleInArr(streets, user.address.street, n)) {
+			streets[n + 1] = user.address.street;
+			n++;
+		}
+	}
+	return n;
+}
+int getReignalInfo_estate(string estates[]) {
+	int n = 0;
+	userinfo user;
+	fstream temp;
+	temp.open(FLOC_USERBASICINFO, ios::binary | ios::in);
+	while (temp.read((char*)&user, sizeof(userinfo))) {
+		if (!eleInArr(estates, user.address.estate, n)) {
+			estates[n + 1] = user.address.estate;
+			n++;
+		}
+	}
+	return n;
 }
 
 
 
+
+
 // Meter Reader_Menu
+void MRListUnread(int username)
+{
+	system("cls");
+	cout << "USER MANAGEMENT - USER LIST" << endl;
+	cout << "======================================================================================================================================" << endl;
+	cout << "Number                Name	                                   Address                                                                 " << endl;
+	cout << "--------------------------------------------------------------------------------------------------------------------------------------" << endl;
+	userinfo user;
+	fstream readUser(FLOC_USERBASICINFO, ios::in | ios::binary);
+	while (readUser.read((char*)&user, sizeof(userinfo)))
+	{
+		if (user.read_now == false && user.type >= 3)
+			cout << setw(11) << right << setfill('0') << user.No << '\t'
+			<< setw(25) << left << setfill(' ') << user.name
+			<< setw(20) << left << user.id << '\t'
+			<< setw(5) << right << setfill(' ') << user.address.unit << '-'
+			<< setw(3) << right << setfill('0') << user.address.level << '-'
+			<< setw(4) << right << setfill('0') << user.address.room << ", "
+			<< setw(15) << setfill(' ') << user.address.estate << ", "
+			<< setw(25) << user.address.street << ", "
+			<< setw(15) << user.address.district << ", "
+			<< setw(15) << user.address.city << endl;
+	}
+	system("pause");
+}
+void MRListUsers()
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	system("cls");
+	cout << "USER MANAGEMENT - USER LIST" << endl;
+	cout << "======================================================================================================================================" << endl;
+	cout << "Number                Name	              Balance              Power Status                Last Month Usage           Read             " << endl;
+	cout << "--------------------------------------------------------------------------------------------------------------------------------------" << endl;
+	userinfo user;
+	fstream readUser(FLOC_USERBASICINFO, ios::in | ios::binary);
+	while (readUser.read((char*)&user, sizeof(userinfo)))
+	{
+		if (user.read_now == false)
+			SetConsoleTextAttribute(hConsole, 12);
+		else
+			SetConsoleTextAttribute(hConsole, 15);
+		
+		cout << setw(11) << right << setfill('0') << user.No << '\t'
+			<< setw(25) << left << setfill(' ') << user.name << '\t' << setw(4) << fixed << setprecision(3) << user.balance << "\t";
+		if (user.powercut == true)
+			cout << "cut" << "\t";
+		else
+			cout << "using" << '\t';
+		cout << user.last_month_usage << "\t";
+
+		if (user.read_now)
+			cout << "read" << '\t';
+		else
+			cout << "Unread" << '\t';
+		cout << user.last_read.h << ":" << user.last_read.min << ":" << user.last_read.sec << " "
+			<< user.last_read.d << "/" << user.last_read.m << "/" << user.last_read.y << endl;
+	}
+	SetConsoleTextAttribute(hConsole, 15);
+	readUser.close();
+	system("pause");
+}
 void MRInput(int username)
 {
 	int userread = 0;
@@ -572,8 +708,8 @@ void MRDash(int username)
 	MRdef mywork;
 	mywork = getMRDetail(username);
 	me = getUserInfo(username);
-	int userread = 0;
-	int totaluser = 10;
+	int userread = getUnread();
+	int totaluser_local = totalUser;
 	int opt;
 	do
 	{
@@ -583,19 +719,19 @@ void MRDash(int username)
 		cout << me.name << ", greetings!" << endl;
 		cout << "----------------------------------------------" << endl;
 		cout << "Your progress: " << endl;
-		cout << "Read: " << userread << "/" << totaluser << endl;
+		cout << "Unread: " << userread << "/" << totaluser_local << endl;
 		cout << "Progress: " << mywork.progress << "%" << endl;
 		cout << "----------------------------------------------" << endl;
 		cout << "Menu:" << endl;
 		cout << "1. Start Inputting" << endl;
-		cout << "2. Edit bill" << endl;
+		cout << "2. Overview" << endl;
 		cout << "3. Show assigned tasks" << endl;
 		cout << "0. Logout" << endl;
 		cin >> opt;
 		switch (opt)
 		{
 		case 1: MROverview(username);  break;
-		case 2:; break;
+		case 2: MRListUsers(); break;
 		case 3: MRWork(username);
 		case 0:
 			system("cls");
@@ -614,7 +750,7 @@ void MRDash(int username)
 	dotDotDot(3);
 }
 
-// Charger_Menu
+// Charger_Menu ===============================================
 void chargerDash(int username)
 {
 	userinfo me;
@@ -639,7 +775,7 @@ void chargerDash(int username)
 }
 
 
-// Admin Features
+// Admin Features =============================================
 void setdefaultPassword(char id[], char passput[])
 {
 	int i;
@@ -651,7 +787,7 @@ void setdefaultPassword(char id[], char passput[])
 }
 
 
-// System Settings
+// System Settings ============================================
 void adminSystemSettings_menu()
 {
 	int opt;
@@ -715,8 +851,7 @@ void adminSystemSettings_menu()
 }
 
 
-// Admin_Menu
-
+// Admin_Menu =================================================
 void adminBillRateManagement()
 {
 
@@ -735,10 +870,9 @@ void MRManage()
 	system("cls");
 	cout << "USER MANAGEMENT - MATER READER MANAGEMENT" << endl;
 	cout << "======================================================================" << endl;
-	cout << "Not available" << endl;
+	cout << "Have a glance of how Meter Readers are doing: " << endl;
 	cout << "----------------------------------------------------------------------" << endl;
-
-
+	cout << endl;
 	cout << "======================================================================" << endl;
 	cout << "Number                Name	          Progress" << endl;
 	cout << "----------------------------------------------------------------------" << endl;
@@ -748,7 +882,7 @@ void MRManage()
 	{
 		cout << setw(11) << right << setfill('0') << mr.No << '\t'
 			<< setw(25) << left << setfill(' ') << mr.name
-			<< setw(25) << left << mr.progress << "%" << endl;
+			<< setw(6) << left << fixed << setprecision(3) << mr.progress << "%" << endl;
 	}
 	cout << "----------------------------------------------------------------------" << endl;
 	system("pause");
@@ -803,215 +937,223 @@ void generateUser()
 	case 8: type = "Rural User in Poverty"; newUser.type = 8; break;
 	}
 
-
-	if (newUser.type == 4)
+	system("cls");
+	cout << "USER REGISTRATION - ADDRESS" << endl;
+	cout << "======================================================================" << endl;
+	cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
+	cout << "User number: " << newUser.No << endl;
+	cout << "----------------------------------------------------------------------" << endl;
+	cout << "City: ";
+	getString(newUser.address.city);
+	while (strlen(newUser.address.city) >= 32)
 	{
+		cout << "Invalid city name" << endl;
+		cout << "city: ";
+		getString(newUser.address.city);
+	}
 
+	system("cls");
+	cout << "USER REGISTRATION - ADDRESS" << endl;
+	cout << "======================================================================" << endl;
+	cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
+	cout << "User number: " << newUser.No << endl;
+	cout << "Address: " << newUser.address.city << endl;
+	cout << "----------------------------------------------------------------------" << endl;
+	if (newUser.type == 7 || newUser.type == 8)
+		cout << "Town: ";
+	else
+		cout << "District: ";
+	getString(newUser.address.district);
+	while (strlen(newUser.address.district) >= 32)
+	{
+		cout << "Invalid district name" << endl;
+		cout << "district: ";
+		getString(newUser.address.district);
+	}
+
+	system("cls");
+	cout << "USER REGISTRATION - ADDRESS" << endl;
+	cout << "======================================================================" << endl;
+	cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
+	cout << "User number: " << newUser.No << endl;
+	cout << "Address: " << newUser.address.district << ", " << newUser.address.city << endl;
+	cout << "----------------------------------------------------------------------" << endl;
+	if (newUser.type == 7 || newUser.type == 8)
+		cout << "County: ";
+	else
+		cout << "Street: ";
+	getString(newUser.address.street);
+	while (strlen(newUser.address.street) >= 32)
+	{
+		cout << "Invalid street name" << endl;
+		cout << "street: ";
+		getString(newUser.address.street);
+	}
+
+	system("cls");
+	cout << "USER REGISTRATION - ADDRESS" << endl;
+	cout << "======================================================================" << endl;
+	cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
+	cout << "User number: " << newUser.No << endl;
+	cout << "Address: " << newUser.address.street << ", " << newUser.address.district << ", "
+		<< newUser.address.city << endl;
+	cout << "----------------------------------------------------------------------" << endl;
+	if (newUser.type == 7 || newUser.type == 8)
+		cout << "Village: ";
+	else
+		cout << "Estate: ";
+	getString(newUser.address.estate);
+	while (strlen(newUser.address.estate) >= 32)
+	{
+		cout << "Invalid estate name" << endl;
+		cout << "Estate: ";
+		getString(newUser.address.estate);
+	}
+
+	system("cls");
+	cout << "USER REGISTRATION - ADDRESS" << endl;
+	cout << "======================================================================" << endl;
+	cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
+	cout << "User number: " << newUser.No << endl;
+	cout << "Address: " << newUser.address.estate << ", " << newUser.address.street << ", "
+		<< newUser.address.district << ", " << newUser.address.city << endl;
+	cout << "----------------------------------------------------------------------" << endl;
+	cout << "Unit: ";
+	getString(newUser.address.unit);
+	while (strlen(newUser.address.unit) >= 32)
+	{
+		cout << "Invalid unit name" << endl;
+		cout << "unit: ";
+		getString(newUser.address.unit);
+	}
+
+	system("cls");
+	cout << "USER REGISTRATION - ADDRESS" << endl;
+	cout << "======================================================================" << endl;
+	cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
+	cout << "User number: " << newUser.No << endl;
+	cout << "Address: " << newUser.address.unit << " " << newUser.address.estate << ", "
+		<< newUser.address.street << ", " << newUser.address.district << ", " << newUser.address.city << endl;
+	cout << "----------------------------------------------------------------------" << endl;
+	cout << "Level: ";
+	cin >> newUser.address.level;
+	while (!cin)
+	{
+		cout << "Invalid level" << endl;
+		cout << "level: ";
+		cin >> newUser.address.level;
+	}
+
+	system("cls");
+	cout << "USER REGISTRATION - ADDRESS" << endl;
+	cout << "======================================================================" << endl;
+	cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
+	cout << "User number: " << newUser.No << endl;
+	cout << "Address: " << newUser.address.level << "-" << newUser.address.level
+		<< " " << newUser.address.estate << ", " << newUser.address.street << ", " << newUser.address.district << ", " << newUser.address.city << endl;
+	cout << "----------------------------------------------------------------------" << endl;
+	cout << "Room: ";
+	cin >> newUser.address.room;
+	while (!cin)
+	{
+		cout << "Invalid room" << endl;
+		cout << "Room: ";
+		cin >> newUser.address.room;
+	}
+
+	system("cls");
+	cout << "USER REGISTRATION - ID" << endl;
+	cout << "======================================================================" << endl;
+	cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
+	cout << "User number: " << newUser.No << endl;
+	cout << "Address: " << newUser.address.unit << "-" << newUser.address.level << "-" << newUser.address.room
+		<< " " << newUser.address.estate << ", " << newUser.address.street << ", " << newUser.address.district << ", " << newUser.address.city << endl;
+	cout << "----------------------------------------------------------------------" << endl;
+	cout << "User's National ID: ";
+	cin >> newUser.id;
+	while (strlen(newUser.id) != 18)
+	{
+		cout << "Invalid ID" << endl;
+		strcpy_s(newUser.password, "set default password error");
+		cout << "User's National ID: ";
+		cin >> newUser.id;
+	}
+
+	setdefaultPassword(newUser.id, newUser.password);
+	newUser.balance = 100;
+	newUser.powercut = false;
+	newUser.last_read = getCurrentTime();
+	newUser.read_now = true;
+	newUser.last_month_usage = 0;
+
+	system("cls");
+	cout << "USER REGISTRATION - FINISH" << endl;
+	cout << "======================================================================" << endl;
+	cout << "*************************Congratulations!*****************************" << endl;
+	cout << "You have created a new user, here is the detail" << endl;
+	cout << "----------------------------------------------------------------------" << endl;
+	cout << "Name: " << newUser.name << endl;
+	cout << "Type: " << type << "(" << newUser.type << ")" << endl;
+	cout << "User number: " << newUser.No << endl;
+	cout << "National ID: " << newUser.id << endl;
+	cout << "Balance: " << newUser.balance << " CNY" << endl;
+	cout << " Address: " << newUser.address.unit << "-" << newUser.address.level << "-" << newUser.address.room
+		<< " " << newUser.address.estate << ", " << newUser.address.street << ", " << newUser.address.district << ", " << newUser.address.city << endl;
+	cout << "Default password: " << newUser.password << endl;
+	cout << "----------------------------------------------------------------------" << endl;
+	cout << "Are you sure to store it" << endl;
+	cout << "y/n: ";
+	char opt;
+	cin >> opt;
+	if (opt == 'y' || opt == 'Y')
+	{
+		fstream userBasicInfo;
+		userBasicInfo.open(FLOC_USERBASICINFO, ios::binary | ios::app | ios::out);
+		if (!userBasicInfo)
+		{
+			cout << "Error opening or creating file!";
+		}
+		userBasicInfo.write((char*)&newUser, sizeof(userinfo));
+		userBasicInfo.close();
+
+		userbill newUserBill;
+		newUserBill.caseNo = genCaseNo();
+		newUserBill.user_record = newUser;
+		newUserBill.rateNo = 0;
+		newUserBill.last_month_usage = 0;
+		newUserBill.current_usage = 0;
+		newUserBill.pay = 0;
+		newUserBill.read = false;
+		newUserBill.payment = false;
+		newUserBill.read_date = newUserBill.payment_date = getCurrentTime();
+
+		fstream userBillInfo;
+		userBillInfo.open(FLOC_BILLDETAIL, ios::binary | ios::out);
+		userBillInfo.write((char*)&newUserBill, sizeof(userbill));
+		userBillInfo.close();
+
+		if (newUser.type == 2)
+		{
+			MRdef MRinfo;
+			MRinfo.No = newUser.No;
+			strcpy_s(MRinfo.name, newUser.name);
+			MRinfo.progress = 0;
+			fstream MRfile;
+			MRfile.open(FLOC_MRINFO, ios::binary | ios::app);
+			MRfile.write((char*)&MRinfo, sizeof(MRdef));
+			MRfile.close();
+		}
+
+		getTotalUser();
+		cout << endl;
+		cout << "Successful" << endl;
+		Sleep(1000);
 	}
 	else
 	{
-		system("cls");
-		cout << "USER REGISTRATION - ADDRESS" << endl;
-		cout << "======================================================================" << endl;
-		cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
-		cout << "User number: " << newUser.No << endl;
-		cout << "----------------------------------------------------------------------" << endl;
-		cout << "City: ";
-		getString(newUser.address.city);
-		while (strlen(newUser.address.city) >= 32)
-		{
-			cout << "Invalid city name" << endl;
-			cout << "city: ";
-			getString(newUser.address.city);
-		}
-
-		system("cls");
-		cout << "USER REGISTRATION - ADDRESS" << endl;
-		cout << "======================================================================" << endl;
-		cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
-		cout << "User number: " << newUser.No << endl;
-		cout << "Address: " << newUser.address.city << endl;
-		cout << "----------------------------------------------------------------------" << endl;
-		if (newUser.type == 6 || newUser.type == 7)
-			cout << "Town: ";
-		else
-			cout << "District: ";
-		getString(newUser.address.district);
-		while (strlen(newUser.address.district) >= 32)
-		{
-			cout << "Invalid district name" << endl;
-			cout << "district: ";
-			getString(newUser.address.district);
-		}
-
-		system("cls");
-		cout << "USER REGISTRATION - ADDRESS" << endl;
-		cout << "======================================================================" << endl;
-		cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
-		cout << "User number: " << newUser.No << endl;
-		cout << "Address: " << newUser.address.district << ", " << newUser.address.city << endl;
-		cout << "----------------------------------------------------------------------" << endl;
-		if (newUser.type == 6 || newUser.type == 7)
-			cout << "County: ";
-		else
-			cout << "Street: ";
-		getString(newUser.address.street);
-		while (strlen(newUser.address.street) >= 32)
-		{
-			cout << "Invalid street name" << endl;
-			cout << "street: ";
-			getString(newUser.address.street);
-		}
-
-		system("cls");
-		cout << "USER REGISTRATION - ADDRESS" << endl;
-		cout << "======================================================================" << endl;
-		cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
-		cout << "User number: " << newUser.No << endl;
-		cout << "Address: " << newUser.address.street << ", " << newUser.address.district << ", "
-			<< newUser.address.city << endl;
-		cout << "----------------------------------------------------------------------" << endl;
-		if (newUser.type == 6 || newUser.type == 7)
-			cout << "Village: ";
-		else
-			cout << "Estate: ";
-		getString(newUser.address.estate);
-		while (strlen(newUser.address.estate) >= 32)
-		{
-			cout << "Invalid estate name" << endl;
-			cout << "Estate: ";
-			getString(newUser.address.estate);
-		}
-
-		system("cls");
-		cout << "USER REGISTRATION - ADDRESS" << endl;
-		cout << "======================================================================" << endl;
-		cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
-		cout << "User number: " << newUser.No << endl;
-		cout << "Address: " << newUser.address.estate << ", " << newUser.address.street << ", "
-			<< newUser.address.district << ", " << newUser.address.city << endl;
-		cout << "----------------------------------------------------------------------" << endl;
-		cout << "Unit: ";
-		getString(newUser.address.unit);
-		while (strlen(newUser.address.unit) >= 32)
-		{
-			cout << "Invalid unit name" << endl;
-			cout << "unit: ";
-			getString(newUser.address.unit);
-		}
-
-		system("cls");
-		cout << "USER REGISTRATION - ADDRESS" << endl;
-		cout << "======================================================================" << endl;
-		cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
-		cout << "User number: " << newUser.No << endl;
-		cout << "Address: " << newUser.address.unit << " " << newUser.address.estate << ", "
-			<< newUser.address.street << ", " << newUser.address.district << ", " << newUser.address.city << endl;
-		cout << "----------------------------------------------------------------------" << endl;
-		cout << "Level: ";
-		cin >> newUser.address.level;
-		while (!cin)
-		{
-			cout << "Invalid level" << endl;
-			cout << "level: ";
-			cin >> newUser.address.level;
-		}
-
-		system("cls");
-		cout << "USER REGISTRATION - ADDRESS" << endl;
-		cout << "======================================================================" << endl;
-		cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
-		cout << "User number: " << newUser.No << endl;
-		cout << "Address: " << newUser.address.level << "-" << newUser.address.level
-			<< " " << newUser.address.estate << ", " << newUser.address.street << ", " << newUser.address.district << ", " << newUser.address.city << endl;
-		cout << "----------------------------------------------------------------------" << endl;
-		cout << "Room: ";
-		cin >> newUser.address.room;
-		while (!cin)
-		{
-			cout << "Invalid room" << endl;
-			cout << "Room: ";
-			cin >> newUser.address.room;
-		}
-
-		system("cls");
-		cout << "USER REGISTRATION - ID" << endl;
-		cout << "======================================================================" << endl;
-		cout << "You are creating: " << newUser.name << "; " << type << "(" << newUser.type << ")" << endl;
-		cout << "User number: " << newUser.No << endl;
-		cout << "Address: " << newUser.address.unit << "-" << newUser.address.level << "-" << newUser.address.room
-			<< " " << newUser.address.estate << ", " << newUser.address.street << ", " << newUser.address.district << ", " << newUser.address.city << endl;
-		cout << "----------------------------------------------------------------------" << endl;
-		cout << "User's National ID: ";
-		cin >> newUser.id;
-		while (strlen(newUser.id) != 18)
-		{
-			cout << "Invalid ID" << endl;
-			strcpy_s(newUser.password, "set default password error");
-			cout << "User's National ID: ";
-			cin >> newUser.id;
-		}
-
-		setdefaultPassword(newUser.id, newUser.password);
-		newUser.balance = 100;
-		newUser.powercut = false;
-		newUser.read = true;
-		newUser.last_month_usage = 0;
-
-		system("cls");
-		cout << "USER REGISTRATION - FINISH" << endl;
-		cout << "======================================================================" << endl;
-		cout << "*************************Congratulations!*****************************" << endl;
-		cout << "You have created a new user, here is the detail" << endl;
-		cout << "----------------------------------------------------------------------" << endl;
-		cout << "Name: " << newUser.name << endl;
-		cout << "Type: " << type << "(" << newUser.type << ")" << endl;
-		cout << "User number: " << newUser.No << endl;
-		cout << "National ID: " << newUser.id << endl;
-		cout << "Balance: " << newUser.balance << " CNY" << endl;
-		cout << " Address: " << newUser.address.unit << "-" << newUser.address.level << "-" << newUser.address.room
-			<< " " << newUser.address.estate << ", " << newUser.address.street << ", " << newUser.address.district << ", " << newUser.address.city << endl;
-		cout << "Default password: " << newUser.password << endl;
-		cout << "----------------------------------------------------------------------" << endl;
-		cout << "Are you sure to store it" << endl;
-		cout << "y/n: ";
-		char opt;
-		cin >> opt;
-		if (opt == 'y' || opt == 'Y')
-		{
-			fstream userBasicInfo;
-			userBasicInfo.open(FLOC_USERBASICINFO, ios::binary | ios::app | ios::out);
-			if (!userBasicInfo)
-			{
-				cout << "Error opening or creating file!";
-			}
-			userBasicInfo.write((char*)&newUser, sizeof(userinfo));
-			userBasicInfo.close();
-
-			userbill newUserBill;
-			newUserBill.caseNo = genCaseNo();
-			newUserBill.user_record = newUser;
-			newUserBill.rateNo = 0;
-			newUserBill.last_month_usage = 0;
-			newUserBill.current_usage = 0;
-			newUserBill.pay = 0;
-			newUserBill.read = false;
-			newUserBill.payment = false;
-			newUserBill.read_date = newUserBill.payment_date = getCurrentTime();
-			
-			fstream userBillInfo;
-			userBillInfo.open(FLOC_BILLDETAIL, ios::binary | ios::out);
-			getTotalUser();
-			cout << endl;
-			cout << "Successful" << endl;
-			Sleep(1000);
-		}
-		else
-		{
-			cout << endl;
-			cout << "Cancelled" << endl;
-			Sleep(1000);
-		}
+		cout << endl;
+		cout << "Cancelled" << endl;
+		Sleep(1000);
 	}
 }
 void adminEditUser_Detail(int username)
@@ -1402,9 +1544,9 @@ void adminListUsers()
 {
 	system("cls");
 	cout << "USER MANAGEMENT - USER LIST" << endl;
-	cout << "============================================================================================================================================================================================================" << endl;
-	cout << "Number                Name	                Type                      ID                                         Address                                                                    Password" << endl;
-	cout << "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+	cout << "=================================================================================================================================================================================================" << endl;
+	cout << "Number                Name	                Type                      ID                                         Address                                                             Read" << endl;
+	cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 	userinfo user;
 	fstream readUser(FLOC_USERBASICINFO, ios::in | ios::binary);
 	while (readUser.read((char*)&user, sizeof(userinfo)))
@@ -1422,7 +1564,7 @@ void adminListUsers()
 			<< setw(25) << user.address.street << ", "
 			<< setw(15) << user.address.district << ", "
 			<< setw(15) << user.address.city << '\t'
-			<< setw(16) << right << user.password << endl;
+			<< setw(4) << right << user.read_now << endl;
 	}
 	cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 	system("pause");
@@ -1441,14 +1583,14 @@ void userManage()
 		cout << "Menu: " << endl;
 		cout << "1. Edit user information" << endl;
 		cout << "2. List users" << endl;
-		cout << "3. Assign Meter Reader tasks" << endl;
+		cout << "3. Meter Reader Management" << endl;
 		cout << "0. Exit" << endl;
 		cin >> opt;
 		switch (opt)
 		{
 		case 1: adminEditUsers(); break;
 		case 2: adminListUsers(); break;
-		case 3:/*MRManage()*/; break;
+		case 3:MRManage(); break;
 		case 0: return;
 		default: cout << "Invalid Input" << endl;
 		}
@@ -1493,7 +1635,7 @@ void AdminDash(int username)
 
 
 
-//User_Menu
+//User_Menu===================================================
 void userEditBasicInfo(int username)
 {
 	int opt;
@@ -1793,7 +1935,7 @@ void userDash(int username)
 }
 
 
-// Login
+// Login======================================================
 int validPassword(int username, char userPass[])
 {
 	userinfo user;
@@ -1809,7 +1951,7 @@ void loginGuide(int username)
 	switch (user.type)
 	{
 	case 1: AdminDash(username); break;
-	case 2: /*MRDash*/(username); break;
+	case 2: MRDash(username); break;
 	case 3: cout << "Not available" << endl; break;
 	case 4:
 	case 5:
@@ -1909,13 +2051,16 @@ void checkAndGenerate()
 	else
 	{
 		cout << "welcome to electricity billing system" << endl;
-		Sleep(1000);
+		Sleep(0500);
 	}
 }
+
 
 int main()
 {
 	checkAndGenerate();
 	getTotalUser();
+	defineUnread();
+	system("pause");
 	login();
 }
