@@ -1719,10 +1719,15 @@ void adminEditRate_Ent()
 		wcout << L"┴─────────";
 	wcout << L"┴─────────┘" << endl;
 }
-void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
+//Enterprise
+
+//Rural
+
+// Urban
+void adminEditRate_Urban_editDetail(int row, int col, rateRecord& current)
 {
-	rateRecord temp = current;
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	double input;
 	do
 	{
 		system("cls");
@@ -1857,7 +1862,7 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 			wcout << setw(4) << "row" << setw(2) << N - 1 << " "; // row
 			SetConsoleTextAttribute(hConsole, 8);
 			wcout << L"│";
-			SetConsoleTextAttribute(hConsole, 6);
+			SetConsoleTextAttribute(hConsole, 15);
 			if (current.urban[N - 1][0] == -1)
 				wcout << setw(9) << " ";
 			else
@@ -1869,10 +1874,10 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 			for (int j = 1; j < N; j++)
 			{
 				SetConsoleTextAttribute(hConsole, 15);
-				if (current.urban[N - 1][0] == -1)
+				if (current.urban[N - 1][j] == -1)
 					wcout << setw(9) << " ";
 				else
-					wcout << setw(9) << current.urban[N - 1][0];
+					wcout << setw(9) << current.urban[N - 1][j];
 				SetConsoleTextAttribute(hConsole, 8);
 				wcout << L"│";
 			}
@@ -1901,56 +1906,87 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 			cout << endl;
 			if (col == 0)
 			{
-				if (col == 0)
-				{
 #pragma region display
-					_setmode(_fileno(stdout), _O_U16TEXT);
-					wcout << setw(10) << " ";
-					for (int i = 0; i < N; i++) // col
-					{
-						SetConsoleTextAttribute(hConsole, 9);
-						wcout << "col " << setw(6) << left << i;
-					}
-					wcout << endl;
-
-					// Upper Line
-					SetConsoleTextAttribute(hConsole, 8);
-					wcout << setw(7) << right << " ";
-					wcout << L"┌─────────";
-					for (int i = 1; i < N - 1; i++)
-						wcout << L"┬─────────";
-					wcout << L"┬─────────┐" << endl;
-
-
-
-					// 0,0
+				_setmode(_fileno(stdout), _O_U16TEXT);
+				wcout << setw(10) << " ";
+				for (int i = 0; i < N; i++) // col
+				{
 					SetConsoleTextAttribute(hConsole, 9);
-					wcout << setw(4) << "row" << setw(2) << 0 << " "; // row
-					SetConsoleTextAttribute(hConsole, 8);
-					wcout << L"│";
+					wcout << "col " << setw(6) << left << i;
+				}
+				wcout << endl;
+
+				// Upper Line
+				SetConsoleTextAttribute(hConsole, 8);
+				wcout << setw(7) << right << " ";
+				wcout << L"┌─────────";
+				for (int i = 1; i < N - 1; i++)
+					wcout << L"┬─────────";
+				wcout << L"┬─────────┐" << endl;
+
+
+
+				// 0,0
+				SetConsoleTextAttribute(hConsole, 9);
+				wcout << setw(4) << "row" << setw(2) << 0 << " "; // row
+				SetConsoleTextAttribute(hConsole, 8);
+				wcout << L"│";
+				SetConsoleTextAttribute(hConsole, 6);
+				if (current.urban[0][0] == -1)
+					wcout << setw(9) << " ";
+				else
+					wcout << setw(9) << current.urban[0][0];
+				SetConsoleTextAttribute(hConsole, 8);
+				wcout << L"│";
+
+				// Line 1
+				for (int i = 1; i < N; i++)
+				{
 					SetConsoleTextAttribute(hConsole, 6);
-					if (current.urban[0][0] == -1)
+					if (current.urban[0][i] == -1)
 						wcout << setw(9) << " ";
 					else
-						wcout << setw(9) << current.urban[0][0];
+						wcout << setw(6) << current.urban[0][i] << " KV";
 					SetConsoleTextAttribute(hConsole, 8);
 					wcout << L"│";
+				}
+				wcout << endl;
 
-					// Line 1
-					for (int i = 1; i < N; i++)
+				// Middle Line
+				SetConsoleTextAttribute(hConsole, 6);
+				wcout << setw(7) << " "; // row
+				SetConsoleTextAttribute(hConsole, 8);
+				wcout << L"├─────────";
+				for (int i = 1; i < N - 1; i++)
+					wcout << L"┼─────────";
+				wcout << L"┼─────────┤" << endl;
+
+				// Content
+				for (int i = 1; i < N - 1; i++)
+				{
+					SetConsoleTextAttribute(hConsole, 9);
+					wcout << setw(4) << "row" << setw(2) << i << " "; // row
+					SetConsoleTextAttribute(hConsole, 8);
+					wcout << L"│";
+					SetConsoleTextAttribute(hConsole, 15);
+					if (current.urban[i][0] == -1)
+						wcout << setw(9) << " ";
+					else
+						wcout << setw(5) << current.urban[i][0] << " kWh";
+					SetConsoleTextAttribute(hConsole, 8);
+					wcout << L"│";
+					for (int j = 1; j < N; j++)
 					{
-						SetConsoleTextAttribute(hConsole, 6);
-						if (current.urban[0][i] == -1)
+						SetConsoleTextAttribute(hConsole, 15);
+						if (current.urban[i][j] == -1)
 							wcout << setw(9) << " ";
 						else
-							wcout << setw(6) << current.urban[0][i] << " KV";
+							wcout << setw(9) << current.urban[i][j];
 						SetConsoleTextAttribute(hConsole, 8);
 						wcout << L"│";
 					}
 					wcout << endl;
-
-					// Middle Line
-					SetConsoleTextAttribute(hConsole, 6);
+					SetConsoleTextAttribute(hConsole, 9);
 					wcout << setw(7) << " "; // row
 					SetConsoleTextAttribute(hConsole, 8);
 					wcout << L"├─────────";
@@ -1958,76 +1994,42 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 						wcout << L"┼─────────";
 					wcout << L"┼─────────┤" << endl;
 
-					// Content
-					for (int i = 1; i < N - 1; i++)
-					{
-						SetConsoleTextAttribute(hConsole, 9);
-						wcout << setw(4) << "row" << setw(2) << i << " "; // row
-						SetConsoleTextAttribute(hConsole, 8);
-						wcout << L"│";
-						SetConsoleTextAttribute(hConsole, 15);
-						if (current.urban[i][0] == -1)
-							wcout << setw(9) << " ";
-						else
-							wcout << setw(5) << current.urban[i][0] << " kWh";
-						SetConsoleTextAttribute(hConsole, 8);
-						wcout << L"│";
-						for (int j = 1; j < N; j++)
-						{
-							SetConsoleTextAttribute(hConsole, 15);
-							if (current.urban[i][j] == -1)
-								wcout << setw(9) << " ";
-							else
-								wcout << setw(9) << current.urban[i][j];
-							SetConsoleTextAttribute(hConsole, 8);
-							wcout << L"│";
-						}
-						wcout << endl;
-						SetConsoleTextAttribute(hConsole, 9);
-						wcout << setw(7) << " "; // row
-						SetConsoleTextAttribute(hConsole, 8);
-						wcout << L"├─────────";
-						for (int i = 1; i < N - 1; i++)
-							wcout << L"┼─────────";
-						wcout << L"┼─────────┤" << endl;
+				}
+				SetConsoleTextAttribute(hConsole, 9);
+				wcout << setw(4) << "row" << setw(2) << N - 1 << " "; // row
+				SetConsoleTextAttribute(hConsole, 8);
+				wcout << L"│";
+				SetConsoleTextAttribute(hConsole, BACKGROUND_RED | 7);
+				if (current.urban[N - 1][0] == -1)
+					wcout << setw(9) << " ";
+				else
+					wcout << setw(5) << current.urban[N - 1][0] << " kWh";
+				SetConsoleTextAttribute(hConsole, 8);
+				wcout << L"│";
 
-					}
-					SetConsoleTextAttribute(hConsole, 9);
-					wcout << setw(4) << "row" << setw(2) << N - 1 << " "; // row
-					SetConsoleTextAttribute(hConsole, 8);
-					wcout << L"│";
-					SetConsoleTextAttribute(hConsole, BACKGROUND_RED | 7);
-					if (current.urban[N - 1][0] == -1)
+
+				for (int j = 1; j < N; j++)
+				{
+					SetConsoleTextAttribute(hConsole, 15);
+					if (current.urban[N - 1][j] == -1)
 						wcout << setw(9) << " ";
 					else
-						wcout << setw(9) << current.urban[N - 1][0];
+						wcout << setw(9) << current.urban[N - 1][j];
 					SetConsoleTextAttribute(hConsole, 8);
 					wcout << L"│";
-
-
-					for (int j = 1; j < N; j++)
-					{
-						SetConsoleTextAttribute(hConsole, 15);
-						if (current.urban[N - 1][0] == -1)
-							wcout << setw(9) << " ";
-						else
-							wcout << setw(5) << current.urban[N - 1][0] << " kWh";
-						SetConsoleTextAttribute(hConsole, 8);
-						wcout << L"│";
-					}
-
-					wcout << endl;
-					SetConsoleTextAttribute(hConsole, 9);
-					wcout << setw(7) << " "; // row
-					SetConsoleTextAttribute(hConsole, 8);
-					wcout << L"└─────────";
-					for (int i = 1; i < N - 1; i++)
-						wcout << L"┴─────────";
-					wcout << L"┴─────────┘" << endl;
-					_setmode(_fileno(stdout), _O_TEXT);
-					SetConsoleTextAttribute(hConsole, 15);
-#pragma endregion 
 				}
+
+				wcout << endl;
+				SetConsoleTextAttribute(hConsole, 9);
+				wcout << setw(7) << " "; // row
+				SetConsoleTextAttribute(hConsole, 8);
+				wcout << L"└─────────";
+				for (int i = 1; i < N - 1; i++)
+					wcout << L"┴─────────";
+				wcout << L"┴─────────┘" << endl;
+				_setmode(_fileno(stdout), _O_TEXT);
+				SetConsoleTextAttribute(hConsole, 15);
+#pragma endregion 
 			}
 			else
 			{
@@ -2142,10 +2144,10 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 						SetConsoleTextAttribute(hConsole, BACKGROUND_RED | 7);
 					else
 						SetConsoleTextAttribute(hConsole, 15);
-					if (current.urban[N - 1][0] == -1)
+					if (current.urban[N - 1][j] == -1)
 						wcout << setw(9) << " ";
 					else
-						wcout << setw(9) << current.urban[N - 1][0];
+						wcout << setw(9) << current.urban[N - 1][j];
 					SetConsoleTextAttribute(hConsole, 8);
 					wcout << L"│";
 				}
@@ -2275,7 +2277,7 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 				if (current.urban[N - 1][0] == -1)
 					wcout << setw(9) << " ";
 				else
-					wcout << setw(9) << current.urban[N - 1][0];
+					wcout << setw(5) << current.urban[N - 1][0] << " kWh";
 				SetConsoleTextAttribute(hConsole, 8);
 				wcout << L"│";
 
@@ -2283,10 +2285,10 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 				for (int j = 1; j < N; j++)
 				{
 					SetConsoleTextAttribute(hConsole, 15);
-					if (current.urban[N - 1][0] == -1)
+					if (current.urban[N - 1][j] == -1)
 						wcout << setw(9) << " ";
 					else
-						wcout << setw(5) << current.urban[N - 1][0] << " kWh";
+						wcout << setw(9) << current.urban[N - 1][j];
 					SetConsoleTextAttribute(hConsole, 8);
 					wcout << L"│";
 				}
@@ -2432,7 +2434,7 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 				if (current.urban[N - 1][0] == -1)
 					wcout << setw(9) << " ";
 				else
-					wcout << setw(9) << current.urban[N - 1][0];
+					wcout << setw(5) << current.urban[N - 1][0] << " kWh";
 				SetConsoleTextAttribute(hConsole, 8);
 				wcout << L"│";
 
@@ -2443,7 +2445,7 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 					if (current.urban[N - 1][0] == -1)
 						wcout << setw(9) << " ";
 					else
-						wcout << setw(5) << current.urban[N - 1][0] << " kWh";
+						wcout << setw(9) << current.urban[N - 1][j];
 					SetConsoleTextAttribute(hConsole, 8);
 					wcout << L"│";
 				}
@@ -2461,6 +2463,8 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 #pragma endregion
 			}
 		}
+		cout << "Input -2 to exit, input -1 to remove data" << endl;
+
 		if (row != 0 && col != 0)
 		{
 			cout << "------------------------------------------------------------------------------------" << endl;
@@ -2471,16 +2475,32 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 			cout << "Rate: " << current.urban[row][col] << endl;
 			cout << "------------------------------------------------------------------------------------" << endl;
 			cout << "Change rate to: ";
-			cin >> temp.urban[row][col];
+			cin >> input;
+			if (input != -2)
+			{
+				current.urban[row][col] = input;
+			}
+			else
+			{
+				return;
+			}
 		}
-		else if(row == 0)
+		else if (row == 0)
 		{
 			cout << "------------------------------------------------------------------------------------" << endl;
 			cout << "You've selected row " << row << " col " << col << ", the detail is as follows: " << endl;
 			cout << "Voltage Interval: " << current.urban[0][col - 1] << " - " << current.urban[0][col] << endl;
 			cout << "------------------------------------------------------------------------------------" << endl;
-			cout << "Change the interval to: " << current.urban[0][col - 1];
-			cin >> temp.urban[row][col];
+			cout << "Change the interval to: " << current.urban[0][col - 1] << " - ";
+			cin >> input;
+			if (input != -2)
+			{
+				current.urban[row][col] = input;
+			}
+			else
+			{
+				return;
+			}
 		}
 		else
 		{
@@ -2488,13 +2508,20 @@ void adminEditRate_Urban_editDetail(rateRecord current, int row, int col)
 			cout << "You've selected row " << row << " col " << col << ", the detail is as follows: " << endl;
 			cout << "Energy Interval: " << current.urban[row - 1][0] << " - " << current.urban[row][0] << endl;
 			cout << "------------------------------------------------------------------------------------" << endl;
-			cout << "Change the interval to: " << current.urban[row - 1][0];
-			cin >> temp.urban[row][col];
+			cout << "Change the interval to: " << current.urban[row - 1][0] << " - ";
+			cin >> input;
+			if (input != -2)
+			{
+				current.urban[row][col] = input;
+			}
+			else
+			{
+				return;
+			}
 		}
-		return;
-	}while (1);
+	} while (input != -2);
 }
-void adminEditRate_Urban_colSelect(rateRecord current, int row)
+void adminEditRate_Urban_colSelect(int row, rateRecord& current)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	int col;
@@ -2641,10 +2668,10 @@ void adminEditRate_Urban_colSelect(rateRecord current, int row)
 			for (int j = 1; j < N; j++)
 			{
 				SetConsoleTextAttribute(hConsole, 15);
-				if (current.urban[N - 1][0] == -1)
+				if (current.urban[N - 1][j] == -1)
 					wcout << setw(9) << " ";
 				else
-					wcout << setw(9) << current.urban[N - 1][0];
+					wcout << setw(9) << current.urban[N - 1][j];
 				SetConsoleTextAttribute(hConsole, 8);
 				wcout << L"│";
 			}
@@ -2779,10 +2806,10 @@ void adminEditRate_Urban_colSelect(rateRecord current, int row)
 		for (int j = 1; j < N; j++)
 		{
 			SetConsoleTextAttribute(hConsole, BACKGROUND_RED | 7);
-			if (current.urban[N - 1][0] == -1)
+			if (current.urban[N - 1][j] == -1)
 				wcout << setw(9) << " ";
 			else
-				wcout << setw(9) << current.urban[N - 1][0];
+				wcout << setw(9) << current.urban[N - 1][j];
 			SetConsoleTextAttribute(hConsole, 8);
 			wcout << L"│";
 		}
@@ -2929,11 +2956,11 @@ void adminEditRate_Urban_colSelect(rateRecord current, int row)
 			wcout << setw(4) << "row" << setw(2) << N - 1 << " "; // row
 			SetConsoleTextAttribute(hConsole, 8);
 			wcout << L"│";
-			SetConsoleTextAttribute(hConsole, 6);
+			SetConsoleTextAttribute(hConsole, 15);
 			if (current.urban[N - 1][0] == -1)
 				wcout << setw(9) << " ";
 			else
-				wcout << setw(9) << current.urban[N - 1][0];
+				wcout << setw(5) << current.urban[N - 1][0] << " kWh";
 			SetConsoleTextAttribute(hConsole, 8);
 			wcout << L"│";
 
@@ -2941,10 +2968,10 @@ void adminEditRate_Urban_colSelect(rateRecord current, int row)
 			for (int j = 1; j < N; j++)
 			{
 				SetConsoleTextAttribute(hConsole, 15);
-				if (current.urban[N - 1][0] == -1)
+				if (current.urban[N - 1][j] == -1)
 					wcout << setw(9) << " ";
 				else
-					wcout << setw(5) << current.urban[N - 1][0] << " kWh";
+					wcout << setw(9) << current.urban[N - 1][j];
 				SetConsoleTextAttribute(hConsole, 8);
 				wcout << L"│";
 			}
@@ -2972,7 +2999,7 @@ void adminEditRate_Urban_colSelect(rateRecord current, int row)
 		}
 		else if (col != -1)
 		{
-			adminEditRate_Urban_editDetail(current, row, col);
+			adminEditRate_Urban_editDetail(row, col, current);
 		}
 		else
 		{
@@ -2980,132 +3007,10 @@ void adminEditRate_Urban_colSelect(rateRecord current, int row)
 		}
 	}while (col != -1);
 }
-void adminEditRate_Urban_rowSelect()
+void adminEditRate_Urban_rowSelect(rateRecord& current)
 {
-	rateRecord current = getCurrentRate();
-	system("cls");
-	int opt;
+	int row;
 	do
-	{
-		cout << "RATE - URBAN" << endl;
-		cout << "===========================================================" << endl;
-		cout << "Here is the current rate for urban users" << endl;
-		cout << "-----------------------------------------------------------" << endl;
-		cout << endl;
-#pragma region display0
-		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-		_setmode(_fileno(stdout), _O_U16TEXT);
-
-
-		// Upper Line
-		SetConsoleTextAttribute(hConsole, 12);
-		wcout << "Urban" << endl;
-		SetConsoleTextAttribute(hConsole, 8);
-		wcout << L"┌─────────";
-		for (int i = 1; i < N - 1; i++)
-			wcout << L"┬─────────";
-		wcout << L"┬─────────┐" << endl;
-
-		wcout << L"│";
-		SetConsoleTextAttribute(hConsole, 6);
-
-		// 0,0
-		if (current.urban[0][0] == -1)
-			wcout << setw(9) << " ";
-		else
-			wcout << setw(9) << current.urban[0][0];
-		SetConsoleTextAttribute(hConsole, 8);
-		wcout << L"│";
-
-		// Line 1
-		for (int i = 1; i < N; i++)
-		{
-			SetConsoleTextAttribute(hConsole, 6);
-			if (current.urban[0][i] == -1)
-				wcout << setw(9) << " ";
-			else
-				wcout << setw(6) << current.urban[0][i] << " KV";
-			SetConsoleTextAttribute(hConsole, 8);
-			wcout << L"│";
-		}
-		wcout << endl;
-
-		// Middle Line
-		wcout << L"├─────────";
-		for (int i = 1; i < N - 1; i++)
-			wcout << L"┼─────────";
-		wcout << L"┼─────────┤" << endl;
-
-		// Content
-		for (int i = 1; i < N - 1; i++)
-		{
-			wcout << L"│";
-			SetConsoleTextAttribute(hConsole, 6);
-			if (current.urban[i][0] == -1)
-				wcout << setw(9) << " ";
-			else
-				wcout << setw(5) << current.urban[i][0] << " kWh";
-			SetConsoleTextAttribute(hConsole, 8);
-			wcout << L"│";
-			for (int j = 1; j < N; j++)
-			{
-				SetConsoleTextAttribute(hConsole, 15);
-				if (current.urban[i][j] == -1)
-					wcout << setw(9) << " ";
-				else
-					wcout << setw(9) << current.urban[i][j];
-				SetConsoleTextAttribute(hConsole, 8);
-				wcout << L"│";
-			}
-
-			wcout << endl;
-			wcout << L"├─────────";
-			for (int i = 1; i < N - 1; i++)
-				wcout << L"┼─────────";
-			wcout << L"┼─────────┤" << endl;
-
-		}
-
-		wcout << L"│";
-		SetConsoleTextAttribute(hConsole, 6);
-		if (current.urban[N - 1][0] == -1)
-			wcout << setw(9) << " ";
-		else
-			wcout << setw(9) << current.urban[N - 1][0];
-		SetConsoleTextAttribute(hConsole, 8);
-		wcout << L"│";
-
-
-		for (int j = 1; j < N; j++)
-		{
-			SetConsoleTextAttribute(hConsole, 15);
-			if (current.urban[N - 1][0] == -1)
-				wcout << setw(9) << " ";
-			else
-				wcout << setw(5) << current.urban[N - 1][0] << " kWh";
-			SetConsoleTextAttribute(hConsole, 8);
-			wcout << L"│";
-		}
-
-
-		wcout << endl;
-		wcout << L"└─────────";
-		for (int i = 1; i < N - 1; i++)
-			wcout << L"┴─────────";
-		wcout << L"┴─────────┘" << endl;
-		_setmode(_fileno(stdout), _O_TEXT);
-		SetConsoleTextAttribute(hConsole, 15);
-#pragma endregion
-		cout << endl;
-		cout << "---------------------------------------------------------------" << endl;
-		cout << "1. Start to edit" << endl;
-		cout << "0. Go back" << endl;
-
-		cin >> opt;
-		if (opt == 1)
-		{
-			int row;
-			do
 			{
 				system("cls");
 
@@ -3217,7 +3122,7 @@ void adminEditRate_Urban_rowSelect()
 				if (current.urban[N - 1][0] == -1)
 					wcout << setw(9) << " ";
 				else
-					wcout << setw(9) << current.urban[N - 1][0];
+					wcout << setw(5) << current.urban[N - 1][0] << " kWh";
 				SetConsoleTextAttribute(hConsole, 8);
 				wcout << L"│";
 
@@ -3225,10 +3130,10 @@ void adminEditRate_Urban_rowSelect()
 				for (int j = 1; j < N; j++)
 				{
 					SetConsoleTextAttribute(hConsole, 15);
-					if (current.urban[N - 1][0] == -1)
+					if (current.urban[N - 1][j] == -1)
 						wcout << setw(9) << " ";
 					else
-						wcout << setw(5) << current.urban[N - 1][0] << "kWh";
+						wcout << setw(9) << current.urban[N - 1][j];
 					SetConsoleTextAttribute(hConsole, 8);
 					wcout << L"│";
 				}
@@ -3249,298 +3154,139 @@ void adminEditRate_Urban_rowSelect()
 				cout << "--------------------------------------------------------" << endl;
 				cout << "Change row: ";
 				cin >> row;
-
-//				system("cls");
-//				if (row == 0)
-//				{
-//					cout << "RATE - URBAN" << endl;
-//					cout << "=================================================================" << endl;
-//					cout << "Here is the current rate for urban users" << endl;
-//					cout << "You are changing data of row 0" << endl;
-//					cout << "-----------------------------------------------------------------" << endl;
-//					cout << endl;
-//#pragma region display2
-//					_setmode(_fileno(stdout), _O_U16TEXT);
-//					wcout << setw(3) << " ";
-//					for (int i = 0; i < N; i++)
-//					{
-//						SetConsoleTextAttribute(hConsole, 3);
-//						wcout << "col " << setw(6) << left << i;
-//					}
-//					wcout << endl;
-//
-//
-//					// Upper Line
-//					SetConsoleTextAttribute(hConsole, 8);
-//					wcout << L"┌─────────";
-//					for (int i = 1; i < N - 1; i++)
-//						wcout << L"┬─────────";
-//					wcout << L"┬─────────┐" << endl;
-//					wcout << L"│";
-//					SetConsoleTextAttribute(hConsole, 6);
-//
-//
-//					// 0,0
-//					SetConsoleTextAttribute(hConsole, BACKGROUND_RED | 7);
-//					if (current.urban[0][0] == -1)
-//						wcout << setw(9) << " ";
-//					else
-//						wcout << setw(9) << current.urban[0][0];
-//					SetConsoleTextAttribute(hConsole, 8);
-//					wcout << L"│";
-//
-//					// Line 1
-//					for (int i = 1; i < N; i++)
-//					{
-//						SetConsoleTextAttribute(hConsole, BACKGROUND_RED | 7);
-//						if (current.urban[0][i] == -1)
-//							wcout << setw(9) << right << " ";
-//						else
-//							wcout << setw(6) << right << current.urban[0][i] << " KV";
-//						SetConsoleTextAttribute(hConsole, 8);
-//						wcout << L"│";
-//					}
-//					wcout << endl;
-//
-//					// Middle Line
-//					wcout << L"├─────────";
-//					for (int i = 1; i < N - 1; i++)
-//						wcout << L"┼─────────";
-//					wcout << L"┼─────────┤" << endl;
-//
-//					// Content
-//					for (int i = 1; i < N - 1; i++)
-//					{
-//						wcout << L"│";
-//						SetConsoleTextAttribute(hConsole, 6);
-//						if (current.urban[i][0] == -1)
-//							wcout << setw(9) << " ";
-//						else
-//							wcout << setw(5) << current.urban[i][0] << " kWh";
-//						SetConsoleTextAttribute(hConsole, 8);
-//						wcout << L"│";
-//						for (int j = 1; j < N; j++)
-//						{
-//							SetConsoleTextAttribute(hConsole, 15);
-//							if (current.urban[i][j] == -1)
-//								wcout << setw(9) << " ";
-//							else
-//								wcout << setw(9) << current.urban[i][j];
-//							SetConsoleTextAttribute(hConsole, 8);
-//							wcout << L"│";
-//						}
-//
-//						wcout << endl;
-//						wcout << L"├─────────";
-//						for (int i = 1; i < N - 1; i++)
-//							wcout << L"┼─────────";
-//						wcout << L"┼─────────┤" << endl;
-//
-//					}
-//
-//					wcout << L"│";
-//					SetConsoleTextAttribute(hConsole, 6);
-//					if (current.urban[N - 1][0] == -1)
-//						wcout << setw(9) << " ";
-//					else
-//						wcout << setw(9) << current.urban[N - 1][0];
-//					SetConsoleTextAttribute(hConsole, 8);
-//					wcout << L"│";
-//
-//
-//					for (int j = 1; j < N; j++)
-//					{
-//						SetConsoleTextAttribute(hConsole, 15);
-//						if (current.urban[N - 1][0] == -1)
-//							wcout << setw(9) << " ";
-//						else
-//							wcout << setw(9) << current.urban[N - 1][0];
-//						SetConsoleTextAttribute(hConsole, 8);
-//						wcout << L"│";
-//					}
-//
-//
-//					wcout << endl;
-//					wcout << L"└─────────";
-//					for (int i = 1; i < N - 1; i++)
-//						wcout << L"┴─────────";
-//					wcout << L"┴─────────┘" << endl;
-//					_setmode(_fileno(stdout), _O_TEXT);
-//					SetConsoleTextAttribute(hConsole, 15);
-//#pragma endregion
-//				}
-//
-//				else
-//				{
-//					system("cls");
-//
-//					cout << "RATE - URBAN" << endl;
-//					cout << "===========================================================" << endl;
-//					cout << "Here is the current rate for urban users" << endl;
-//					cout << "Change data on row " << row << endl;
-//					cout << "-----------------------------------------------------------" << endl;
-//					cout << endl;
-//#pragma region diaplay3
-//					_setmode(_fileno(stdout), _O_U16TEXT);
-//					wcout << setw(10) << " ";
-//					for (int i = 0; i < N; i++) // col
-//					{
-//						SetConsoleTextAttribute(hConsole, 9);
-//						wcout << "col " << setw(6) << left << i;
-//					}
-//					wcout << endl;
-//
-//					// Upper Line
-//					SetConsoleTextAttribute(hConsole, 8);
-//					wcout << setw(7) << right << " ";
-//					wcout << L"┌─────────";
-//					for (int i = 1; i < N - 1; i++)
-//						wcout << L"┬─────────";
-//					wcout << L"┬─────────┐" << endl;
-//
-//
-//
-//					// 0,0
-//					SetConsoleTextAttribute(hConsole, 9);
-//					wcout << setw(4) << "row" << setw(2) << 0 << " "; // row
-//					SetConsoleTextAttribute(hConsole, 8);
-//					wcout << L"│";
-//					SetConsoleTextAttribute(hConsole, 6);
-//					if (current.urban[0][0] == -1)
-//						wcout << setw(9) << " ";
-//					else
-//						wcout << setw(9) << current.urban[0][0];
-//					SetConsoleTextAttribute(hConsole, 8);
-//					wcout << L"│";
-//
-//					// Line 1
-//					for (int i = 1; i < N; i++)
-//					{
-//						SetConsoleTextAttribute(hConsole, 6);
-//						if (current.urban[0][i] == -1)
-//							wcout << setw(9) << " ";
-//						else
-//							wcout << setw(6) << current.urban[0][i] << " KV";
-//						SetConsoleTextAttribute(hConsole, 8);
-//						wcout << L"│";
-//					}
-//					wcout << endl;
-//
-//					// Middle Line
-//					SetConsoleTextAttribute(hConsole, 6);
-//					wcout << setw(7) << " "; // row
-//					SetConsoleTextAttribute(hConsole, 8);
-//					wcout << L"├─────────";
-//					for (int i = 1; i < N - 1; i++)
-//						wcout << L"┼─────────";
-//					wcout << L"┼─────────┤" << endl;
-//
-//					// Content
-//					for (int i = 1; i < N - 1; i++)
-//					{
-//						if (i == row)
-//						{
-//							SetConsoleTextAttribute(hConsole, 9);
-//							wcout << setw(4) << "row" << setw(2) << i << " "; // row
-//							SetConsoleTextAttribute(hConsole, 8);
-//							wcout << L"│";
-//							SetConsoleTextAttribute(hConsole, BACKGROUND_RED | 7);
-//							if (current.urban[i][0] == -1)
-//								wcout << setw(9) << " ";
-//							else
-//								wcout << setw(5) << current.urban[i][0] << " kWh";
-//							SetConsoleTextAttribute(hConsole, 8);
-//							wcout << L"│";
-//							for (int j = 1; j < N; j++)
-//							{
-//								SetConsoleTextAttribute(hConsole, BACKGROUND_RED | 7);
-//								if (current.urban[i][j] == -1)
-//									wcout << setw(9) << " ";
-//								else
-//									wcout << setw(9) << current.urban[i][j];
-//								SetConsoleTextAttribute(hConsole, 8);
-//								wcout << L"│";
-//							}
-//						}
-//						else
-//						{
-//							SetConsoleTextAttribute(hConsole, 9);
-//							wcout << setw(4) << "row" << setw(2) << i << " "; // row
-//							SetConsoleTextAttribute(hConsole, 8);
-//							wcout << L"│";
-//							SetConsoleTextAttribute(hConsole, 15);
-//							if (current.urban[i][0] == -1)
-//								wcout << setw(9) << " ";
-//							else
-//								wcout << setw(5) << current.urban[i][0] << " kWh";
-//							SetConsoleTextAttribute(hConsole, 8);
-//							wcout << L"│";
-//							for (int j = 1; j < N; j++)
-//							{
-//								SetConsoleTextAttribute(hConsole, 15);
-//								if (current.urban[i][j] == -1)
-//									wcout << setw(9) << " ";
-//								else
-//									wcout << setw(9) << current.urban[i][j];
-//								SetConsoleTextAttribute(hConsole, 8);
-//								wcout << L"│";
-//							}
-//						}
-//						wcout << endl;
-//						SetConsoleTextAttribute(hConsole, 9);
-//						wcout << setw(7) << " "; // row
-//						SetConsoleTextAttribute(hConsole, 8);
-//						wcout << L"├─────────";
-//						for (int i = 1; i < N - 1; i++)
-//							wcout << L"┼─────────";
-//						wcout << L"┼─────────┤" << endl;
-//
-//					}
-//					SetConsoleTextAttribute(hConsole, 9);
-//					wcout << setw(4) << "row" << setw(2) << N - 1 << " "; // row
-//					SetConsoleTextAttribute(hConsole, 8);
-//					wcout << L"│";
-//					SetConsoleTextAttribute(hConsole, 6);
-//					if (current.urban[N - 1][0] == -1)
-//						wcout << setw(9) << " ";
-//					else
-//						wcout << setw(9) << current.urban[N - 1][0];
-//					SetConsoleTextAttribute(hConsole, 8);
-//					wcout << L"│";
-//
-//
-//					for (int j = 1; j < N; j++)
-//					{
-//						SetConsoleTextAttribute(hConsole, 15);
-//						if (current.urban[N - 1][0] == -1)
-//							wcout << setw(9) << " ";
-//						else
-//							wcout << setw(9) << current.urban[N - 1][0];
-//						SetConsoleTextAttribute(hConsole, 8);
-//						wcout << L"│";
-//					}
-//
-//					wcout << endl;
-//					SetConsoleTextAttribute(hConsole, 9);
-//					wcout << setw(7) << " "; // row
-//					SetConsoleTextAttribute(hConsole, 8);
-//					wcout << L"└─────────";
-//					for (int i = 1; i < N - 1; i++)
-//						wcout << L"┴─────────";
-//					wcout << L"┴─────────┘" << endl;
-//					_setmode(_fileno(stdout), _O_TEXT);
-//					SetConsoleTextAttribute(hConsole, 15);
-//#pragma endregion
-//				}
 				if (row != -1)
 				{
-					adminEditRate_Urban_colSelect(current, row);
+					adminEditRate_Urban_colSelect(row, current);
 				}
 				else
 				{
 					return;
 				}
 			}while (row != -1);
+}
+void adminEditRate_Urban_Overview(rateRecord current = getCurrentRate())
+{
+	int opt;
+	do
+	{
+		system("cls");
+		cout << "RATE - URBAN" << endl;
+		cout << "===========================================================" << endl;
+		cout << "Here is the current rate for urban users" << endl;
+		cout << "-----------------------------------------------------------" << endl;
+		cout << endl;
+#pragma region display0
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		_setmode(_fileno(stdout), _O_U16TEXT);
+
+
+		// Upper Line
+		SetConsoleTextAttribute(hConsole, 12);
+		wcout << "Urban" << endl;
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"┌─────────";
+		for (int i = 1; i < N - 1; i++)
+			wcout << L"┬─────────";
+		wcout << L"┬─────────┐" << endl;
+
+		wcout << L"│";
+		SetConsoleTextAttribute(hConsole, 6);
+
+		// 0,0
+		if (current.urban[0][0] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(9) << current.urban[0][0];
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+
+		// Line 1
+		for (int i = 1; i < N; i++)
+		{
+			SetConsoleTextAttribute(hConsole, 6);
+			if (current.urban[0][i] == -1)
+				wcout << setw(9) << " ";
+			else
+				wcout << setw(6) << current.urban[0][i] << " KV";
+			SetConsoleTextAttribute(hConsole, 8);
+			wcout << L"│";
+		}
+		wcout << endl;
+
+		// Middle Line
+		wcout << L"├─────────";
+		for (int i = 1; i < N - 1; i++)
+			wcout << L"┼─────────";
+		wcout << L"┼─────────┤" << endl;
+
+		// Content
+		for (int i = 1; i < N - 1; i++)
+		{
+			wcout << L"│";
+			SetConsoleTextAttribute(hConsole, 6);
+			if (current.urban[i][0] == -1)
+				wcout << setw(9) << " ";
+			else
+				wcout << setw(5) << current.urban[i][0] << " kWh";
+			SetConsoleTextAttribute(hConsole, 8);
+			wcout << L"│";
+			for (int j = 1; j < N; j++)
+			{
+				SetConsoleTextAttribute(hConsole, 15);
+				if (current.urban[i][j] == -1)
+					wcout << setw(9) << " ";
+				else
+					wcout << setw(9) << current.urban[i][j];
+				SetConsoleTextAttribute(hConsole, 8);
+				wcout << L"│";
+			}
+
+			wcout << endl;
+			wcout << L"├─────────";
+			for (int i = 1; i < N - 1; i++)
+				wcout << L"┼─────────";
+			wcout << L"┼─────────┤" << endl;
+
+		}
+
+		wcout << L"│";
+		SetConsoleTextAttribute(hConsole, 6);
+		if (current.urban[N - 1][0] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(5) << current.urban[N - 1][0] << " kWh";
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+
+
+		for (int j = 1; j < N; j++)
+		{
+			SetConsoleTextAttribute(hConsole, 15);
+			if (current.urban[N - 1][j] == -1)
+				wcout << setw(9) << " ";
+			else
+				wcout << setw(9) << current.urban[N - 1][j];
+			SetConsoleTextAttribute(hConsole, 8);
+			wcout << L"│";
+		}
+
+
+		wcout << endl;
+		wcout << L"└─────────";
+		for (int i = 1; i < N - 1; i++)
+			wcout << L"┴─────────";
+		wcout << L"┴─────────┘" << endl;
+		_setmode(_fileno(stdout), _O_TEXT);
+		SetConsoleTextAttribute(hConsole, 15);
+#pragma endregion
+		cout << endl;
+		cout << "---------------------------------------------------------------" << endl;
+		cout << "1. Start to edit" << endl;
+		cout << "0. Go back" << endl;
+		cin >> opt;
+		if (opt == 1)
+		{
+			adminEditRate_Urban_rowSelect(current);
 		}
 		else if (opt == 0)
 		{
@@ -3552,6 +3298,7 @@ void adminEditRate_Urban_rowSelect()
 		}
 	}while (opt != 0);
 }
+
 void adminEditRate_Rural()
 {
 	system("cls");
@@ -3586,7 +3333,7 @@ void adminEditRate_1()
 		cin >> opt;
 		switch (opt)
 		{
-		case 1: adminEditRate_Urban_rowSelect(); break;
+		case 1: adminEditRate_Urban_Overview(); break;
 		case 2: adminEditRate_Rural(); break;
 		case 3: adminEditRate_Ent(); break;
 		case 4: adminShowRate(); break;
@@ -3597,19 +3344,7 @@ void adminEditRate_1()
 	} while (opt != 0);
 }
 
-void adminBillRateManagement()
-{
 
-}
-void adminBillingRateManage()
-{
-	system("cls");
-	cout << "BILLING RATE MANAGEMENT - OVERVIEW" << endl;
-	cout << "======================================================================" << endl;
-	cout << "Chart" << endl;
-	cout << " ______________________________________________________________________________________________________________________________" << endl;
-	cout << "|     Enterprise      |           ";
-}
 void MRManage()
 {
 	system("cls");
@@ -4807,5 +4542,5 @@ int main()
 	//defineUnread();
 	//login();
 	resetDatabase_Rate();
-	adminEditRate_1();
+	adminEditRate_Urban_Overview();
 }
