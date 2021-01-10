@@ -1,5 +1,4 @@
 ﻿#include "headerfiles.h"
-#include "system.h"
 #include "user.h"
 using namespace std;
 
@@ -232,7 +231,7 @@ void MRDash(int username) {
     cout << "Menu:" << endl;
     cout << "1. Start Inputting" << endl;
     cout << "2. Overview" << endl;
-    cout << "3. Show assigned tasks" << endl;
+    cout << "3. Show Current Rate Rules" << endl;
     cout << "0. Logout" << endl;
     cin >> opt;
     switch (opt) {
@@ -243,6 +242,7 @@ void MRDash(int username) {
         MRListUsers();
         break;
       case 3:
+        showRate();
         break;
       case 0:
         system("clear");
@@ -262,6 +262,23 @@ void MRDash(int username) {
   dotDotDot(3);
 }
 // Charger_Menu ===============================================
+void showAllBillList() {
+  fstream file;
+  userbill bill;
+  file.open(FLOC_BILLDETAIL, ios::binary | ios::in);
+  while (file.read((char*)&bill, sizeof(userbill))) {
+    cout << "Case No.: " << bill.caseNo << endl
+        << "User No.: "<< bill.user_record.No << endl
+        << "User Name: " << bill.user_record.name << endl 
+        << "Read: " << bill.read << endl
+        << "Current Usage: " << bill.current_usage << endl
+        << "Last Month Usage: " << bill.last_month_usage << endl
+        << "Read Date: "
+        << bill.read_date.y << "-" << bill.read_date.m <<"-" << bill.read_date.d << " "<< bill.pay << endl
+        <<"------------------------------------------------------------------" << endl;
+  }
+  file.close();
+}
 void chargerDash(int username) {
   userinfo me;
   me = getUserInfo(username);
@@ -275,11 +292,15 @@ void chargerDash(int username) {
     cout << "Total users: " << totalUser << endl;
     cout << "----------------------------------------------" << endl;
     cout << "Menu:" << endl;
-    cout << "1. Manage current users" << endl;
-    cout << "2. User Registration" << endl;
-    cout << "3. System Settings" << endl;
+    cout << "1. Show Bill List" << endl;
+    cout << "2. " << endl;
+    cout << "3. " << endl;
     cout << "0. Logout" << endl;
     cin >> opt;
+    switch(opt) {
+    case 1: showAllBillList();
+      break;
+    }
   } while (opt != 0);
 }
 // Admin Features =============================================
@@ -407,18 +428,12 @@ void generateUser() {
           "--"
        << endl;
   cout << "user type:" << endl;
-  cout << "--------------------------------------------------------------"
-       << endl;
-  cout << "|  1.Administrator       2.Meter Reader      3.Charger       |"
-       << endl;
-  cout << "|  4.Enterprise User(E1)       5. Enterprise User(E2)        |"
-       << endl;
-  cout << "|  6.Urban User                7.Common Rural User           |"
-       << endl;
-  cout << "|  8.Rural User in Poverty                                   |"
-       << endl;
-  cout << "--------------------------------------------------------------"
-       << endl;
+  cout << "--------------------------------------------------------------"<< endl;
+  cout << "|  1.Administrator       2.Meter Reader      3.Charger       |"<< endl;
+  cout << "|  4.Enterprise User(E1)       5. Enterprise User(E2)        |"<< endl;
+  cout << "|  6.Urban User                7.Common Rural User           |"<< endl;
+  cout << "|  8.Rural User in Poverty                                   |"<< endl;
+  cout << "--------------------------------------------------------------"<< endl;
   cout << "User type: ";
   cin >> typchoice;
   string type;
@@ -700,7 +715,7 @@ void generateUser() {
     newUserBill.read_date = newUserBill.payment_date = getCurrentTime();
 
     fstream userBillInfo;
-    userBillInfo.open(FLOC_BILLDETAIL, ios::binary | ios::out);
+    userBillInfo.open(FLOC_BILLDETAIL, ios::binary | ios:: app | ios::out);
     userBillInfo.write((char*)&newUserBill, sizeof(userbill));
     userBillInfo.close();
 
@@ -1652,7 +1667,7 @@ void loginGuide(int username) {
       MRDash(username);
       break;
     case 3:
-      cout << "Not available" << endl;
+      chargerDash(username);
       break;
     case 4:
     case 5:
@@ -1705,7 +1720,7 @@ void checkAndGenerate() {
   fstream userinfofile;
   userinfofile.open(FLOC_USERBASICINFO, ios::binary | ios::in);
   if (!userinfofile) {
-    system("mkdir -p /home/jensen/Documents/Code/ElectricityBillingSystem/");
+    system("mkdir -p /home/jensen/Documents/code/ElectricityBillingSystem/");
     resetDatabase();
     cout << "*************************************************" << endl;
     cout << "* Hi, Welcome to the electricity billing         *" << endl;
@@ -1722,21 +1737,11 @@ void checkAndGenerate() {
     cout << "*************************************************" << endl;
     sleep(1);
     system("clear");
-    cout << "******************************************************************"
-            "*****"
-         << endl;
-    cout << "* You are the administrator, use the following information to "
-            "sign in *"
-         << endl;
-    cout << "* Username: 0                                                     "
-            "    *"
-         << endl;
-    cout << "* Password: root                                                  "
-            "    *"
-         << endl;
-    cout << "******************************************************************"
-            "*****"
-         << endl;
+    cout << "***********************************************************************"<< endl;
+    cout << "* You are the administrator, use the following information to sign in *"<< endl;
+    cout << "* Username: 0                                                         *"<< endl;
+    cout << "* Password: root                                                      *"<< endl;
+    cout << "***********************************************************************"<< endl;
     system("clear");
     system("clear");
     cout << "*********************************************" << endl;
@@ -1756,9 +1761,10 @@ void checkAndGenerate() {
 }
 //Main ============================================================
 int main() {
-  checkAndGenerate();
-  getTotalUser();
-  defineUnread();
-  MRListUnread();
-  login();
+  // checkAndGenerate();
+  // getTotalUser();
+  // defineUnread();
+  // MRListUnread();
+  // login();
+  showAllBillList();
 }
