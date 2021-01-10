@@ -1,6 +1,5 @@
 #pragma once
 #include <string.h>
-
 #include <fstream>
 #include <iostream>
 #include <ctime>
@@ -101,6 +100,11 @@ typedef struct estateUserInfoNode {
   userinfo info;
   struct estateUserInfoNode* next;
 } estateUserInfoNode;
+typedef struct unreadRegionInfoNode {
+  add region;
+  int unread;
+  struct unreadRegionInfoNode* next;
+} unreadRegionInfoNode;
 // Functions ===========================================================
 rateRecord getCurrentRate() {
   rateRecord current;
@@ -172,7 +176,7 @@ date getCurrentTime() {
   tm* tm_local = localtime(&current);
   date currentTime;
   currentTime.y = tm_local->tm_year + 1900;
-  currentTime.m = tm_local->tm_mon + 2;
+  currentTime.m = tm_local->tm_mon + 1;
   currentTime.d = tm_local->tm_mday;
   currentTime.h = tm_local->tm_hour;
   currentTime.min = tm_local->tm_min;

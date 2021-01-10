@@ -76,6 +76,17 @@ void showList(estateUserInfoNode* head) {
   }
   return;
 }
+void showList(unreadRegionInfoNode* head) {
+  unreadRegionInfoNode* p = head->next;
+  while (1) {
+    if (p == NULL) {
+      break;
+    }
+    cout << p->region.district << " " << p->region.street << " " << p->unread << " " << endl;
+    p = p->next;
+  }
+  return;
+}
 // Meter Reader_Menu
 void MRListUnread() {
   system("clear");
@@ -108,14 +119,11 @@ void MRListUnread() {
 void MRListUsers() {
   system("clear");
   cout << "USER MANAGEMENT - USER LIST" << endl;
-  cout << "===================================================================="
-          "=================================================================="
+  cout << "======================================================================================================================================"
        << endl;
-  cout << "Number                Name	               Balance  Status    "
-          "Usage      Read Status             "
+  cout << "Number                Name	               Balance  Status    Usage      Read Status             "
        << endl;
-  cout << "--------------------------------------------------------------------"
-          "------------------------------------------------------------------"
+  cout << "--------------------------------------------------------------------------------------------------------------------------------------"
        << endl;
   userinfo user;
   fstream readUser(FLOC_USERBASICINFO, ios::in | ios::binary);
@@ -137,8 +145,8 @@ void MRListUsers() {
     cout << user.last_read.h << ":" << user.last_read.min << ":"
          << user.last_read.sec << " " << user.last_read.d << "/"
          << user.last_read.m << "/" << user.last_read.y << endl;
-    readUser.close();
   }
+  readUser.close();
   char ch;
   cin >> ch;
 }
@@ -275,6 +283,7 @@ void showAllBillList() {
         << "Last Month Usage: " << bill.last_month_usage << endl
         << "Read Date: "
         << bill.read_date.y << "-" << bill.read_date.m <<"-" << bill.read_date.d << " "<< bill.pay << endl
+        << "Address: " << bill.user_record.address.street << endl
         <<"------------------------------------------------------------------" << endl;
   }
   file.close();
@@ -1761,10 +1770,14 @@ void checkAndGenerate() {
 }
 //Main ============================================================
 int main() {
-  // checkAndGenerate();
-  // getTotalUser();
-  // defineUnread();
-  // MRListUnread();
-  // login();
+  checkAndGenerate();
+  getTotalUser();
+  defineUnread();
+  MRListUnread();
+  login();
+  MRListUsers();
   showAllBillList();
+  // unreadRegionInfoNode* head = getUnreadRegions();
+  // sortList(head);
+  // showList(head);
 }

@@ -124,6 +124,90 @@ int genRateNo(int type, int row, int col) {
   rateNo = rateNo * 10 + col;
   return rateNo;
 }
+unreadRegionInfoNode* getUnreadRegions() {
+  fstream file;
+  userinfo user;
+  file.open(FLOC_USERBASICINFO, ios::binary |ios::in);
+  unreadRegionInfoNode* head = new unreadRegionInfoNode;
+  head->next = NULL;
+  while (1) {
+    file.read((char*)&user, sizeof(userinfo));
+    if (file.eof())
+      break;
+    //if (!user.read_now) {
+      unreadRegionInfoNode* p = new unreadRegionInfoNode;
+      p->region = user.address;
+      p->unread = 1;
+      p->next = head->next;
+      head->next = p;
+    //}
+  }
+  file.close();
+  unreadRegionInfoNode* q = head;
+  unreadRegionInfoNode* findpre = q;
+  while (q->next != NULL) {
+    while (findpre->next != NULL) {
+      if (samestr(findpre->next->region.district, q->region.district) && 
+          samestr(findpre->next->region.street, q->region.street)) {
+            findpre->next = findpre->next->next;
+            q->unread++;
+          }
+      findpre = findpre->next;
+    }
+    q = q->next;
+    findpre = q;
+  }
+  return head;
+}
+void sortList(unreadRegionInfoNode* head) {
+  unreadRegionInfoNode* p = head;
+  unreadRegionInfoNode* find = p->next;
+  while (p->next != NULL) {
+    while (find->next != NULL) {
+    if (samestr(find->region.district, p->region.district)) {
+        add temp;
+        temp = p->next->region;
+        p->next->region = find->region;
+        find->region = temp;
+      }
+    find = find->next;
+    }
+    p = p->next;
+  }
+}
+unreadRegionInfoNode* getUnreadRigions_new() {
+  fstream file;
+  userinfo user;
+  file.open(FLOC_USERBASICINFO, ios::binary |ios::in);
+  unreadRegionInfoNode* head = new unreadRegionInfoNode;
+  head->next = NULL;
+  while (1) {
+    file.read((char*)&user, sizeof(userinfo));
+    if (file.eof())
+      break;
+    //if (!user.read_now) {
+      unreadRegionInfoNode* p = new unreadRegionInfoNode;
+      int flag = 1;
+      unreadRegionInfoNode* findpre = head;
+      while (findpre->next != NULL) {
+        if (samestr(findpre->region.district, p->region.district) && 
+            samestr(findpre->region.district, p->region.district)) {
+              flag = 0;
+              break;
+            }
+        findpre = findpre->next;
+     }
+      if (flag) {
+      p->region = user.address;
+      cout << p->region.street << " ";
+      p->next = head->next;
+      head->next = p;
+      }
+    //}
+  }
+  file.close();
+  return head;
+}
 void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, double& fee) {
   rateRecord rate = getCurrentRate();
   userinfo user = getUserInfo(username);
@@ -138,38 +222,32 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
       if (currentUsage >= rate.urban[row][0] &&
           currentUsage < rate.urban[row + 1][0]) {
         break;
-      } else if (currentUsage > rate.urban[row][0] &&
-                 rate.urban[row + 1][0] == -1) {
+      } else if (currentUsage > rate.urban[row][0] && rate.urban[row + 1][0] == -1) {
         break;
       }
     }
     for (col = 0; rate.urban[0][col] != -1; col++) {
-      if (user.voltage >= rate.urban[0][col] &&
-          user.voltage < rate.urban[0][col + 1]) {
+      if (user.voltage >= rate.urban[0][col] && user.voltage < rate.urban[0][col + 1]) {
         col++;
         break;
-      } else if (rate.urban[0][col + 1] == -1 &&
-                 user.voltage > rate.urban[0][col]) {
+      } else if (rate.urban[0][col + 1] == -1 && user.voltage > rate.urban[0][col]) {
         break;
       }
     }
     fee = (currentUsage - lastUsage) * rate.urban[row][col];
   } else if (user.type == 7) {
     for (col = 0; rate.rural[0][col] != -1; col++) {
-      if (user.voltage >= rate.rural[0][col] &&
-          currentUsage < rate.rural[0][col + 1]) {
+      if (user.voltage >= rate.rural[0][col] && currentUsage < rate.rural[0][col + 1]) {
         col++;
         break;
-      } else if (rate.rural[0][col + 1] == -1 &&
-                 currentUsage >= rate.rural[0][col]) {
+      } else if (rate.rural[0][col + 1] == -1 && currentUsage >= rate.rural[0][col]) {
         break;
       }
     }
     fee = (currentUsage - lastUsage) * rate.rural[1][col];
   } else if (user.type == 4) {
     for (col = 0; rate.ent[0][col] != -1; col++) {
-      if (user.voltage >= rate.ent[0][col] &&
-          user.voltage < rate.ent[0][col + 1]) {
+      if (user.voltage >= rate.ent[0][col] && user.voltage < rate.ent[0][col + 1]) {
         col++;
         break;
       } else if (rate.ent[0][col + 1] == -1 &&
@@ -180,12 +258,10 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
     fee = (currentUsage - lastUsage) * rate.ent[1][col];
   } else if (user.type == 5) {
     for (col = 0; rate.ent[0][col] != -1; col++) {
-      if (currentUsage >= rate.ent[0][col] &&
-          currentUsage < rate.ent[1][col + 1]) {
+      if (currentUsage >= rate.ent[0][col] && currentUsage < rate.ent[1][col + 1]) {
         col++;
         break;
-      } else if (rate.ent[0][col + 1] == -1 &&
-                 currentUsage >= rate.ent[0][col]) {
+      } else if (rate.ent[0][col + 1] == -1 && currentUsage >= rate.ent[0][col]) {
         break;
       }
       fee = (currentUsage - lastUsage) * rate.ent[2][col];
@@ -196,7 +272,7 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
   cout << "rate: " << rate.urban[row][col] << endl;
   cout << "fee: " << fee << endl;
 }
-void updateUserReadStatus(int username, int currentUsage, int fee) {
+void updateUserBillingStatus(int username, int currentUsage, int fee) {
   fstream file;
   file.open(FLOC_USERBASICINFO, ios::binary | ios::in | ios::out | ios::app);
   while (1) {
