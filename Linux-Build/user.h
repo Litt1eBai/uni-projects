@@ -161,18 +161,21 @@ unreadRegionInfoNode* getUnreadRegions() {
 }
 void sortList(unreadRegionInfoNode* head) {
   unreadRegionInfoNode* p = head;
-  unreadRegionInfoNode* find = p->next;
+  unreadRegionInfoNode* findpre = p->next;
+  unreadRegionInfoNode* sawpptr = p->next;
   while (p->next != NULL) {
-    while (find->next != NULL) {
-    if (samestr(find->region.district, p->region.district)) {
+    while (findpre->next->next != NULL) {
+    if (samestr(findpre->next->region.district, p->region.district)) {
         add temp;
-        temp = p->next->region;
-        p->next->region = find->region;
-        find->region = temp;
+        temp = sawpptr->region;
+        sawpptr->region = findpre->next->region;
+        findpre->next->region = temp;
+        sawpptr = sawpptr->next;
       }
-    find = find->next;
+    findpre = findpre->next;
     }
     p = p->next;
+    findpre = p;
   }
 }
 unreadRegionInfoNode* getUnreadRigions_new() {
