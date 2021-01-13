@@ -273,7 +273,7 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
     for (row = 0; rate.urban[row][0] != -1; row++) {
       if (currentUsage >= rate.urban[row][0] &&
           currentUsage < rate.urban[row + 1][0]) {
-
+        row++;
         break;
       } else if (currentUsage > rate.urban[row][0] && rate.urban[row + 1][0] == -1) {
         break;
