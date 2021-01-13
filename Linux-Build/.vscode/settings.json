@@ -6,5 +6,6 @@
         "fstream": "cpp",
         "iomanip": "cpp",
         "*.tcc": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

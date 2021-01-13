@@ -273,6 +273,7 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
     for (row = 0; rate.urban[row][0] != -1; row++) {
       if (currentUsage >= rate.urban[row][0] &&
           currentUsage < rate.urban[row + 1][0]) {
+
         break;
       } else if (currentUsage > rate.urban[row][0] && rate.urban[row + 1][0] == -1) {
         break;
@@ -287,7 +288,8 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
       }
     }
     fee = (currentUsage - lastUsage) * rate.urban[row][col];
-  } else if (user.type == 7) {
+  } 
+  else if (user.type == 7) {
     for (col = 0; rate.rural[0][col] != -1; col++) {
       if (user.voltage >= rate.rural[0][col] && currentUsage < rate.rural[0][col + 1]) {
         col++;
@@ -297,7 +299,8 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
       }
     }
     fee = (currentUsage - lastUsage) * rate.rural[1][col];
-  } else if (user.type == 4) {
+  }
+  else if (user.type == 4) {
     for (col = 0; rate.ent[0][col] != -1; col++) {
       if (user.voltage >= rate.ent[0][col] && user.voltage < rate.ent[0][col + 1]) {
         col++;
@@ -358,6 +361,7 @@ void pushReadToHistory(int username, int lastUsage, int currentUsage, int rateNo
   file.write((char*)&bill, sizeof(userbill));
   file.close();
 }
+//
 void changeMRInfo(MRdef mr) {
   MRdef mrtmp;
   fstream origin;

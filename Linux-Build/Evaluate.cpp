@@ -102,7 +102,7 @@ void MRListUsers() {
   char ch;
   cin >> ch;
 }
-void MRInput(char* district, char* street, char* estate) {
+void MRInput_Urban(char* district, char* street, char* estate) {
   int read = 0;
   int unread = 0;
   estateUserInfoNode* head = getEstateUserUnread(district, street, estate, read, unread);
@@ -150,6 +150,57 @@ void MRInput(char* district, char* street, char* estate) {
     read++;
   }
 }
+void MRInput_Rural(char* district, char* street, char* estate) {
+    int read = 0;
+  int unread = 0;
+  estateUserInfoNode* head = getEstateUserUnread(district, street, estate, read, unread);
+  showList(head);  // test
+  estateUserInfoNode* p = head;
+  int usage1 = 0;
+  int usage2 = 0;
+  while (usage1 != -1) {
+    if (p->next == NULL) {
+      system("clear");
+      cout << "You've completed inputting, thank you" << endl;
+      break;
+    }
+    p = p->next;
+    system("clear");
+    cout << "BILL INPUT" << endl;
+    cout << "=====================================================" << endl;
+    cout << "You are inputting bill information of:" << endl;
+    cout << p->info.address.estate << ", " << p->info.address.street << ", "
+         << p->info.address.district << ", " << p->info.address.city << endl;
+    cout << "-----------------------------------------------------" << endl;
+    cout << "Information for: " << p->info.address.room << ", "
+         << p->info.address.unit << ", " << p->info.address.estate << ", "
+         << p->info.address.street << endl;
+    cout << endl;
+    cout << "User: " << p->info.name << endl;
+    cout << "User No. " << p->info.No << endl;
+    cout << "User ID: " << p->info.id << endl;
+    cout << "Balance: " << p->info.balance << endl;
+    cout << "Power Status: ";
+    if (p->info.powercut == false) {
+      cout << "Using";
+    } else {
+      cout << "Cut";
+    }
+    cout << endl;
+    cout << "-----------------------------------------------------" << endl;
+    cout << "Your progress:" << endl;
+    cout << "Read: " << read << "/" << unread << endl;
+    cout << "-----------------------------------------------------" << endl;
+    cout << "Input -1 to exit" << endl;
+    cout << "-----------------------------------------------------" << endl;
+    cout << "Common Usage: ";
+    cin >> usage1;
+    cout << "Algricultural Irrigation Usage: ";
+    cin >> usage2;
+    // pushToHistory(p->info.No, currentUsage);
+    read++;
+  }
+}
 void MROverview_estate(int username, char* district, char* street) {
   MRdef mywork;
   mywork = getMRDetail(username);
@@ -177,7 +228,7 @@ void MROverview_estate(int username, char* district, char* street) {
     getString(estate);
     if (samestr(estate, (char*)"-1"))
       break;
-    MRInput(district, street, estate);
+    MRInput_Urban(district, street, estate);
   } while (!samestr(estate, (char*)"-1"));
 }
 void MROverview_street(int username, char* district) {
@@ -1802,4 +1853,8 @@ int main() {
   //MRListUsers();
   //login();
   //MRDash(6);
+  showRate();
+  int RateNo;
+  double fee;
+  chargeFeedback(1, 1000, 3000, RateNo, fee);
 }
