@@ -1,26 +1,31 @@
 #pragma once
-#include <string.h>
-#include <fstream>
-#include <iostream>
-#include <ctime>
-#include <iomanip>
 #include <fcntl.h>
+#include <string.h>
 #include <unistd.h>
+
+#include <ctime>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 using namespace std;
 
 // File locations ====================================================
 char FLOC_FILEFOLDER[70] = {
     "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/"};
 string FLOC_USERBASICINFO =
-    "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/userbasicinfo.dat";
+    "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/"
+    "userbasicinfo.dat";
 string FLOC_EDITUSERINFO_TEMP =
-    "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/temp_userbasicinfo.dat";
+    "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/"
+    "temp_userbasicinfo.dat";
 string FLOC_BILLDETAIL =
-    "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/bill_detail.dat";
+    "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/"
+    "bill_detail.dat";
 string FLOC_MRINFO =
     "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/mrinfo.dat";
 string FLOC_EDITMRINFO_TEMP =
-    "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/temp_mrinfo.dat";
+    "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/"
+    "temp_mrinfo.dat";
 string FLOC_RATE =
     "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/rate.dat";
 // Global Veriables =========================================================
@@ -160,7 +165,7 @@ void changeUserInfo(userinfo use) {
       temp.write((char*)&use, sizeof(userinfo));
     else
       temp.write((char*)&tempUserInfo, sizeof(userinfo));
-  } 
+  }
   temp.close();
   origin.close();
   origin.open(FLOC_USERBASICINFO, ios::binary | ios::out);
@@ -224,25 +229,20 @@ void defineUnread() {
   date current_time = getCurrentTime();
   userinfo info;
   fstream file;
-  file.open(FLOC_USERBASICINFO, ios::binary | ios::app | ios::out);
+  file.open(FLOC_USERBASICINFO, ios::binary | ios::in | ios::out);
+  file.seekg(0, ios::beg);
   while (file.read((char*)&info, sizeof(userinfo))) {
     if (!sameMonth(current_time, info.last_read)) {
       info.read_now = false;
       int size = sizeof(userinfo);
-      int now = file.tellg();
       file.seekp(-size, ios::cur);
       file.write((char*)&info, sizeof(userinfo));
-      file.seekp(now, ios::beg);
-      file.seekp(now, ios::beg);
     }
     if (sameMonth(current_time, info.last_read)) {
       info.read_now = true;
       int size = sizeof(userinfo);
-      int now = file.tellg();
       file.seekp(-size, ios::cur);
       file.write((char*)&info, sizeof(userinfo));
-      file.seekp(now, ios::beg);
-      file.seekp(now, ios::beg);
     }
   }
   file.close();
@@ -271,15 +271,15 @@ int genCaseNo() {
 }
 // System settings - reset =====================================
 void resetDatabase_Rate() {
-  rateRecord defaultRate;
-  defaultRate.createTime = getCurrentTime();
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
-      defaultRate.urban[i][j] = -1;
-      defaultRate.rural[i][j] = -1;
-      defaultRate.ent[i][j] = -1;
-    }
-  }
+	rateRecord defaultRate;
+	defaultRate.createTime = getCurrentTime();
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			defaultRate.urban[i][j] = -1;
+			defaultRate.rural[i][j] = -1;
+			defaultRate.ent[i][j] = -1;
+    	}
+	}
 
   // Urban ==========================
   defaultRate.urban[0][0] = 0;
@@ -382,7 +382,7 @@ void resetDatabase() {
   resetDatabase_Rate();
 }
 void userInfoImport(string location) {
-    fstream fromfile;
+  fstream fromfile;
   fromfile.open(location, ios::binary | ios::in);
   if (!fromfile) {
     cout << "Can't find the file in the location provided." << endl;

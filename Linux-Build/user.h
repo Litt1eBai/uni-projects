@@ -74,6 +74,7 @@ MRdef getMRDetail(int username) {
   return mr;
 }
 // Meter Reader-specific ====================================================
+// Generate Bill
 void showRate(rateRecord current = getCurrentRate()) {
   cout << "Urban Rate Overview" << endl;
   for (int i = 0; i < N; i++) {
@@ -124,7 +125,8 @@ int genRateNo(int type, int row, int col) {
   rateNo = rateNo * 10 + col;
   return rateNo;
 }
-unreadRegionInfoNode* getUnreadRegions() {
+// Input
+unreadRegionInfoNode* getUnreadRegions_districts() {
   fstream file;
   userinfo user;
   file.open(FLOC_USERBASICINFO, ios::binary |ios::in);
@@ -134,83 +136,130 @@ unreadRegionInfoNode* getUnreadRegions() {
     file.read((char*)&user, sizeof(userinfo));
     if (file.eof())
       break;
-    //if (!user.read_now) {
+    if (user.type > 3 &&
+        !user.read_now) {
       unreadRegionInfoNode* p = new unreadRegionInfoNode;
       p->region = user.address;
-      p->unread = 1;
-      p->next = head->next;
-      head->next = p;
-    //}
-  }
-  file.close();
-  unreadRegionInfoNode* q = head;
-  unreadRegionInfoNode* findpre = q;
-  while (q->next != NULL) {
-    while (findpre->next != NULL) {
-      if (samestr(findpre->next->region.district, q->region.district) && 
-          samestr(findpre->next->region.street, q->region.street)) {
-            findpre->next = findpre->next->next;
-            q->unread++;
-          }
-      findpre = findpre->next;
-    }
-    q = q->next;
-    findpre = q;
-  }
-  return head;
-}
-void sortList(unreadRegionInfoNode* head) {
-  unreadRegionInfoNode* p = head;
-  unreadRegionInfoNode* findpre = p->next;
-  unreadRegionInfoNode* sawpptr = p->next;
-  while (p->next != NULL) {
-    while (findpre->next->next != NULL) {
-    if (samestr(findpre->next->region.district, p->region.district)) {
-        add temp;
-        temp = sawpptr->region;
-        sawpptr->region = findpre->next->region;
-        findpre->next->region = temp;
-        sawpptr = sawpptr->next;
-      }
-    findpre = findpre->next;
-    }
-    p = p->next;
-    findpre = p;
-  }
-}
-unreadRegionInfoNode* getUnreadRigions_new() {
-  fstream file;
-  userinfo user;
-  file.open(FLOC_USERBASICINFO, ios::binary |ios::in);
-  unreadRegionInfoNode* head = new unreadRegionInfoNode;
-  head->next = NULL;
-  while (1) {
-    file.read((char*)&user, sizeof(userinfo));
-    if (file.eof())
-      break;
-    //if (!user.read_now) {
-      unreadRegionInfoNode* p = new unreadRegionInfoNode;
+      unreadRegionInfoNode* find = head->next;
       int flag = 1;
-      unreadRegionInfoNode* findpre = head;
-      while (findpre->next != NULL) {
-        if (samestr(findpre->region.district, p->region.district) && 
-            samestr(findpre->region.district, p->region.district)) {
-              flag = 0;
-              break;
-            }
-        findpre = findpre->next;
-     }
-      if (flag) {
-      p->region = user.address;
-      cout << p->region.street << " ";
-      p->next = head->next;
-      head->next = p;
+      while (find != NULL) {
+        if (samestr(find->region.district, user.address.district)) {
+          find->unread++;
+          flag = 0;
+        }
+        find = find->next;
       }
-    //}
+      if (flag) {
+        p->unread = 1;
+        p->next = head->next;
+        head->next = p;
+      }
+     
+    }
   }
   file.close();
   return head;
 }
+unreadRegionInfoNode* getUnreadRegions_streets(char* district) {
+  fstream file;
+  userinfo user;
+  file.open(FLOC_USERBASICINFO, ios::binary |ios::in);
+  unreadRegionInfoNode* head = new unreadRegionInfoNode;
+  head->next = NULL;
+  while (1) {
+    file.read((char*)&user, sizeof(userinfo));
+    if (file.eof())
+      break;
+    if (user.type > 3 &&
+        !user.read_now &&
+        samestr(user.address.district, district)) {
+      unreadRegionInfoNode* p = new unreadRegionInfoNode;
+      p->region = user.address;
+      unreadRegionInfoNode* find = head->next;
+      int flag = 1;
+      while (find != NULL) {
+        if (samestr(find->region.district, user.address.district) &&
+            samestr(find->region.street, user.address.street)) {
+          find->unread++;
+          flag = 0;
+        }
+        find = find->next;
+      }
+      if (flag) {
+        p->unread = 1;
+        p->next = head->next;
+        head->next = p;
+      }
+     
+    }
+  }
+  file.close();
+  return head;
+}
+unreadRegionInfoNode* getUnreadRegions_estates(char* district, char* street) {
+  fstream file;
+  userinfo user;
+  file.open(FLOC_USERBASICINFO, ios::binary |ios::in);
+  unreadRegionInfoNode* head = new unreadRegionInfoNode;
+  head->next = NULL;
+  while (1) {
+    file.read((char*)&user, sizeof(userinfo));
+    if (file.eof())
+      break;
+    if (user.type > 3 &&
+        !user.read_now &&
+        samestr(user.address.district, district) && 
+        samestr(user.address.street, street)) {
+      unreadRegionInfoNode* p = new unreadRegionInfoNode;
+      p->region = user.address;
+      unreadRegionInfoNode* find = head->next;
+      int flag = 1;
+      while (find != NULL) {
+        if (samestr(find->region.district, user.address.district) && 
+            samestr(find->region.street, user.address.street) &&
+            samestr(find->region.estate, user.address.estate)) {
+          find->unread++;
+          flag = 0;
+        }
+        find = find->next;
+      }
+      if (flag) {
+        p->unread = 1;
+        p->next = head->next;
+        head->next = p;
+      }
+     
+    }
+  }
+  file.close();
+  return head;
+}
+estateUserInfoNode* getEstateUserUnread(char* district, char* street, char* estate, int& read, int& unread) {
+  fstream fileRead;
+  estateUserInfoNode* head = new estateUserInfoNode;
+  head->next = NULL;
+  fileRead.open(FLOC_USERBASICINFO, ios::binary | ios::in);
+  read = 0;
+  unread = 0;
+  while (1) {
+    estateUserInfoNode* p = new estateUserInfoNode;
+    fileRead.read((char*)&(p->info), sizeof(userinfo));
+    if (fileRead.eof()) {
+      break;
+    }
+    if (p->info.type > 3 &&
+        !p->info.read_now &&
+        samestr(p->info.address.district, district) && 
+        samestr(p->info.address.street, street) &&
+        samestr(p->info.address.estate, estate)) {
+      p->next = head->next;
+      head->next = p;
+      unread++;
+    }
+  }
+    return head;
+}
+// Store
 void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, double& fee) {
   rateRecord rate = getCurrentRate();
   userinfo user = getUserInfo(username);
@@ -309,7 +358,6 @@ void pushReadToHistory(int username, int lastUsage, int currentUsage, int rateNo
   file.write((char*)&bill, sizeof(userbill));
   file.close();
 }
-// end of update=============================
 void changeMRInfo(MRdef mr) {
   MRdef mrtmp;
   fstream origin;

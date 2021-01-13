@@ -3,68 +3,6 @@
 using namespace std;
 
 // Get Reginal Info
-int getRegnalInfo_district(string districts[]) {
-  int n = 0;
-  userinfo user;
-  fstream temp;
-  temp.open(FLOC_USERBASICINFO, ios::binary | ios::in);
-  while (temp.read((char*)&user, sizeof(userinfo))) {
-    if (!eleInArr(districts, user.address.district, n)) {
-      districts[n + 1] = user.address.district;
-      n++;
-    }
-  }
-  return n;
-}
-int getRegnalInfo_street(string streets[]) {
-  int n = 0;
-  userinfo user;
-  fstream temp;
-  temp.open(FLOC_USERBASICINFO, ios::binary | ios::in);
-  while (temp.read((char*)&user, sizeof(userinfo))) {
-    if (!eleInArr(streets, user.address.street, n)) {
-      streets[n + 1] = user.address.street;
-      n++;
-    }
-  }
-  return n;
-}
-int getRegnalInfo_estate(string estates[]) {
-  int n = 0;
-  userinfo user;
-  fstream temp;
-  temp.open(FLOC_USERBASICINFO, ios::binary | ios::in);
-  while (temp.read((char*)&user, sizeof(userinfo))) {
-    if (!eleInArr(estates, user.address.estate, n)) {
-      estates[n + 1] = user.address.estate;
-      n++;
-    }
-  }
-  return n;
-}
-estateUserInfoNode* getEstateUserUnread(char* estate, int& read, int& unread) {
-  fstream fileRead;
-  estateUserInfoNode* head = new estateUserInfoNode;
-  head->next = NULL;
-  fileRead.open(FLOC_USERBASICINFO, ios::binary | ios::in);
-  read = 0;
-  unread = 0;
-  while (1) {
-    estateUserInfoNode* p = new estateUserInfoNode;
-    fileRead.read((char*)&(p->info), sizeof(userinfo));
-    if (fileRead.eof()) {
-      break;
-    }
-    // if (p->info.read_now == false && samestr((p->info.address.estate),
-    // estate)) {
-    if (samestr((p->info.address.estate), estate)) {
-      p->next = head->next;
-      head->next = p;
-      unread++;
-    }
-  }
-  return head;
-}
 void showList(estateUserInfoNode* head) {
   estateUserInfoNode* p = head->next;
   while (1) {
@@ -76,13 +14,25 @@ void showList(estateUserInfoNode* head) {
   }
   return;
 }
-void showList(unreadRegionInfoNode* head) {
+void showList_district(unreadRegionInfoNode* head) {
   unreadRegionInfoNode* p = head->next;
   while (1) {
     if (p == NULL) {
       break;
     }
-    cout << p->region.district << " " << p->region.street << " " << p->unread << " " << endl;
+    cout << p->region.district << " " << p->unread << endl;
+    p = p->next;
+  }
+  return;
+}
+void showList_street(unreadRegionInfoNode* head) {
+  unreadRegionInfoNode* p = head->next;
+  while (1) {
+    if (p == NULL) {
+      cout << "No user unread in this region";
+      break;
+    }
+    cout << p->region.street << " " << p->unread << endl;
     p = p->next;
   }
   return;
@@ -127,11 +77,13 @@ void MRListUsers() {
        << endl;
   userinfo user;
   fstream readUser(FLOC_USERBASICINFO, ios::in | ios::binary);
-  while (readUser.read((char*)&user, sizeof(userinfo))) {
+  while (1) {
+    readUser.read((char*)&user, sizeof(userinfo));
+    if (readUser.eof())
+      break;
     // if (user.read_now == false)
     cout << setw(11) << right << setfill('0') << user.No << '\t' << setw(25)
-         << left << setfill(' ') << user.name << '\t' << setw(4) << fixed
-         << setprecision(3) << user.balance << "\t";
+         << left << setfill(' ') << user.name << '\t' << setw(4) << user.balance << "\t";
     if (user.powercut == true)
       cout << setw(6) << right << "cut" << '\t';
     else
@@ -150,10 +102,10 @@ void MRListUsers() {
   char ch;
   cin >> ch;
 }
-void MRInput(char* estate) {
+void MRInput(char* district, char* street, char* estate) {
   int read = 0;
   int unread = 0;
-  estateUserInfoNode* head = getEstateUserUnread(estate, read, unread);
+  estateUserInfoNode* head = getEstateUserUnread(district, street, estate, read, unread);
   showList(head);  // test
   estateUserInfoNode* p = head;
   int usage = 0;
@@ -165,7 +117,7 @@ void MRInput(char* estate) {
     }
     p = p->next;
     system("clear");
-    cout << "Bill Input" << endl;
+    cout << "BILL INPUT" << endl;
     cout << "=====================================================" << endl;
     cout << "You are inputting bill information of:" << endl;
     cout << p->info.address.estate << ", " << p->info.address.street << ", "
@@ -174,6 +126,7 @@ void MRInput(char* estate) {
     cout << "Information for: " << p->info.address.room << ", "
          << p->info.address.unit << ", " << p->info.address.estate << ", "
          << p->info.address.street << endl;
+    cout << endl;
     cout << "User: " << p->info.name << endl;
     cout << "User No. " << p->info.No << endl;
     cout << "User ID: " << p->info.id << endl;
@@ -197,26 +150,99 @@ void MRInput(char* estate) {
     read++;
   }
 }
-void MROverview(int username) {
+void MROverview_estate(int username, char* district, char* street) {
   MRdef mywork;
   mywork = getMRDetail(username);
-  char place[32];
+  char estate[32];
+  do {
+    unreadRegionInfoNode* estateListHead = getUnreadRegions_estates(district, street);
+    system("clear");
+    cout << "BILL INPUT - ESTATE OVERVIEW" << endl;
+    cout << "==============================================" << endl;
+    cout << endl;
+    cout << "Unread estates in " << street << ", " << district << " district" << endl;
+    cout << "-----------------------------------------------" << endl;
+    cout << "Estate" << '\t'  << "Unread" << endl;
+    cout << "-----------------------------------------------" << endl;
+    unreadRegionInfoNode* p = estateListHead->next;
+    while (1) {
+      if (p == NULL) {
+        break;
+      }
+      cout << left << setw(15) << p->region.estate << '\t' << right << p->unread << endl;
+      p = p->next;
+    }
+    cout << "----------------------------------------------" << endl;
+    cout << "You wish to input: ";
+    getString(estate);
+    if (samestr(estate, (char*)"-1"))
+      break;
+    MRInput(district, street, estate);
+  } while (!samestr(estate, (char*)"-1"));
+}
+void MROverview_street(int username, char* district) {
+  MRdef mywork;
+  mywork = getMRDetail(username);
+  char street[32];
   do {
     int userread = 0;
     int userunread = 10;
+    unreadRegionInfoNode* streetListHead = getUnreadRegions_streets(district);
     system("clear");
-    cout << "DASHBOARD" << endl;
+    cout << "BILL INPUT - STREET OVERVIEW" << endl;
     cout << "==============================================" << endl;
-    cout << "Your progress: ";
-    cout << "Read: " << userread << "/" << userunread << endl;
-    cout << "Progress: " << (userread / userunread) * 100 << "%" << endl;
+    cout << endl;
+    cout << "Unread streets in " << district << " district" << endl;
     cout << "----------------------------------------------" << endl;
-    cout << "Overview:" << endl;
+    cout << "Street                      Unread" << endl;
+    cout << "----------------------------------------------" << endl;
+    unreadRegionInfoNode* p = streetListHead->next;
+    while (1) {
+      if (p == NULL) {
+        break;
+      }
+      cout << left << setw(25) << p->region.street << '\t' << right << p->unread << endl;
+      p = p->next;
+    }
     cout << "----------------------------------------------" << endl;
     cout << "You wish to input: ";
-    getString(place);
-    MRInput(place);
-  } while (place != "-1");
+    getString(street);
+    if (samestr(street, (char*)"-1"))
+      break;
+    MROverview_estate(username, district, street);
+  } while (!samestr(district, (char*)"-1"));
+}
+void MROverview_district(int username) {
+  MRdef mywork;
+  mywork = getMRDetail(username);
+  char district[32];
+  do {
+    int userread = 0;
+    int userunread = 10;
+    unreadRegionInfoNode* districtListHead = getUnreadRegions_districts();
+    system("clear");
+    cout << "METER READER INPUT - DISTRICT OVERVIEW" << endl;
+    cout << "==============================================" << endl;
+    cout << endl;
+    cout << "Districts unread" << endl;
+    cout << "----------------------------------------------" << endl;
+    cout << "District      Unread" << endl;
+    cout << "----------------------------------------------" << endl;
+    unreadRegionInfoNode* p = districtListHead->next;
+    while (1) {
+      if (p == NULL) {
+        break;
+      }
+      cout << left << setw(15) << p->region.district << '\t' << right << p->unread << endl;
+      p = p->next;
+    }
+    cout << "----------------------------------------------" << endl;
+    cout << "You wish to input: ";
+    getString(district);
+    if (samestr(district, (char*)"-1"))
+      break;
+    MROverview_street(username, district);
+  } while (!samestr(district, (char*)"-1"));
 }
 void MRDash(int username) {
   userinfo me;
@@ -244,7 +270,7 @@ void MRDash(int username) {
     cin >> opt;
     switch (opt) {
       case 1:
-        MROverview(username);
+        MROverview_district(username);
         break;
       case 2:
         MRListUsers();
@@ -1773,11 +1799,7 @@ int main() {
   checkAndGenerate();
   getTotalUser();
   defineUnread();
-  MRListUnread();
-  login();
-  MRListUsers();
-  showAllBillList();
-  // unreadRegionInfoNode* head = getUnreadRegions();
-  // sortList(head);
-  // showList(head);
+  //MRListUsers();
+  //login();
+  //MRDash(6);
 }
