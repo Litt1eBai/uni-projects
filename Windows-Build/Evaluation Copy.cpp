@@ -2,6 +2,7 @@
 #include "user.h"
 using namespace std;
 
+
 // Get Reginal Info
 void showList(estateUserInfoNode* head) {
     estateUserInfoNode* p = head->next;
@@ -354,7 +355,7 @@ void ReportFormGenerate() {
     fstream readfile;
     fstream reportform;
     readfile.open(FLOC_BILLDETAIL, ios::binary | ios::in);
-    reportform.open(FLOC_REPORTFORM, ios::out);
+    
     reportform << "Address" << '\t' << "Total Usage" << '\t' << "Unread Users" << '\t' << "Total Arrears" << endl;
 }
 void showAllBillList() {
@@ -375,6 +376,7 @@ void showAllBillList() {
             << "------------------------------------------------------------------" << endl;
     }
     file.close();
+    system("pause");
 }
 void chargerDash(int username) {
     userinfo me;
@@ -739,7 +741,7 @@ void generateUser() {
     cin >> newUser.id;
     while (strlen(newUser.id) != 18) {
         cout << "Invalid ID" << endl;
-        strcpy(newUser.password, "set default password error");
+        strcpy_s(newUser.password, "set default password error");
         cout << "User's National ID: ";
         cin >> newUser.id;
     }
@@ -817,7 +819,7 @@ void generateUser() {
         if (newUser.type == 2) {
             MRdef MRinfo;
             MRinfo.No = newUser.No;
-            strcpy(MRinfo.name, newUser.name);
+            strcpy_s(MRinfo.name, newUser.name);
             MRinfo.progress = 0;
             fstream MRfile;
             MRfile.open(FLOC_MRINFO, ios::binary | ios::app);
@@ -844,8 +846,7 @@ void adminEditUser_Detail(int username) {
         system("cls");
         getTotalUser();
         cout << "USER MANAGEMENT - EDIT USER DETAIL" << endl;
-        cout << "=================================================================="
-            "===="
+        cout << "======================================================================"
             << endl;
         cout << "Detail of " << user.name << endl;
         cout << endl;
@@ -860,8 +861,7 @@ void adminEditUser_Detail(int username) {
             << user.address.street << ", " << user.address.district << ", "
             << user.address.city << endl;
         cout << "6. Password: " << user.password << endl;
-        cout << "------------------------------------------------------------------"
-            "----"
+        cout << "----------------------------------------------------------------------"
             << endl;
         cout << "What do you want to change about the user " << user.name << endl;
         cout << "1 - 6 Change the corresponding information" << endl;
@@ -871,8 +871,7 @@ void adminEditUser_Detail(int username) {
         if (opt == 1) {
             system("cls");
             cout << "USER MANAGEMENT - EDIT USER DETAIL - NAME EDIT" << endl;
-            cout << "================================================================"
-                "======"
+            cout << "======================================================================"
                 << endl;
             cout << "Editing the name of " << user.name << endl;
             cout << endl;
@@ -887,7 +886,7 @@ void adminEditUser_Detail(int username) {
             char choice1;
             cin >> choice1;
             if (choice1 == 'y' || choice1 == 'Y') {
-                strcpy(user.name, newname);
+                strcpy_s(user.name, newname);
                 changeUserInfo(user);
                 cout << "Successful" << endl;
                 Sleep(1);
@@ -901,8 +900,7 @@ void adminEditUser_Detail(int username) {
         else if (opt == 2) {
             system("cls");
             cout << "USER MANAGEMENT - EDIT USER DETAIL - USER TYPE EDIT" << endl;
-            cout << "================================================================"
-                "======"
+            cout << "======================================================================"
                 << endl;
             cout << "Editing the name of " << user.name << endl;
             cout << endl;
@@ -911,21 +909,13 @@ void adminEditUser_Detail(int username) {
                 "------"
                 << endl;
             cout << "Choose the type below" << endl;
-            cout << "--------------------------------------------------------------"
-                << endl;
-            cout << "|  1.Administrator       2.Meter Reader      3.Charger       |"
-                << endl;
-            cout << "|  4.Enterprise User(E1)       5. Enterprise User(E2)        |"
-                << endl;
-            cout << "|  6.Urban User                7.Common Rural User           |"
-                << endl;
-            cout << "|  8.Rural User in Poverty                                   |"
-                << endl;
-            cout << "--------------------------------------------------------------"
-                << endl;
-            cout << "----------------------------------------------------------------"
-                "------"
-                << endl;
+            cout << "--------------------------------------------------------------"<< endl;
+            cout << "|  1.Administrator       2.Meter Reader      3.Charger       |"<< endl;
+            cout << "|  4.Enterprise User(E1)       5. Enterprise User(E2)        |"<< endl;
+            cout << "|  6.Urban User                7.Common Rural User           |"<< endl;
+            cout << "|  8.Rural User in Poverty                                   |"<< endl;
+            cout << "--------------------------------------------------------------"<< endl;
+            cout << "----------------------------------------------------------------------"<< endl;
             cout << "Change to: ";
             int user_typ;
             cin >> user_typ;
@@ -1034,7 +1024,7 @@ void adminEditUser_Detail(int username) {
             char choice3;
             cin >> choice3;
             if (choice3 == 'y' || choice3 == 'Y') {
-                strcpy(user.id, newID);
+                strcpy_s(user.id, newID);
                 changeUserInfo(user);
                 cout << "Successful" << endl;
                 Sleep(1);
@@ -1198,7 +1188,7 @@ void adminEditUser_Detail(int username) {
             char choice4;
             cin >> choice4;
             if (choice4 == 'y' || choice4 == 'Y') {
-                strcpy(user.password, newPassword);
+                strcpy_s(user.password, newPassword);
                 changeUserInfo(user);
                 cout << "Successful" << endl;
                 Sleep(1);
@@ -1536,7 +1526,7 @@ void userEditBasicInfo(int username) {
             char choice1;
             cin >> choice1;
             if (choice1 == 'y' || choice1 == 'Y') {
-                strcpy(me.name, newname);
+                strcpy_s(me.name, newname);
                 changeUserInfo(me);
                 cout << "Successful" << endl;
                 Sleep(1);
@@ -1579,7 +1569,7 @@ void userEditBasicInfo(int username) {
             char choice3;
             cin >> choice3;
             if (choice3 == 'y' || choice3 == 'Y') {
-                strcpy(me.id, newID);
+                strcpy_s(me.id, newID);
                 changeUserInfo(me);
                 cout << "Successful" << endl;
                 Sleep(1);
@@ -1745,7 +1735,7 @@ void userEditBasicInfo(int username) {
             char choice4;
             cin >> choice4;
             if (choice4 == 'y' || choice4 == 'Y') {
-                strcpy(me.password, newPassword);
+                strcpy_s(me.password, newPassword);
                 changeUserInfo(me);
                 cout << "Successful" << endl;
                 Sleep(1);
@@ -1850,37 +1840,34 @@ void userDash(int username) {
     } while (opt != 0);
 }
 // Login ======================================================
-int validPassword(int username, char userPass[]) {
+int validPassword(int username, char userPass[])
+{
     userinfo user;
     user = getUserInfo(username);
-    if (samestr(user.password, userPass)) return 1;
+    if (samestr(user.password, userPass))
+        return 1;
     return 0;
 }
-void loginGuide(int username) {
+void loginGuide(int username)
+{
     userinfo user;
     user = getUserInfo(username);
-    switch (user.type) {
-    case 1:
-        AdminDash(username);
-        break;
-    case 2:
-        MRDash(username);
-        break;
-    case 3:
-        chargerDash(username);
-        break;
+    switch (user.type)
+    {
+    case 1: AdminDash(username); break;
+    case 2: MRDash(username); break;
+    case 3: cout << "Not available" << endl; break;
     case 4:
     case 5:
-    case 6:
-        userDash(username);
-        break;
-    case 7:
-        break;
+    case 6:userDash(username); break;
+    case 7: break;
     }
 }
-void login() {
+void login()
+{
     int username;
-    do {
+    do
+    {
         system("cls");
         cout << "SYSTEM - LOGIN" << endl;
         cout << "=================================================" << endl;
@@ -1888,14 +1875,17 @@ void login() {
         cout << endl;
         cout << "Username: ";
         cin >> username;
-        if (validUser(username)) {
+        if (validUser(username))
+        {
             cout << "Password: ";
             char userPass[32];
             cin >> userPass;
-            if (validPassword(username, userPass)) {
+            if (validPassword(username, userPass))
+            {
                 loginGuide(username);
             }
-            else {
+            else
+            {
                 system("cls");
                 cout << "SYSTEM - LOGIN ERROR" << endl;
                 cout << "==============================================" << endl;
@@ -1903,10 +1893,11 @@ void login() {
                 cout << "**********************************************" << endl;
                 cout << "*     Invalid password, Please try again     *" << endl;
                 cout << "**********************************************" << endl;
-                Sleep(1);
+                Sleep(0500);
             }
         }
-        else {
+        else
+        {
             system("cls");
             cout << "SYSTEM - LOGIN ERROR" << endl;
             cout << "==============================================" << endl;
@@ -1914,73 +1905,76 @@ void login() {
             cout << "**********************************************" << endl;
             cout << "*     Invalid username, Please try again     *" << endl;
             cout << "**********************************************" << endl;
-            Sleep(1);
+            Sleep(0500);
         }
     } while (username >= 0);
 }
-void checkAndGenerate() {
+void checkAndGenerate()
+{
     fstream userinfofile;
     userinfofile.open(FLOC_USERBASICINFO, ios::binary | ios::in);
-    if (!userinfofile) {
-        system("mkdir -p /home/jensen/Documents/code/ElectricityBillingSystem/");
+    if (!userinfofile)
+    {
+        _mkdir(FLOC_FILEFOLDER);
         resetDatabase();
         cout << "*************************************************" << endl;
-        cout << "* Hi, Welcome to the electricity billing         *" << endl;
+        cout << "* Hi, Welcome to the electricity billing system *" << endl;
         cout << "*************************************************" << endl;
-        Sleep(1);
+        Sleep(1000);
         system("cls");
         cout << "*************************************************" << endl;
         cout << "*      We are setting up everything for you     *" << endl;
         cout << "*************************************************" << endl;
-        Sleep(1);
+        Sleep(1000);
         system("cls");
         cout << "*************************************************" << endl;
         cout << "*                  Almost done                  *" << endl;
         cout << "*************************************************" << endl;
-        Sleep(1);
+        Sleep(1000);
         system("cls");
         cout << "***********************************************************************" << endl;
         cout << "* You are the administrator, use the following information to sign in *" << endl;
         cout << "* Username: 0                                                         *" << endl;
         cout << "* Password: root                                                      *" << endl;
         cout << "***********************************************************************" << endl;
-        system("cls");
+        system("pause");
         system("cls");
         cout << "*********************************************" << endl;
         cout << "*                  Thanks!                  *" << endl;
         cout << "*********************************************" << endl;
-        Sleep(1);
+        Sleep(0700);
         system("cls");
         cout << "*********************************************" << endl;
         cout << "*                   Enjoy!                  *" << endl;
         cout << "*********************************************" << endl;
-        Sleep(1);
+        Sleep(0700);
     }
-    else {
-        cout << "welcome to electricity billing" << endl;
-        system("cls");
-        Sleep(1);
+    else
+    {
+        cout << "welcome to electricity billing system" << endl;
+        Sleep(0500);
     }
 }
 //Main ============================================================
 int main() {
-    checkAndGenerate();
-    getTotalUser();
-    defineUnread();
+    //userDash(0);
+    //checkAndGenerate();
+    //getTotalUser();
+	//defineUnread();
     //showAllBillList();
     //MRListUsers();
-    login();
+    //login();
     //showBillDetail(1);
     //userShowHistory(1);
     //showRate();
-    // while (1) {
-    //   int lastUsage;
-    //   int currentUsage;
-    //   int rateNo;
-    //   double fee;
-    //   cin >> lastUsage >> currentUsage;
-    //   chargeFeedback(1, lastUsage, currentUsage, rateNo, fee);
-    //   cout << "Rate No. " << rateNo << endl;
-    //   cout << decodeRateNoforBill(rateNo) << endl;
-    // }
+     while (1) {
+       int lastusage;
+       int currentusage;
+       int rateno;
+       double fee;
+       cin >> lastusage >> currentusage;
+       chargeFeedback(1, lastusage, currentusage, rateno, fee);
+       cout << "rate no. " << rateno << endl;
+       cout << decodeRateNoforBill(rateno) << endl;
+     }
 }
