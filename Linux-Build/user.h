@@ -73,7 +73,29 @@ MRdef getMRDetail(int username) {
   }
   return mr;
 }
+// Bill
+userbill getBill(int caseNo) {
+  fstream file;
+  userbill bill;
+  file.open(FLOC_BILLDETAIL, ios::binary | ios::in);
+  while (1) {
+    file.read((char*)&bill, sizeof(userbill));
+    if (file.eof())
+      break;
+    if (bill.caseNo == caseNo)
+      break;
+  }
+  file.close();
+  return bill;
+}
 // Meter Reader-specific ====================================================
+void storeMRInfo(MRdef mr) {
+  MRdef mrtmp;
+  fstream temp;
+  temp.open(FLOC_MRINFO, ios::binary | ios::app | ios::out);
+  temp.write((char*)&mr, sizeof(MRdef));
+  temp.close();
+}
 // Generate Bill
 void showRate(rateRecord current = getCurrentRate()) {
   cout << "Urban Rate Overview" << endl;
@@ -100,30 +122,58 @@ void showRate(rateRecord current = getCurrentRate()) {
     cout << endl;
   }
 }
-void storeMRInfo(MRdef mr) {
-  MRdef mrtmp;
-  fstream temp;
-  temp.open(FLOC_MRINFO, ios::binary | ios::app | ios::out);
-  temp.write((char*)&mr, sizeof(MRdef));
-  temp.close();
-}
 int getRateEdition() {
+  rateRecord current;
   fstream file;
   file.open(FLOC_RATE, ios::binary | ios::in);
-  file.seekg(0, ios::beg);
-  double head = file.tellg();
-  file.seekg(-(sizeof(rateRecord), ios::end));
-  double end = file.tellg();
-  return end - head;
+  float size = sizeof(rateRecord);
+  file.seekg(-size, ios::end);
+  file.read((char*)&current, sizeof(rateRecord));
+  file.close();
+  return current.rateNo;
 }
-int genRateNo(int type, int row, int col) {
-  date currentTime = getCurrentTime();
+int generateRateGen() {
+  int current = getRateEdition();
+  return current + 1;
+}
+int genRateNoforBill(int type, int row, int col) {
   int rateNo = 0;
   rateNo = getRateEdition();
   rateNo = rateNo * 10 + type;
   rateNo = rateNo * 10 + row;
   rateNo = rateNo * 10 + col;
   return rateNo;
+}
+rateRecord getRate(int gen) {
+  fstream file;
+  rateRecord rate;
+  file.open(FLOC_RATE, ios::binary | ios::in);
+  while (1) {
+    file.read((char*)&rate, sizeof(rateRecord));
+    if (file.eof())
+      break;
+    if (rate.rateNo == gen);
+      break;
+  }
+  return rate;
+}
+double decodeRateNoforBill(int rateNo) {
+  int col = rateNo % 10;
+  rateNo = rateNo / 10;
+  int row = rateNo % 10;
+  rateNo = rateNo / 10;
+  int type = rateNo % 10;
+  rateNo = rateNo / 10;
+  int rateGen = rateNo % 10;
+  rateRecord rate = getRate(rateGen);
+  if (type == 6)
+    return rate.urban[row][col];
+  else if (type == 4)
+    return rate.ent[1][col];
+  else if (type == 5)
+    return rate.ent[2][col];
+  else if (type == 7 || type == 8)
+    return rate.rural[row][col];
 }
 // Input
 unreadRegionInfoNode* getUnreadRegions_districts() {
@@ -154,7 +204,6 @@ unreadRegionInfoNode* getUnreadRegions_districts() {
         p->next = head->next;
         head->next = p;
       }
-     
     }
   }
   file.close();
@@ -247,8 +296,7 @@ estateUserInfoNode* getEstateUserUnread(char* district, char* street, char* esta
     if (fileRead.eof()) {
       break;
     }
-    if (p->info.type > 3 &&
-        !p->info.read_now &&
+    if (p->info.type > 3 && !p->info.read_now &&
         samestr(p->info.address.district, district) && 
         samestr(p->info.address.street, street) &&
         samestr(p->info.address.estate, estate)) {
@@ -258,6 +306,39 @@ estateUserInfoNode* getEstateUserUnread(char* district, char* street, char* esta
     }
   }
     return head;
+}
+
+unreadRegionInfoNode* getReportRegions_districts() {
+  fstream file;
+  userinfo user;
+  file.open(FLOC_USERBASICINFO, ios::binary |ios::in);
+  unreadRegionInfoNode* head = new unreadRegionInfoNode;
+  head->next = NULL;
+  while (1) {
+    file.read((char*)&user, sizeof(userinfo));
+    if (file.eof())
+      break;
+    if (user.type > 3) {
+      unreadRegionInfoNode* p = new unreadRegionInfoNode;
+      p->region = user.address;
+      unreadRegionInfoNode* find = head->next;
+      int flag = 1;
+      while (find != NULL) {
+        if (samestr(find->region.district, user.address.district)) {
+          find->unread++;
+          flag = 0;
+        }
+        find = find->next;
+      }
+      if (flag) {
+        p->unread = 1;
+        p->next = head->next;
+        head->next = p;
+      }
+    }
+  }
+  file.close();
+  return head;
 }
 // Store
 void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, double& fee) {
@@ -289,7 +370,7 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
     }
     fee = (currentUsage - lastUsage) * rate.urban[row][col];
   } 
-  else if (user.type == 7) {
+  else if (user.type == 7 && user.type == 8) {
     for (col = 0; rate.rural[0][col] != -1; col++) {
       if (user.voltage >= rate.rural[0][col] && currentUsage < rate.rural[0][col + 1]) {
         col++;
@@ -311,7 +392,8 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
       }
     }
     fee = (currentUsage - lastUsage) * rate.ent[1][col];
-  } else if (user.type == 5) {
+  }
+  else if (user.type == 5) {
     for (col = 0; rate.ent[0][col] != -1; col++) {
       if (currentUsage >= rate.ent[0][col] && currentUsage < rate.ent[1][col + 1]) {
         col++;
@@ -319,17 +401,33 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
       } else if (rate.ent[0][col + 1] == -1 && currentUsage >= rate.ent[0][col]) {
         break;
       }
-      fee = (currentUsage - lastUsage) * rate.ent[2][col];
+      fee = (currentUsage - lastUsage) * rate.ent[2][col] + 36 * rate.ent[0][col];
     }
   }
   cout << endl;
   cout << "row: " << row << " col: " << col << endl;
   cout << "rate: " << rate.urban[row][col] << endl;
   cout << "fee: " << fee << endl;
+  rateNo = genRateNoforBill(user.type, row, col);
 }
-void updateUserBillingStatus(int username, int currentUsage, int fee) {
+void chargeFeedback_RuralIrrigation(int username, int lastUsage, int currentUsage, int& rateNo, double& fee) {
+  rateRecord rate = getCurrentRate();
+  userinfo user = getUserInfo(username);
+  int row = 0;
+  int col = 0;
+  for (col = 0; rate.rural[0][col] != -1; col++) {
+      if (user.voltage >= rate.rural[0][col] && currentUsage < rate.rural[0][col + 1]) {
+        col++;
+        break;
+      } else if (rate.rural[0][col + 1] == -1 && currentUsage >= rate.rural[0][col]) {
+        break;
+      }
+    }
+    fee = (currentUsage - lastUsage) * rate.rural[2][col];
+}
+void updateUserBillingStatus(int username, int currentUsage, double fee) {
   fstream file;
-  file.open(FLOC_USERBASICINFO, ios::binary | ios::in | ios::out | ios::app);
+  file.open(FLOC_USERBASICINFO, ios::binary | ios::in | ios::out);
   while (1) {
     userinfo currentUser;
     file.read((char*)&currentUser, sizeof(userinfo));
@@ -341,7 +439,8 @@ void updateUserBillingStatus(int username, int currentUsage, int fee) {
     if (currentUser.No == username) {
       currentUser.last_month_usage = currentUsage;
       currentUser.balance = currentUser.balance - fee;
-      file.seekg(-(sizeof(userinfo), ios::cur));
+      int size = sizeof(userinfo);
+      file.seekg(-size, ios::cur);
       file.write((char*)&currentUser, sizeof(userinfo));
       file.close();
     }
@@ -356,12 +455,51 @@ void pushReadToHistory(int username, int lastUsage, int currentUsage, int rateNo
   bill.read_date = getCurrentTime();
   bill.read = true;
   chargeFeedback(username, lastUsage, currentUsage, bill.rateNo, fee);
+  bill.rateNo = rateNo;
+  bill.fee = fee;
+  fstream file;
+  file.open(FLOC_BILLDETAIL, ios::binary | ios::out | ios::app);
+  file.write((char*)&bill, sizeof(userbill));
+  file.close();
+}
+void pushReadToHistory_RuralIrrigation(int username, int lastUsage, int currentUsage, int rateNo, double fee) {
+  userinfo user = getUserInfo(username);
+  userbill bill;
+  bill.caseNo = genCaseNo();
+  bill.user_record = user;
+  bill.last_month_usage = user.last_month_usage;
+  bill.read_date = getCurrentTime();
+  bill.read = true;
+  chargeFeedback_RuralIrrigation(username, lastUsage, currentUsage, bill.rateNo, fee);
+  bill.rateNo = rateNo;
+  bill.fee = fee;
   fstream file;
   file.open(FLOC_BILLDETAIL, ios::binary | ios::out | ios::app);
   file.write((char*)&bill, sizeof(userbill));
   file.close();
 }
 //
+// User-Spesific
+userBillHistoryNode* getUserBillHistory(int username) {
+  fstream file;
+  userbill bill;
+  userBillHistoryNode* head = new userBillHistoryNode;
+  head->next = NULL;
+  file.open(FLOC_BILLDETAIL, ios::binary | ios::in);
+  while(1) {
+    file.read((char*)&bill, sizeof(userbill));
+    if (file.eof())
+      break;
+    if (bill.user_record.No == username) {
+      userBillHistoryNode* p = new userBillHistoryNode;
+      p->bill = bill;
+      p->next = head->next;
+      head->next = p;
+    }
+  }
+  file.close();
+  return head;
+}
 void changeMRInfo(MRdef mr) {
   MRdef mrtmp;
   fstream origin;

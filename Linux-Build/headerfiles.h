@@ -28,14 +28,12 @@ string FLOC_EDITMRINFO_TEMP =
     "temp_mrinfo.dat";
 string FLOC_RATE =
     "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/rate.dat";
+string FLOC_REPORTFORM =
+    "/home/jensen/Documents/code/ElectricityBillingSystem/testdata/reportform.csv";
 // Global Veriables =========================================================
-int totalUser = 0;
+int usercount[9];
 const int N = 6;
 // Structures =========================================================
-typedef struct fLoc_sysSet {
-  string userBasicInfo;
-  string editUserBasicInfo_tmp;
-} fLoc_sysSet;
 typedef struct address {
   char city[32];
   char district[32];  // Town
@@ -86,7 +84,7 @@ typedef struct userbill {
   bool read;
   date read_date;
   // Pay Status
-  int pay;
+  double fee;
   bool payment;
   date payment_date;
 } userbill;
@@ -96,6 +94,7 @@ typedef struct MRdef {
   float progress;
 } MRdef;
 typedef struct rateRecord {
+  int rateNo;
   date createTime;
   double ent[N][N];
   double urban[N][N];
@@ -107,9 +106,16 @@ typedef struct estateUserInfoNode {
 } estateUserInfoNode;
 typedef struct unreadRegionInfoNode {
   add region;
+  int users;
   int unread;
+  int total_usage;
+  int total_arrears;
   struct unreadRegionInfoNode* next;
 } unreadRegionInfoNode;
+typedef struct userBillHistoryNode {
+  userbill bill;
+  struct userBillHistoryNode* next;
+} userBillHistoryNode;
 // Functions ===========================================================
 rateRecord getCurrentRate() {
   rateRecord current;
@@ -122,16 +128,20 @@ rateRecord getCurrentRate() {
   return current;
 }
 void getTotalUser() {
-  totalUser = 0;
-  fstream tmp;
-  tmp.open(FLOC_USERBASICINFO, ios::in | ios::binary);
-  tmp.seekg(0, ios::beg);
-  int begin;
-  begin = tmp.tellg();
-  tmp.seekg(0, ios::end);
-  int endFile;
-  endFile = tmp.tellg();
-  totalUser = (endFile - begin) / sizeof(userinfo);
+  for (int i = 0; i < 9; i++) {
+    usercount[i] = 0;
+  }
+  fstream file;
+  userinfo user;
+  file.open(FLOC_USERBASICINFO, ios::binary | ios::in);
+  while (1) {
+    file.read((char*)&user, sizeof(userinfo));
+    if (file.eof())
+      break;
+    usercount[user.type]++;
+    usercount[0]++;
+  }
+  file.close();
 }
 userinfo getUserInfo(int username) {
   userinfo use;
@@ -280,7 +290,7 @@ void resetDatabase_Rate() {
 			defaultRate.ent[i][j] = -1;
     	}
 	}
-
+  defaultRate.rateNo = 0;
   // Urban ==========================
   defaultRate.urban[0][0] = 0;
   defaultRate.urban[0][1] = 1;
@@ -369,7 +379,7 @@ void resetDatabase_UserBill() {
   rootUser.last_month_usage = 0;
   rootUser.current_usage = 0;
   rootUser.read = true;
-  rootUser.pay = 0;
+  rootUser.fee = 0;
   rootUser.payment = true;
   rootUser.payment_date = rootUser.read_date = getCurrentTime();
   fstream rootBill;

@@ -301,7 +301,7 @@ void MRDash(int username) {
   mywork = getMRDetail(username);
   me = getUserInfo(username);
   int userread = getUnread();
-  int totaluser_local = totalUser;
+  int totaluser_local = usercount[0];
   int opt;
   do {
     system("clear");
@@ -317,6 +317,7 @@ void MRDash(int username) {
     cout << "1. Start Inputting" << endl;
     cout << "2. Overview" << endl;
     cout << "3. Show Current Rate Rules" << endl;
+    cout << "4. Change Profile Information" << endl;
     cout << "0. Logout" << endl;
     cin >> opt;
     switch (opt) {
@@ -347,6 +348,13 @@ void MRDash(int username) {
   dotDotDot(3);
 }
 // Charger_Menu ===============================================
+void ReportFormGenerate() {
+  fstream readfile;
+  fstream reportform;
+  readfile.open(FLOC_BILLDETAIL, ios::binary | ios::in);
+  reportform.open(FLOC_REPORTFORM, ios::out);
+  reportform << "Address" << '\t' << "Total Usage" << '\t' << "Unread Users" << '\t' << "Total Arrears" << endl;
+}
 void showAllBillList() {
   fstream file;
   userbill bill;
@@ -358,8 +366,9 @@ void showAllBillList() {
         << "Read: " << bill.read << endl
         << "Current Usage: " << bill.current_usage << endl
         << "Last Month Usage: " << bill.last_month_usage << endl
+        << "rate" << decodeRateNoforBill(bill.rateNo) << endl
         << "Read Date: "
-        << bill.read_date.y << "-" << bill.read_date.m <<"-" << bill.read_date.d << " "<< bill.pay << endl
+        << bill.read_date.y << "-" << bill.read_date.m <<"-" << bill.read_date.d << " "<< bill.fee << endl
         << "Address: " << bill.user_record.address.street << endl
         <<"------------------------------------------------------------------" << endl;
   }
@@ -375,12 +384,13 @@ void chargerDash(int username) {
     cout << "==============================================" << endl;
     cout << me.name << ", greetings!" << endl;
     cout << "----------------------------------------------" << endl;
-    cout << "Total users: " << totalUser << endl;
+    cout << "Total users: " << usercount[0] << endl;
     cout << "----------------------------------------------" << endl;
     cout << "Menu:" << endl;
     cout << "1. Show Bill List" << endl;
-    cout << "2. " << endl;
-    cout << "3. " << endl;
+    cout << "2. Show Arrears" << endl;
+    cout << "3. Update User Payment" << endl;
+    cout << "4. Report Form Generate" << endl;
     cout << "0. Logout" << endl;
     cin >> opt;
     switch(opt) {
@@ -492,26 +502,22 @@ void generateUser() {
   system("clear");
   int typchoice;
   cout << "USER USER REGISTRATION - NAME" << endl;
-  cout << "===================================================================="
-          "=="
+  cout << "======================================================================"
        << endl;
   cout << "You are creating an user" << endl;
   cout << "User number: " << newUser.No << endl;
-  cout << "--------------------------------------------------------------------"
-          "--"
+  cout << "----------------------------------------------------------------------"
        << endl;
   cout << "Name:";
   getString(newUser.name);
 
   system("clear");
   cout << "USER REGISTRATION - USER TYPE" << endl;
-  cout << "===================================================================="
-          "=="
+  cout << "======================================================================"
        << endl;
   cout << "You are creating: " << newUser.name << endl;
   cout << "User number: " << newUser.No << endl;
-  cout << "--------------------------------------------------------------------"
-          "--"
+  cout << "----------------------------------------------------------------------"
        << endl;
   cout << "user type:" << endl;
   cout << "--------------------------------------------------------------"<< endl;
@@ -564,14 +570,12 @@ void generateUser() {
 
   system("clear");
   cout << "USER REGISTRATION - ADDRESS" << endl;
-  cout << "===================================================================="
-          "=="
+  cout << "======================================================================"
        << endl;
   cout << "You are creating: " << newUser.name << "; " << type << "("
        << newUser.type << ")" << endl;
   cout << "User number: " << newUser.No << endl;
-  cout << "--------------------------------------------------------------------"
-          "--"
+  cout << "----------------------------------------------------------------------"
        << endl;
   cout << "City: ";
   getString(newUser.address.city);
@@ -583,15 +587,13 @@ void generateUser() {
 
   system("clear");
   cout << "USER REGISTRATION - ADDRESS" << endl;
-  cout << "===================================================================="
-          "=="
+  cout << "======================================================================"
        << endl;
   cout << "You are creating: " << newUser.name << "; " << type << "("
        << newUser.type << ")" << endl;
   cout << "User number: " << newUser.No << endl;
   cout << "Address: " << newUser.address.city << endl;
-  cout << "--------------------------------------------------------------------"
-          "--"
+  cout << "----------------------------------------------------------------------"
        << endl;
   if (newUser.type == 7 || newUser.type == 8)
     cout << "Town: ";
@@ -606,16 +608,14 @@ void generateUser() {
 
   system("clear");
   cout << "USER REGISTRATION - ADDRESS" << endl;
-  cout << "===================================================================="
-          "=="
+  cout << "======================================================================"
        << endl;
   cout << "You are creating: " << newUser.name << "; " << type << "("
        << newUser.type << ")" << endl;
   cout << "User number: " << newUser.No << endl;
   cout << "Address: " << newUser.address.district << ", "
        << newUser.address.city << endl;
-  cout << "--------------------------------------------------------------------"
-          "--"
+  cout << "----------------------------------------------------------------------"
        << endl;
   if (newUser.type == 7 || newUser.type == 8)
     cout << "County: ";
@@ -630,16 +630,14 @@ void generateUser() {
 
   system("clear");
   cout << "USER REGISTRATION - ADDRESS" << endl;
-  cout << "===================================================================="
-          "=="
+  cout << "======================================================================"
        << endl;
   cout << "You are creating: " << newUser.name << "; " << type << "("
        << newUser.type << ")" << endl;
   cout << "User number: " << newUser.No << endl;
   cout << "Address: " << newUser.address.street << ", "
        << newUser.address.district << ", " << newUser.address.city << endl;
-  cout << "--------------------------------------------------------------------"
-          "--"
+  cout << "----------------------------------------------------------------------"
        << endl;
   if (newUser.type == 7 || newUser.type == 8)
     cout << "Village: ";
@@ -756,6 +754,7 @@ void generateUser() {
   cout << "===================================================================="
           "=="
        << endl;
+  cout << endl;
   cout << "*************************Congratulations!***************************"
           "**"
        << endl;
@@ -792,11 +791,18 @@ void generateUser() {
     userbill newUserBill;
     newUserBill.caseNo = genCaseNo();
     newUserBill.user_record = newUser;
-    newUserBill.rateNo = 0;
+    if (newUser.type == 5)
+      newUserBill.rateNo = genRateNoforBill(newUser.type, 2, 1);
+    else if (newUser.type <= 3)
+      newUserBill.rateNo = 0;
+    else
+      newUserBill.rateNo = genRateNoforBill(newUser.type, 1, 1);
+
+    newUserBill.rateNo = genRateNoforBill(newUser.type, 1, 1);
     newUserBill.last_month_usage = 0;
     newUserBill.current_usage = 0;
-    newUserBill.pay = 0;
-    newUserBill.read = false;
+    newUserBill.fee = 0;
+    newUserBill.read = true;
     newUserBill.payment = false;
     newUserBill.read_date = newUserBill.payment_date = getCurrentTime();
 
@@ -1317,7 +1323,7 @@ void userManage() {
     cout << "=================================================================="
             "===="
          << endl;
-    cout << "Total users: " << totalUser << endl;
+    cout << "Total users: " << usercount[0] << endl;
     cout << "------------------------------------------------------------------"
             "----"
          << endl;
@@ -1354,7 +1360,15 @@ void AdminDash(int username) {
     cout << "==============================================" << endl;
     cout << me.name << ", greetings!" << endl;
     cout << "----------------------------------------------" << endl;
-    cout << "Total users: " << totalUser << endl;
+    cout << "Total users: " << usercount[0] << endl;
+    cout << "Administrators: " << usercount[1] << endl;
+    cout << "Meter Readers: " << usercount[2] << endl;
+    cout << "Chargers: " << usercount[3] << endl;
+    cout << "Enterprise E1 Users: " << usercount[4] << endl;
+    cout << "Enterprise E2 Users: " << usercount[5] << endl;
+    cout << "Urban Users: " << usercount[6] << endl;
+    cout << "Rural Users: " << usercount[7] << endl;
+    cout << "Poverty Rural Users: " << usercount[8] << endl;
     cout << "----------------------------------------------" << endl;
     cout << "Menu:" << endl;
     cout << "1. Manage current users" << endl;
@@ -1385,6 +1399,74 @@ void AdminDash(int username) {
   } while (opt != 0);
 }
 // User_Menu ===================================================
+void showBillDetail(int caseNo) {
+  userbill bill = getBill(caseNo);
+  system("clear");
+  cout << "BILL DETAIL" << endl;
+  cout << "========================================" << endl;
+  cout << "Detail of this bill" << endl;
+  cout << endl;
+  cout << "-----------------General----------------" << endl;
+  cout << "Case No.: " << bill.caseNo << endl;
+  cout << "User No.: " << bill.user_record.No << endl;
+  cout << "User Name: " << bill.user_record.name << endl;
+  cout << "Address: " << bill.user_record.address.unit << "-" << bill.user_record.address.level << "-" 
+        << bill.user_record.address.room << " " << bill.user_record.address.estate << ", " << bill.user_record.address.street << ", "
+        << bill.user_record.address.district << ", " << bill.user_record.address.city << endl;
+  cout << endl;
+  cout << "--------------Bill Detail---------------" << endl;
+  if (bill.read) {
+    cout << "Month Before: " << bill.last_month_usage << " kWh" << endl;
+    cout << "Then: " << bill.current_usage << " kWh" << endl;
+    cout << "Fee: " << bill.fee << " CNY" << endl;
+    cout << "Rate: " << decodeRateNoforBill(bill.rateNo) << "(" << bill.rateNo << ")" << endl;
+    cout << "Read Date: " << bill.read_date.h << ":" << bill.read_date.m << ":" << bill.read_date.sec << " "
+          << bill.read_date.d << "/" << bill.read_date.m << "/" << bill.read_date.y << endl;
+    if (bill.payment) {
+      cout << "Payment Date: " << bill.payment_date.h << ":" << bill.payment_date.m << ":" << bill.payment_date.sec << " "
+          << bill.payment_date.d << "/" << bill.payment_date.m << "/" << bill.payment_date.y << endl;
+    }
+    else {
+      cout << "Not pay" << endl;
+    }
+  }
+  else {
+    cout << "Not read" << endl;
+  }
+  char ch;
+  cin >> ch;
+}
+void userShowHistory(int username) {
+  userBillHistoryNode* head = getUserBillHistory(username);
+  int caseNo;
+  do{
+    userBillHistoryNode* p = head;
+    system("clear");
+    cout << "BILL HISTORY" << endl;
+    cout << "========================================================" << endl;
+    cout << "Date     Case No.  Before Then  Read   Fee   Rate No." << endl;
+    cout << "--------------------------------------------------------" << endl;
+    while (1) {
+      p = p->next;
+      if (p == NULL)
+        break;
+      cout << setfill('0') << setw(2) << p->bill.read_date.m << "/" << setw(4) << p->bill.read_date.y << '\t' 
+          << setfill(' ') << setw(5) << p->bill.caseNo << '\t'
+          << right << setfill(' ') << setw(5) << p->bill.last_month_usage << '\t' << setw(5) << p->bill.current_usage << '\t';
+      if (p->bill.read == true)
+        cout << "Read" << '\t';
+      else
+        cout << "Not " << '\t';
+      cout << left << setw(5) <<  p->bill.fee << '\t' << setw(5) << p->bill.rateNo << endl;
+    } 
+    cout << right << "---------------------------------------------------------" << endl;
+    cout << "Input -1 to exit" << endl;
+    cout << "Input the the number of case of which you want to see in detail" << endl;
+    cout << "CaseNo. : ";
+    cin >> caseNo;
+    showBillDetail(caseNo);
+  } while (caseNo != -1);
+}
 void userEditBasicInfo(int username) {
   int opt;
   do {
@@ -1721,14 +1803,13 @@ void userDash(int username) {
         userEditBasicInfo(me.No);
         break;
       case 2:
-        cout << "Not available" << endl;
+        userShowHistory(me.No);
         break;
       case 0:
         system("clear");
         cout << "Thanks!" << endl;
         cout << endl;
         cout << "Logging out";
-        dotDotDot(3);
         return;
       default:
         cout << "Invalid input, please try again" << endl;
@@ -1850,11 +1931,20 @@ int main() {
   checkAndGenerate();
   getTotalUser();
   defineUnread();
+  //showAllBillList();
   //MRListUsers();
-  //login();
-  //MRDash(6);
-  showRate();
-  int RateNo;
-  double fee;
-  chargeFeedback(1, 1000, 3000, RateNo, fee);
+  login();
+  //showBillDetail(1);
+  //userShowHistory(1);
+  //showRate();
+  // while (1) {
+  //   int lastUsage;
+  //   int currentUsage;
+  //   int rateNo;
+  //   double fee;
+  //   cin >> lastUsage >> currentUsage;
+  //   chargeFeedback(1, lastUsage, currentUsage, rateNo, fee);
+  //   cout << "Rate No. " << rateNo << endl;
+  //   cout << decodeRateNoforBill(rateNo) << endl;
+  // }
 }
