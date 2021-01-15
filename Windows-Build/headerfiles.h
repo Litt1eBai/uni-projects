@@ -11,14 +11,14 @@
 using namespace std;
 
 // File locations ====================================================
-char FLOC_FILEFOLDER[18] = { "C:\\Billing System" };
-string FLOC_USERBASICINFO = "C:\\Billing System\\userbasicinfo.dat";
-string FLOC_EDITUSERINFO_TEMP = "C:\\Billing System\\temp_userbasicinfo.dat";
-string FLOC_SYSSET = "C:\\BillingSystem\\SystemSettings.dat";
-string FLOC_BILLDETAIL = "C:\\Billing System\\bill_detail.dat";
-string FLOC_MRINFO = "C:\\Billing System\\mrinfo.dat";
-string FLOC_EDITMRINFO_TEMP = "C:\\Billing System\\temp_mrinfo.dat";
-string FLOC_RATE = "C:\\Billing System\\rate.dat";
+char FLOC_FILEFOLDER[18] = { "D:\\Billing System" };
+string FLOC_USERBASICINFO = "D:\\Billing System\\userbasicinfo.dat";
+string FLOC_EDITUSERINFO_TEMP = "D:\\Billing System\\temp_userbasicinfo.dat";
+string FLOC_SYSSET = "D:\\Billing System\\SystemSettings.dat";
+string FLOC_BILLDETAIL = "D:\\Billing System\\bill_detail.dat";
+string FLOC_MRINFO = "D:\\Billing System\\mrinfo.dat";
+string FLOC_EDITMRINFO_TEMP = "D:\\Billing System\\temp_mrinfo.dat";
+string FLOC_RATE = "D:\\Billing System\\rate.dat";
 // Global Veriables =========================================================
 int usercount[9];
 const int N = 6;
@@ -136,8 +136,10 @@ userinfo getUserInfo(int username) {
     userinfo use;
     fstream temp;
     temp.open(FLOC_USERBASICINFO, ios::binary | ios::in);
-    while (temp.read((char*)&use, sizeof(userinfo))) {
-        if (use.No == username) {
+    while (temp.read((char*)&use, sizeof(userinfo)))
+    {
+        if (use.No == username)
+        {
             temp.close();
             break;
         }
@@ -176,15 +178,16 @@ void changeUserInfo(userinfo use) {
     origin.close();
 }
 date getCurrentTime() {
-    time_t current = time(NULL);
-    tm* tm_local = localtime(&current);
+    time_t now = time(0);
+    tm nowLocal;
+    localtime_s(&nowLocal, &now);
     date currentTime;
-    currentTime.y = tm_local->tm_year + 1900;
-    currentTime.m = tm_local->tm_mon + 2;
-    currentTime.d = tm_local->tm_mday;
-    currentTime.h = tm_local->tm_hour;
-    currentTime.min = tm_local->tm_min;
-    currentTime.sec = tm_local->tm_sec;
+    currentTime.y = nowLocal.tm_year + 1900;
+    currentTime.m = nowLocal.tm_mon + 2;
+    currentTime.d = nowLocal.tm_mday;
+    currentTime.h = nowLocal.tm_hour;
+    currentTime.min = nowLocal.tm_min;
+    currentTime.sec = nowLocal.tm_sec;
     return currentTime;
 }
 void getString(char* s) {
@@ -229,19 +232,22 @@ void defineUnread() {
     userinfo info;
     fstream file;
     file.open(FLOC_USERBASICINFO, ios::binary | ios::in | ios::out);
-    file.seekg(0, ios::beg);
     while (file.read((char*)&info, sizeof(userinfo))) {
         if (!sameMonth(current_time, info.last_read)) {
             info.read_now = false;
             int size = sizeof(userinfo);
+            int now = file.tellg();
             file.seekp(-size, ios::cur);
             file.write((char*)&info, sizeof(userinfo));
+            file.seekp(now, ios::beg);
         }
         if (sameMonth(current_time, info.last_read)) {
             info.read_now = true;
             int size = sizeof(userinfo);
+            int now = file.tellg();
             file.seekp(-size, ios::cur);
             file.write((char*)&info, sizeof(userinfo));
+            file.seekp(now, ios::beg);
         }
     }
     file.close();
@@ -335,8 +341,8 @@ void resetDatabase_Rate() {
 void resetDatabase_UserBasicInfo() {
     userinfo rootUser;
     rootUser.No = 0;
-    strcpy(rootUser.name, "root");
-    strcpy(rootUser.id, "0");
+    strcpy_s(rootUser.name, "root");
+    strcpy_s(rootUser.id, "0");
     rootUser.type = 1;
     rootUser.powercut = true;
     rootUser.last_month_usage = 0;
@@ -344,13 +350,13 @@ void resetDatabase_UserBasicInfo() {
     rootUser.read_now = true;
     rootUser.powercut = false;
     rootUser.last_read = getCurrentTime();
-    strcpy(rootUser.password, "root");
+    strcpy_s(rootUser.password, "root");
     rootUser.balance = 10000;
-    strcpy(rootUser.address.city, "default");
-    strcpy(rootUser.address.district, "default");
-    strcpy(rootUser.address.street, "default");
-    strcpy(rootUser.address.estate, "default");
-    strcpy(rootUser.address.unit, "0");
+    strcpy_s(rootUser.address.city, "default");
+    strcpy_s(rootUser.address.district, "default");
+    strcpy_s(rootUser.address.street, "default");
+    strcpy_s(rootUser.address.estate, "default");
+    strcpy_s(rootUser.address.unit, "0");
     rootUser.address.level = 0;
     rootUser.address.room = 0;
     fstream resetFile;
