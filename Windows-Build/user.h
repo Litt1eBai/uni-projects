@@ -1,12 +1,11 @@
 #pragma once
-#pragma once
 #include "headerfiles.h"
 using namespace std;
 
 void changePasswordTo(int username, char* passput) {
     userinfo user;
     user = getUserInfo(username);
-    strcpy(user.password, passput);
+    strcpy_s(user.password, passput);
     changeUserInfo(user);
 }
 bool findUser(int username) {
