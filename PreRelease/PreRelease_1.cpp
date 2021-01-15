@@ -2695,7 +2695,7 @@ void adminEditRate_1()
 	} while (opt != 0);
 }
 
-
+	
 void MRManage()
 {
 	system("cls");
