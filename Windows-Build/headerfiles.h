@@ -198,7 +198,7 @@ date getCurrentTime() {
 	localtime_s(&nowLocal, &now);
 	date currentTime;
 	currentTime.y = nowLocal.tm_year + 1900;
-	currentTime.m = nowLocal.tm_mon + 2;
+	currentTime.m = nowLocal.tm_mon + 1;
 	currentTime.d = nowLocal.tm_mday;
 	currentTime.h = nowLocal.tm_hour;
 	currentTime.min = nowLocal.tm_min;
@@ -390,8 +390,6 @@ void resetDatabase_UserBill() {
 	rootUser.current_usage = 0;
 	rootUser.read = true;
 	rootUser.fee = 0;
-	rootUser.payment = true;
-	rootUser.payment_date = rootUser.read_date = getCurrentTime();
 	fstream rootBill;
 	rootBill.open(FLOC_BILLDETAIL, ios::binary | ios::out);
 	rootBill.write((char*)&rootUser, sizeof(userbill));
