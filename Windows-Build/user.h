@@ -297,7 +297,6 @@ estateUserInfoNode* getEstateUserUnread(char* district, char* street, char* esta
 	}
 	return head;
 }
-
 unreadRegionInfoNode* getReportRegions_districts() {
 	fstream file;
 	userinfo user;
@@ -336,9 +335,9 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
 	int row = 0;
 	int col = 0;
 	user.voltage = user.voltage / 1000;
-	cout << "voltage: " << user.voltage << endl;
-	cout << "Current Use: " << currentUsage << endl;
-	cout << "Used : " << currentUsage - lastUsage << endl;
+	//cout << "voltage: " << user.voltage << endl;
+	//cout << "Current Use: " << currentUsage << endl;
+	//cout << "Used : " << currentUsage - lastUsage << endl;
 	if (user.type == 6) {
 		for (row = 0; rate.urban[row][0] != -1; row++) {
 			if (currentUsage >= rate.urban[row][0] &&
@@ -407,10 +406,10 @@ void chargeFeedback(int username, int lastUsage, int currentUsage, int& rateNo, 
 				(currentUsage - lastUsage) * rate.ent[2][col] + 36 * rate.ent[0][col];
 		}
 	}
-	cout << endl;
-	cout << "row: " << row << " col: " << col << endl;
-	cout << "rate: " << rate.urban[row][col] << endl;
-	cout << "fee: " << fee << endl;
+	//cout << endl;
+	//cout << "row: " << row << " col: " << col << endl;
+	//cout << "rate: " << rate.urban[row][col] << endl;
+	//cout << "fee: " << fee << endl;
 	rateNo = genRateNoforBill(user.type, row, col);
 }
 void chargeFeedback_RuralIrrigation(int username, int lastUsage, int currentUsage, int& rateNo, double& fee) {
@@ -445,6 +444,7 @@ void updateUserBillingStatus(int username, int currentUsage, double fee) {
 		if (currentUser.No == username) {
 			currentUser.last_month_usage = currentUsage;
 			currentUser.balance = currentUser.balance - fee;
+			currentUser.read_now = true;
 			int size = sizeof(userinfo);
 			file.seekg(-size, ios::cur);
 			int now = file.tellg();
@@ -454,21 +454,21 @@ void updateUserBillingStatus(int username, int currentUsage, double fee) {
 		}
 	}
 }
-void pushReadToHistory(int username, int lastUsage, int currentUsage, int rateNo, double fee) {
+void pushReadToHistory(int username, int lastUsage, int currentUsage) {
 	userinfo user = getUserInfo(username);
 	userbill bill;
 	bill.caseNo = genCaseNo();
 	bill.user_record = user;
 	bill.last_month_usage = user.last_month_usage;
+	bill.current_usage = currentUsage;
 	bill.read_date = getCurrentTime();
 	bill.read = true;
-	chargeFeedback(username, lastUsage, currentUsage, bill.rateNo, fee);
-	bill.rateNo = rateNo;
-	bill.fee = fee;
+	chargeFeedback(username, lastUsage, currentUsage, bill.rateNo, bill.fee);
 	fstream file;
 	file.open(FLOC_BILLDETAIL, ios::binary | ios::out | ios::app);
 	file.write((char*)&bill, sizeof(userbill));
 	file.close();
+	updateUserBillingStatus(username, currentUsage, bill.fee);
 }
 void pushReadToHistory_RuralIrrigation(int username, int lastUsage, int currentUsage, int rateNo, double fee) {
 	userinfo user = getUserInfo(username);
