@@ -113,6 +113,13 @@ typedef struct userBillHistoryNode {
 	userbill bill;
 	struct userBillHistoryNode* next;
 } userBillHistoryNode;
+typedef struct regionInfoNode {
+	add region;
+	int totalUser;
+	int totalConsomp;
+	int arrears;
+	struct regionInfoNode* next;
+} regionInfoNode;
 // Functions ===========================================================
 rateRecord getCurrentRate() {
 	rateRecord current;
@@ -283,7 +290,7 @@ int getUnread() {
 	fstream user;
 	user.open(FLOC_USERBASICINFO, ios::binary | ios::in);
 	while (user.read((char*)&basicInfo, sizeof(userinfo))) {
-		if (basicInfo.read_now == false) {
+		if (basicInfo.read_now == false && basicInfo.type > 3) {
 			unread++;
 		}
 	}
