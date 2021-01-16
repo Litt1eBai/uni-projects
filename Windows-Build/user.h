@@ -263,12 +263,11 @@ unreadRegionInfoNode* getUnreadRegions_estates(char* district, char* street) {
 	file.close();
 	return head;
 }
-estateUserInfoNode* getEstateUserUnread(char* district, char* street, char* estate, int& read, int& unread) {
+estateUserInfoNode* getEstateUserUnread(char* district, char* street, char* estate, int& unread) {
 	fstream fileRead;
 	estateUserInfoNode* head = new estateUserInfoNode;
 	head->next = NULL;
 	fileRead.open(FLOC_USERBASICINFO, ios::binary | ios::in);
-	read = 0;
 	unread = 0;
 	while (1) {
 		estateUserInfoNode* p = new estateUserInfoNode;
@@ -540,6 +539,12 @@ void deleteMRInfo(MRdef mr) {
 	}
 	temp.close();
 	origin.close();
+}
+// Charger Sheets
+regionInfoNode* getRegion_Districts() {
+	fstream billfile;
+	userbill billinfo;
+	
 }
 // Commom ===================================================================
 void storeUserInfo(userinfo use) {
