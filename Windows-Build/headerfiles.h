@@ -124,6 +124,16 @@ rateRecord getCurrentRate() {
 	file.close();
 	return current;
 }
+int getRateEdition() {
+	rateRecord current;
+	fstream file;
+	file.open(FLOC_RATE, ios::binary | ios::in);
+	float size = sizeof(rateRecord);
+	file.seekg(-size, ios::end);
+	file.read((char*)&current, sizeof(rateRecord));
+	file.close();
+	return current.rateNo;
+}
 void getTotalUser() {
 	for (int i = 0; i < 9; i++) {
 		usercount[i] = 0;
