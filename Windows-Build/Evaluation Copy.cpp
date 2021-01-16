@@ -152,7 +152,7 @@ void MRInput_Urban(char* district, char* street, char* estate) {
 		cout << "-----------------------------------------------------" << endl;
 		cout << "Usage: ";
 		cin >> usage;
-		// pushToHistory(p->info.No, currentUsage);
+		pushReadToHistory(p->info.No, p->info.last_month_usage, usage);
 		read++;
 	}
 }
@@ -921,6 +921,7 @@ void generateUser() {
 
 		userbill newUserBill;
 		newUserBill.caseNo = genCaseNo();
+		newUserBill.read_date = getCurrentTime();
 		newUserBill.user_record = newUser;
 		if (newUser.type == 5)
 			newUserBill.rateNo = genRateNoforBill(newUser.type, 2, 1);
@@ -1593,7 +1594,7 @@ void userShowHistory(int username) {
 				cout << "Read" << '\t';
 			else
 				cout << "Not " << '\t';
-			cout << left << setw(5) << p->bill.fee << '\t' << setw(5)
+			cout << right << setw(5) << p->bill.fee << '\t' << setw(5)
 				<< p->bill.rateNo << endl;
 		}
 		cout << right << "---------------------------------------------------------"
@@ -2099,7 +2100,6 @@ int main() {
 	login();
 	// showAllBillList();
 	// MRListUsers();
-
 	// showBillDetail(1);
 	// userShowHistory(1);
 	// showRate();
