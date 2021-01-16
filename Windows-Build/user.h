@@ -120,16 +120,6 @@ void showRate(rateRecord current = getCurrentRate()) {
 		cout << endl;
 	}
 }
-int getRateEdition() {
-	rateRecord current;
-	fstream file;
-	file.open(FLOC_RATE, ios::binary | ios::in);
-	float size = sizeof(rateRecord);
-	file.seekg(-size, ios::end);
-	file.read((char*)&current, sizeof(rateRecord));
-	file.close();
-	return current.rateNo;
-}
 int generateRateGen() {
 	int current = getRateEdition();
 	return current + 1;
