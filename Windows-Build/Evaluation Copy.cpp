@@ -107,11 +107,8 @@ void MRListUsers() {
 	cin >> ch;
 }
 void MRInput_Urban(char* district, char* street, char* estate) {
-	int read = 0;
 	int unread = 0;
-	estateUserInfoNode* head =
-		getEstateUserUnread(district, street, estate, read, unread);
-	showList(head);  // test
+	estateUserInfoNode* head = getEstateUserUnread(district, street, estate, unread);
 	estateUserInfoNode* p = head;
 	int usage = 0;
 	while (usage != -1) {
@@ -143,6 +140,7 @@ void MRInput_Urban(char* district, char* street, char* estate) {
 		else {
 			cout << "Cut";
 		}
+		cout << " Last Month Usage" << p->info.last_month_usage << endl;
 		cout << endl;
 		cout << "-----------------------------------------------------" << endl;
 		cout << "Your progress:" << endl;
@@ -153,60 +151,7 @@ void MRInput_Urban(char* district, char* street, char* estate) {
 		cout << "Usage: ";
 		cin >> usage;
 		pushReadToHistory(p->info.No, p->info.last_month_usage, usage);
-		read++;
-	}
-}
-void MRInput_Rural(char* district, char* street, char* estate) {
-	int read = 0;
-	int unread = 0;
-	estateUserInfoNode* head =
-		getEstateUserUnread(district, street, estate, read, unread);
-	showList(head);  // test
-	estateUserInfoNode* p = head;
-	int usage1 = 0;
-	int usage2 = 0;
-	while (usage1 != -1) {
-		if (p->next == NULL) {
-			system("cls");
-			cout << "You've completed inputting, thank you" << endl;
-			break;
-		}
-		p = p->next;
-		system("cls");
-		cout << "BILL INPUT" << endl;
-		cout << "=====================================================" << endl;
-		cout << "You are inputting bill information of:" << endl;
-		cout << p->info.address.estate << ", " << p->info.address.street << ", "
-			<< p->info.address.district << ", " << p->info.address.city << endl;
-		cout << "-----------------------------------------------------" << endl;
-		cout << "Information for: " << p->info.address.room << ", "
-			<< p->info.address.unit << ", " << p->info.address.estate << ", "
-			<< p->info.address.street << endl;
-		cout << endl;
-		cout << "User: " << p->info.name << endl;
-		cout << "User No. " << p->info.No << endl;
-		cout << "User ID: " << p->info.id << endl;
-		cout << "Balance: " << p->info.balance << endl;
-		cout << "Power Status: ";
-		if (p->info.powercut == false) {
-			cout << "Using";
-		}
-		else {
-			cout << "Cut";
-		}
-		cout << endl;
-		cout << "-----------------------------------------------------" << endl;
-		cout << "Your progress:" << endl;
-		cout << "Read: " << read << "/" << unread << endl;
-		cout << "-----------------------------------------------------" << endl;
-		cout << "Input -1 to exit" << endl;
-		cout << "-----------------------------------------------------" << endl;
-		cout << "Common Usage: ";
-		cin >> usage1;
-		cout << "Algricultural Irrigation Usage: ";
-		cin >> usage2;
-		// pushToHistory(p->info.No, currentUsage);
-		read++;
+		unread--;
 	}
 }
 void MROverview_estate(int username, char* district, char* street) {
@@ -255,7 +200,7 @@ void MROverview_street(int username, char* district) {
 		cout << endl;
 		cout << "Unread streets in " << district << " district" << endl;
 		cout << "----------------------------------------------" << endl;
-		cout << "Street                      Unread" << endl;
+		cout << "Street                 Unread" << endl;
 		cout << "----------------------------------------------" << endl;
 		unreadRegionInfoNode* p = streetListHead->next;
 		while (1) {
@@ -287,7 +232,7 @@ void MROverview_district(int username) {
 		cout << endl;
 		cout << "Districts unread" << endl;
 		cout << "----------------------------------------------" << endl;
-		cout << "District      Unread" << endl;
+		cout << "District                 Unread" << endl;
 		cout << "----------------------------------------------" << endl;
 		unreadRegionInfoNode* p = districtListHead->next;
 		while (1) {
@@ -311,7 +256,7 @@ void MRDash(int username) {
 	mywork = getMRDetail(username);
 	me = getUserInfo(username);
 	int userread = getUnread();
-	int totaluser_local = usercount[0];
+	int totaluser_local = usercount[4] + usercount[5] + usercount[6] + usercount[7] + usercount[8];
 	int opt;
 	do {
 		system("cls");
@@ -358,7 +303,6 @@ void MRDash(int username) {
 	dotDotDot(3);
 }
 // Charger_Menu ===============================================
-
 void makePayment(int username, double amount) {
 	userinfo user = getUserInfo(username);
 	userpay pay;
@@ -1372,20 +1316,9 @@ void adminEditUsers() {
 	do {
 		system("cls");
 		cout << "USER MANAGEMENT - USER LIST" << endl;
-		cout << "=================================================================="
-			"=================================================================="
-			"=================================================================="
-			"======"
-			<< endl;
-		cout << "Number                Name	                Type                   "
-			"   ID                                         Address             "
-			"                                                       Password"
-			<< endl;
-		cout << "------------------------------------------------------------------"
-			"------------------------------------------------------------------"
-			"------------------------------------------------------------------"
-			"------"
-			<< endl;
+		cout << "=================================================================================================================================================================="<< endl;
+		cout << "Number                Name	                Type                      ID                Password                 Address"<< endl;
+		cout << "------------------------------------------------------------------------------------------------------------------------------------------------------------------"<< endl;
 		userinfo user;
 		fstream readUser(FLOC_USERBASICINFO, ios::in | ios::binary);
 		while (readUser.read((char*)&user, sizeof(userinfo))) {
@@ -1394,19 +1327,14 @@ void adminEditUsers() {
 			cout << setw(11) << right << setfill('0') << user.No << '\t' << setw(25)
 				<< left << setfill(' ') << user.name << setw(25) << left << type
 				<< setw(20) << left << user.id << '\t' << setw(5) << right
-				<< setfill(' ') << user.address.unit << '-' << setw(3) << right
-				<< setfill('0') << user.address.level << '-' << setw(4) << right
-				<< setfill('0') << user.address.room << ", " << setw(15)
-				<< setfill(' ') << user.address.estate << ", " << setw(25)
-				<< user.address.street << ", " << setw(15) << user.address.district
-				<< ", " << setw(15) << user.address.city << '\t' << setw(16) << right
-				<< user.password << endl;
+				<< setfill(' ') << setw(16) << right
+				<< user.password << setw(3) << user.address.unit << '-' << setw(2) << right
+				<< setfill('0') << user.address.level << '-' << setw(2) << right
+				<< setfill('0') << user.address.room << ", " << setfill(' ')
+				<< user.address.estate << ", " << user.address.street << ", " << user.address.district
+				<< ", " << user.address.city << '\t' << endl;
 		}
-		cout << "------------------------------------------------------------------"
-			"------------------------------------------------------------------"
-			"------------------------------------------------------------------"
-			"-----"
-			<< endl;
+		cout << "------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 		cout << "Input the user's serial number that you wish to see in detail "
 			"(Input -1 to exit)"
 			<< endl;
@@ -1424,34 +1352,6 @@ void adminEditUsers() {
 		}
 	} while (userno != -1);
 }
-void adminListUsers() {
-	system("cls");
-	cout << "USER MANAGEMENT - USER LIST" << endl;
-	cout << "================================================================================================================================================================================================="<< endl;
-	cout << "Number                Name	                Type                      ID                                         Address                                                             Read"<< endl;
-	cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<< endl;
-	userinfo user;
-	fstream readUser(FLOC_USERBASICINFO, ios::in | ios::binary);
-	while (readUser.read((char*)&user, sizeof(userinfo))) {
-		string type;
-		type = rtnType(user.type);
-		cout << setw(11) << right << setfill('0') << user.No << '\t' << setw(25)
-			<< left << setfill(' ') << user.name << setw(25) << left << type
-			<< setw(20) << left << user.id << '\t' << setw(5) << right
-			<< setfill(' ') << user.address.unit << '-' << setw(3) << right
-			<< setfill('0') << user.address.level << '-' << setw(4) << right
-			<< setfill('0') << user.address.room << ", " << setw(15)
-			<< setfill(' ') << user.address.estate << ", " << setw(25)
-			<< user.address.street << ", " << setw(15) << user.address.district
-			<< ", " << setw(15) << user.address.city << '\t' << setw(4) << right
-			<< user.read_now << endl;
-	}
-	cout << "--------------------------------------------------------------------"
-		"--------------------------------------------------------------------"
-		"---------------------------------------------------------"
-		<< endl;
-	system("cls");
-}
 void userManage() {
 	int opt;
 	do {
@@ -1462,13 +1362,20 @@ void userManage() {
 			"===="
 			<< endl;
 		cout << "Total users: " << usercount[0] << endl;
+		cout << "Administrators: " << usercount[1] << endl;
+		cout << "Meter Readers: " << usercount[2] << endl;
+		cout << "Chargers: " << usercount[3] << endl;
+		cout << "Enterprise E1 Users: " << usercount[4] << endl;
+		cout << "Enterprise E2 Users: " << usercount[5] << endl;
+		cout << "Urban Users: " << usercount[6] << endl;
+		cout << "Rural Users: " << usercount[7] << endl;
+		cout << "Poverty Rural Users: " << usercount[8] << endl;
 		cout << "------------------------------------------------------------------"
 			"----"
 			<< endl;
 		cout << "Menu: " << endl;
 		cout << "1. Edit user information" << endl;
-		cout << "2. List users" << endl;
-		cout << "3. Meter Reader Management" << endl;
+		cout << "2. Meter Reader Management" << endl;
 		cout << "0. Exit" << endl;
 		cin >> opt;
 		switch (opt) {
@@ -1476,9 +1383,6 @@ void userManage() {
 			adminEditUsers();
 			break;
 		case 2:
-			adminListUsers();
-			break;
-		case 3:
 			MRManage();
 			break;
 		case 0:
