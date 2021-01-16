@@ -1511,7 +1511,8 @@ void AdminDash(int username) {
 		cout << "Menu:" << endl;
 		cout << "1. Manage current users" << endl;
 		cout << "2. User Registration" << endl;
-		cout << "3. System Settings" << endl;
+		cout << "3. Change Rate Rule" << endl;
+		cout << "4. System Settings" << endl;
 		cout << "0. Logout" << endl;
 		cin >> opt;
 		switch (opt) {
@@ -1522,6 +1523,10 @@ void AdminDash(int username) {
 			generateUser();
 			break;
 		case 3:
+			rateRecord current = getCurrentRate();
+			adminEditRate_Index(current);
+			break;
+		case 4:
 			adminSystemSettings_menu();
 			break;
 		case 0:
@@ -1569,8 +1574,8 @@ void showBillDetail(int caseNo) {
 	else {
 		cout << "Not read" << endl;
 	}
-	char ch;
-	cin >> ch;
+	cout << "------------------------------------------" << endl;
+	system("pause");
 }
 void userShowHistory(int username) {
 	userBillHistoryNode* head = getUserBillHistory(username);
@@ -1580,7 +1585,7 @@ void userShowHistory(int username) {
 		system("cls");
 		cout << "BILL HISTORY" << endl;
 		cout << "========================================================" << endl;
-		cout << "Date     Case No.  Before Then  Read   Fee   Rate No." << endl;
+		cout << "Date     Case No.  Before  Then  Read   Fee   Rate No." << endl;
 		cout << "--------------------------------------------------------" << endl;
 		while (1) {
 			p = p->next;
@@ -1604,6 +1609,8 @@ void userShowHistory(int username) {
 			<< endl;
 		cout << "CaseNo. : ";
 		cin >> caseNo;
+		if (caseNo == -1)
+			break;
 		showBillDetail(caseNo);
 	} while (caseNo != -1);
 }
@@ -1910,6 +1917,75 @@ void userEditBasicInfo(int username) {
 		}
 	} while (opt != 0);
 }
+void userPaymentHistory(int username) {
+	fstream payfile;
+	userpay payment;
+	payfile.open(FLOC_PAYMENT, ios::binary | ios::in);
+	while (1) {
+		payfile.read((char*)&payment, sizeof(userpay));
+		if (payfile.eof())
+			break;
+		if (payment.userNo == username) {
+			cout << setfill('0') << setw(2) << payment.payDate.h << ":" << setw(2)
+				<< payment.payDate.min << ":" << setw(2) << payment.payDate.sec << " "
+				<< setw(2) << payment.payDate.d << "/" << setw(2) << payment.payDate.m << "/" << setfill(' ')
+				<< payment.payDate.y << '\t' << payment.payNo << payment.balance_before << " " << payment.amount
+				<< payment.address.unit << "-" << payment.address.level << "-" << payment.address.room << " "
+				<< payment.address.estate << ", " << payment.address.street << ", " << payment.address.district
+				<< ", " << payment.address.city << endl;
+		}
+	}
+	payfile.close();
+}
+void userMakeSheet(int username) {
+	userinfo info = getUserInfo(username);
+	userbill billinfo;
+	fstream bill;
+	fstream billsheet;
+	bill.open(FLOC_BILLDETAIL, ios::binary | ios::in);
+	billsheet.open("D:\\Billing System\\sheet.csv", ios::out);
+	billsheet << "The billing information for " << info.name << endl;
+	billsheet << "Bill" << endl;
+	billsheet << "Date, Case No., Address, Last Month, Current, Fee, Rate No." << endl;
+	while (1) {
+		bill.read((char*)&billinfo, sizeof(userbill));
+		if (bill.eof())
+			break;
+		if (billinfo.user_record.No == username) {
+			billsheet << billinfo.read_date.m << "/" << billinfo.read_date.y << ","
+				<< billinfo.caseNo << "," << billinfo.user_record.address.unit << "-" << billinfo.user_record.address.level
+				<< billinfo.user_record.address.room << " " << billinfo.user_record.address.estate << "/"
+				<< billinfo.user_record.address.street << "/" << billinfo.user_record.address.district << "/"
+				<< billinfo.user_record.address.city << ","
+				<< billinfo.last_month_usage << "," << billinfo.current_usage << "," << billinfo.fee << ","
+				<< billinfo.rateNo << endl;
+		}
+	}
+	bill.close();
+	fstream pay;
+	userpay payinfo;
+	billsheet << endl;
+	billsheet << "Payment" << endl;
+	billsheet << "Date, Payment No., Balance Before, Amount, Address" << endl;
+	pay.open(FLOC_PAYMENT, ios::binary | ios::in);
+	while (1) {
+		pay.read((char*)&payinfo, sizeof(userpay));
+		if (pay.eof())
+			break;
+		if (payinfo.userNo == username) {
+			billsheet << payinfo.payDate.h << ":" << payinfo.payDate.sec << ":" << payinfo.payDate.sec << " "
+				<< payinfo.payDate.d << "/" << payinfo.payDate.m << "/" << payinfo.payDate.y << ","
+				<< payinfo.payNo << "," << payinfo.balance_before << "," << payinfo.amount << ","
+				<< payinfo.address.unit << "-" << payinfo.address.level << "-" << payinfo.address.room << " "
+				<< payinfo.address.estate << "/" << payinfo.address.street << "/" << payinfo.address.district
+				<< "/" << payinfo.address.city << endl;
+		}
+	}
+	pay.close();
+	billsheet.close();
+	cout << "Opening file..." << endl;
+	system("D:\\\"Billing System\"\\sheet.csv");
+}
 void userDash(int username) {
 	userinfo me;
 	me = getUserInfo(username);
@@ -1948,7 +2024,9 @@ void userDash(int username) {
 		cout << "----------------------------------------------" << endl;
 		cout << "Menu:" << endl;
 		cout << "1. Edit information" << endl;
-		cout << "2. Billing history" << endl;
+		cout << "2. Billing History" << endl;
+		cout << "3. Payment History" << endl;
+		cout << "4. Make Sheet" << endl;
 		cout << "0. Logout" << endl;
 		cin >> opt;
 		switch (opt) {
@@ -1957,6 +2035,12 @@ void userDash(int username) {
 			break;
 		case 2:
 			userShowHistory(me.No);
+			break;
+		case 3:
+			userPaymentHistory(me.No);
+			break;
+		case 4:
+			userMakeSheet(me.No);
 			break;
 		case 0:
 			system("cls");
@@ -2054,26 +2138,11 @@ void checkAndGenerate() {
 		cout << "*************************************************" << endl;
 		Sleep(1000);
 		system("cls");
-		cout << "*************************************************" << endl;
-		cout << "*                  Almost done                  *" << endl;
-		cout << "*************************************************" << endl;
-		Sleep(1000);
-		system("cls");
-		cout << "******************************************************************"
-			"*****"
-			<< endl;
-		cout << "* You are the administrator, use the following information to "
-			"sign in *"
-			<< endl;
-		cout << "* Username: 0                                                     "
-			"    *"
-			<< endl;
-		cout << "* Password: root                                                  "
-			"    *"
-			<< endl;
-		cout << "******************************************************************"
-			"*****"
-			<< endl;
+		cout << "***********************************************************************"<< endl;
+		cout << "* You are the administrator, use the following information to sign in *"<< endl;
+		cout << "* Username: 0                                                         *"<< endl;
+		cout << "* Password: root                                                      *"<< endl;
+		cout << "***********************************************************************"<< endl;
 		system("pause");
 		system("cls");
 		cout << "*********************************************" << endl;
@@ -2093,24 +2162,8 @@ void checkAndGenerate() {
 }
 // Main ============================================================
 int main() {
-	// userDash(0);
 	checkAndGenerate();
 	getTotalUser();
 	defineUnread();
 	login();
-	// showAllBillList();
-	// MRListUsers();
-	// showBillDetail(1);
-	// userShowHistory(1);
-	// showRate();
-	// while (1) {
-	//  int lastusage;
-	//  int currentusage;
-	//  int rateno;
-	//  double fee;
-	//  cin >> lastusage >> currentusage;
-	//  chargeFeedback(1, lastusage, currentusage, rateno, fee);
-	//  cout << "rate no. " << rateno << endl;
-	//  cout << decodeRateNoforBill(rateno) << endl;
-	//}
 }
