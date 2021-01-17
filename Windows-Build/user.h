@@ -427,11 +427,11 @@ void updateUserBillingStatus(int username, int currentUsage, double fee) {
 		file.read((char*)&currentUser, sizeof(userinfo));
 		if (file.eof()) {
 			file.close();
-			cout << "Cannot find the user" << endl;
 			return;
 		}
 		if (currentUser.No == username) {
 			currentUser.last_month_usage = currentUsage;
+			currentUser.last_read = getCurrentTime();
 			currentUser.balance = currentUser.balance - fee;
 			currentUser.read_now = true;
 			int size = sizeof(userinfo);
@@ -440,6 +440,7 @@ void updateUserBillingStatus(int username, int currentUsage, double fee) {
 			file.write((char*)&currentUser, sizeof(userinfo));
 			file.seekg(now, ios::beg);
 			file.close();
+			return;
 		}
 	}
 }
@@ -541,11 +542,7 @@ void deleteMRInfo(MRdef mr) {
 	origin.close();
 }
 // Charger Sheets
-regionInfoNode* getRegion_Districts() {
-	fstream billfile;
-	userbill billinfo;
-	
-}
+// 
 // Commom ===================================================================
 void storeUserInfo(userinfo use) {
 	fstream temp;
