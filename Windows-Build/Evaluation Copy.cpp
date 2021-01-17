@@ -96,8 +96,13 @@ void MRListUsers() {
 
 		if (user.read_now)
 			cout << setw(6) << left << "read" << '\t';
-		else
+		else {
+			HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsole, 12);
 			cout << setw(6) << left << "Unread" << '\t';
+			SetConsoleTextAttribute(hConsole, 15);
+			
+		}
 		cout << user.last_read.h << ":" << user.last_read.min << ":"
 			<< user.last_read.sec << " " << user.last_read.d << "/"
 			<< user.last_read.m << "/" << user.last_read.y << endl;
@@ -106,15 +111,37 @@ void MRListUsers() {
 	char ch;
 	cin >> ch;
 }
-void MRInput_Urban(char* district, char* street, char* estate) {
+void MRInput_Urban(int username, char* district, char* street, char* estate) {
 	int unread = 0;
 	estateUserInfoNode* head = getEstateUserUnread(district, street, estate, unread);
+	int unreadInitial = unread;
+	int totalUsers_local = usercount[4] + usercount[5] + usercount[6] + usercount[7] + usercount[8];
 	estateUserInfoNode* p = head;
 	int usage = 0;
 	while (usage != -1) {
 		if (p->next == NULL) {
+			fstream MRfile;
+			MRfile.open(FLOC_MRINFO, ios::binary | ios::in | ios::out);
+			MRdef MRinfo = getMRDetail(username);
+			MRinfo.progress = (totalUsers_local - (unreadInitial - unread)) / totalUsers_local;
+			while (1) {
+				MRfile.read((char*)&MRinfo, sizeof(MRdef));
+				if (MRfile.eof())
+					break;
+				if (MRinfo.No == username) {
+					int size = sizeof(MRdef);
+					int now = MRfile.tellg();
+					MRfile.seekg(-size, ios::cur);
+					MRfile.write((char*)&MRinfo, sizeof(MRdef));
+					MRfile.seekg(now, ios::beg);
+				}
+			}
+			MRfile.close();
 			system("cls");
+			cout << "BILL INPUT" << endl;
+			cout << "=====================================================" << endl;
 			cout << "You've completed inputting, thank you" << endl;
+			system("pause");
 			break;
 		}
 		p = p->next;
@@ -144,7 +171,7 @@ void MRInput_Urban(char* district, char* street, char* estate) {
 		cout << endl;
 		cout << "-----------------------------------------------------" << endl;
 		cout << "Your progress:" << endl;
-		cout << "Read: " << read << "/" << unread << endl;
+		cout << "Unread: " << unread << endl;
 		cout << "-----------------------------------------------------" << endl;
 		cout << "Input -1 to exit" << endl;
 		cout << "-----------------------------------------------------" << endl;
@@ -183,7 +210,7 @@ void MROverview_estate(int username, char* district, char* street) {
 		cout << "You wish to input: ";
 		getString(estate);
 		if (samestr(estate, (char*)"-1")) break;
-		MRInput_Urban(district, street, estate);
+		MRInput_Urban(username, district, street, estate);
 	} while (!samestr(estate, (char*)"-1"));
 }
 void MROverview_street(int username, char* district) {
@@ -252,21 +279,22 @@ void MROverview_district(int username) {
 }
 void MRDash(int username) {
 	userinfo me;
-	MRdef mywork;
-	mywork = getMRDetail(username);
-	me = getUserInfo(username);
-	int userread = getUnread();
-	int totaluser_local = usercount[4] + usercount[5] + usercount[6] + usercount[7] + usercount[8];
 	int opt;
 	do {
+		MRdef mywork;
+		mywork = getMRDetail(username);
+		me = getUserInfo(username);
+		int userread = getUnread();
+		int totaluser_local = usercount[4] + usercount[5] + usercount[6] + usercount[7] + usercount[8];
 		system("cls");
 		cout << "DASHBOARD" << endl;
 		cout << "==============================================" << endl;
 		cout << me.name << ", greetings!" << endl;
 		cout << "----------------------------------------------" << endl;
 		cout << "Your progress: " << endl;
-		cout << "Unread: " << userread << "/" << totaluser_local << endl;
-		cout << "Progress: " << mywork.progress << "%" << endl;
+		cout << "Unread: " << userread << endl;
+		cout << "Total: "<< totaluser_local << endl;
+		//cout << "Progress: " << mywork.progress << "%" << endl;
 		cout << "----------------------------------------------" << endl;
 		cout << "Menu:" << endl;
 		cout << "1. Start Inputting" << endl;
@@ -283,7 +311,7 @@ void MRDash(int username) {
 			MRListUsers();
 			break;
 		case 3:
-			showRate();
+			MRShowRate();
 			break;
 		case 0:
 			system("cls");
@@ -382,7 +410,7 @@ void userPaymentMake() {
 	cout << "Type: " << rtnType(user.type) << "(" << user.type << ")" << endl;
 	cout << "Username: " << user.No << endl;
 	cout << "ID: " << user.id << endl;
-	cout << "Balance" << user.balance << endl;
+	cout << "Balance: " << user.balance << endl;
 	cout << "3. Address: " << user.address.unit << "-" << user.address.level << "-"
 		<< user.address.room << " " << user.address.estate << ", "
 		<< user.address.street << ", " << user.address.district << ", "
@@ -873,17 +901,28 @@ void generateUser() {
 			newUserBill.rateNo = 0;
 		else
 			newUserBill.rateNo = genRateNoforBill(newUser.type, 1, 1);
-
 		newUserBill.rateNo = genRateNoforBill(newUser.type, 1, 1);
 		newUserBill.last_month_usage = 0;
 		newUserBill.current_usage = 0;
 		newUserBill.fee = 0;
 		newUserBill.read = true;
-
 		fstream userBillInfo;
 		userBillInfo.open(FLOC_BILLDETAIL, ios::binary | ios::app | ios::out);
 		userBillInfo.write((char*)&newUserBill, sizeof(userbill));
 		userBillInfo.close();
+
+		userpay newUserPay;
+		fstream userPayInfo;
+		strcpy_s(newUserPay.name, newUser.name);
+		newUserPay.address = newUser.address;
+		newUserPay.amount = 100;
+		newUserPay.balance_before = 0;
+		newUserPay.payNo = genPayNo();
+		newUserPay.userNo = newUser.No;
+		newUserPay.payDate = getCurrentTime();
+		userPayInfo.open(FLOC_PAYMENT, ios::binary | ios::out | ios::app);
+		userPayInfo.write((char*)&newUserPay, sizeof(userpay));
+		userPayInfo.close();
 
 		if (newUser.type == 2) {
 			MRdef MRinfo;
@@ -923,7 +962,7 @@ void adminEditUser_Detail(int username) {
 		cout << "1. Name: " << user.name << endl;
 		cout << "2. Type: " << rtnType(user.type) << "(" << user.type << ")"
 			<< endl;
-		cout << "3.  User Number: " << user.No << endl;
+		cout << "3. User Number: " << user.No << endl;
 		cout << "4. ID: " << user.id << endl;
 		cout << "#. Balance: " << user.balance << " CNY" << endl;
 		cout << "5. Address: " << user.address.unit << "-" << user.address.level
@@ -1481,7 +1520,7 @@ void showBillDetail(int caseNo) {
 	cout << "------------------------------------------" << endl;
 	system("pause");
 }
-void userShowHistory(int username) {
+void userBillHistory(int username) {
 	userBillHistoryNode* head = getUserBillHistory(username);
 	int caseNo;
 	do {
@@ -1535,7 +1574,7 @@ void userEditBasicInfo(int username) {
 		cout << "#. Type: " << rtnType(me.type) << "(" << me.type << ")" << endl;
 		cout << "#. User Number: " << me.No << endl;
 		cout << "2. ID: " << me.id << endl;
-		cout << "#. Balance" << me.balance << endl;
+		cout << "#. Balance: " << me.balance << endl;
 		cout << "3. Address: " << me.address.unit << "-" << me.address.level << "-"
 			<< me.address.room << " " << me.address.estate << ", "
 			<< me.address.street << ", " << me.address.district << ", "
@@ -1824,6 +1863,11 @@ void userEditBasicInfo(int username) {
 void userPaymentHistory(int username) {
 	fstream payfile;
 	userpay payment;
+	system("cls");
+	cout << "PAYMENT HISTORY" << endl;
+	cout << "===========================================================================================" << endl;
+	cout << "Date                       No.   Balance Amount              Address" << endl;
+	cout << "-------------------------------------------------------------------------------------------" << endl;
 	payfile.open(FLOC_PAYMENT, ios::binary | ios::in);
 	while (1) {
 		payfile.read((char*)&payment, sizeof(userpay));
@@ -1833,13 +1877,15 @@ void userPaymentHistory(int username) {
 			cout << setfill('0') << setw(2) << payment.payDate.h << ":" << setw(2)
 				<< payment.payDate.min << ":" << setw(2) << payment.payDate.sec << " "
 				<< setw(2) << payment.payDate.d << "/" << setw(2) << payment.payDate.m << "/" << setfill(' ')
-				<< payment.payDate.y << '\t' << payment.payNo << payment.balance_before << " " << payment.amount
+				<< payment.payDate.y << '\t' << setw(5) << payment.payNo << '\t' << setw(5) << payment.balance_before
+				<< '\t' << setw(5) << payment.amount << '\t'
 				<< payment.address.unit << "-" << payment.address.level << "-" << payment.address.room << " "
 				<< payment.address.estate << ", " << payment.address.street << ", " << payment.address.district
 				<< ", " << payment.address.city << endl;
 		}
 	}
 	payfile.close();
+	system("pause");
 }
 void userMakeSheet(int username) {
 	userinfo info = getUserInfo(username);
@@ -1938,7 +1984,7 @@ void userDash(int username) {
 			userEditBasicInfo(me.No);
 			break;
 		case 2:
-			userShowHistory(me.No);
+			userBillHistory(me.No);
 			break;
 		case 3:
 			userPaymentHistory(me.No);
@@ -2069,5 +2115,6 @@ int main() {
 	checkAndGenerate();
 	getTotalUser();
 	defineUnread();
+	definePowercut();
 	login();
 }
