@@ -3066,7 +3066,7 @@ void adminEditRate_Rural_Overview(rateRecord& current)
 
 		// Upper Line
 		SetConsoleTextAttribute(hConsole, 12);
-		wcout << "Urban" << endl;
+		wcout << "Rural" << endl;
 		SetConsoleTextAttribute(hConsole, 8);
 		wcout << L"┌─────────";
 		for (int i = 1; i < N - 1; i++)
@@ -4898,4 +4898,294 @@ void adminEditRate_Index(rateRecord& current) {
 		default: cout << "Invalid input, please try again" << endl;
 		}
 	} while (opt > 0);
+}
+void MRShowRate(rateRecord current = getCurrentRate()) {
+	system("cls");
+	cout << "RATE OverView" << endl;
+	cout << "===========================================================" << endl;
+	cout << "The current rule is on its " << getRateEdition() << " edition." << endl;
+	cout << "-----------------------------------------------------------" << endl;
+#pragma region display0
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	_setmode(_fileno(stdout), _O_U16TEXT);
+
+	// Upper Line
+	SetConsoleTextAttribute(hConsole, 12);
+	wcout << "Urban" << endl;
+	SetConsoleTextAttribute(hConsole, 8);
+	wcout << L"┌─────────";
+	for (int i = 1; i < N - 1; i++) wcout << L"┬─────────";
+	wcout << L"┬─────────┐" << endl;
+
+	wcout << L"│";
+	SetConsoleTextAttribute(hConsole, 6);
+
+	// 0,0
+	if (current.urban[0][0] == -1)
+		wcout << setw(9) << " ";
+	else
+		wcout << setw(9) << current.urban[0][0];
+	SetConsoleTextAttribute(hConsole, 8);
+	wcout << L"│";
+
+	// Line 1
+	for (int i = 1; i < N; i++) {
+		SetConsoleTextAttribute(hConsole, 6);
+		if (current.urban[0][i] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(6) << current.urban[0][i] << " KV";
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+	}
+	wcout << endl;
+
+	// Middle Line
+	wcout << L"├─────────";
+	for (int i = 1; i < N - 1; i++) wcout << L"┼─────────";
+	wcout << L"┼─────────┤" << endl;
+
+	// Content
+	for (int i = 1; i < N - 1; i++) {
+		wcout << L"│";
+		SetConsoleTextAttribute(hConsole, 6);
+		if (current.urban[i][0] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(5) << current.urban[i][0] << " kWh";
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+		for (int j = 1; j < N; j++) {
+			SetConsoleTextAttribute(hConsole, 15);
+			if (current.urban[i][j] == -1)
+				wcout << setw(9) << " ";
+			else
+				wcout << setw(9) << current.urban[i][j];
+			SetConsoleTextAttribute(hConsole, 8);
+			wcout << L"│";
+		}
+
+		wcout << endl;
+		wcout << L"├─────────";
+		for (int i = 1; i < N - 1; i++) wcout << L"┼─────────";
+		wcout << L"┼─────────┤" << endl;
+	}
+
+	wcout << L"│";
+	SetConsoleTextAttribute(hConsole, 6);
+	if (current.urban[N - 1][0] == -1)
+		wcout << setw(9) << " ";
+	else
+		wcout << setw(9) << current.urban[N - 1][0];
+	SetConsoleTextAttribute(hConsole, 8);
+	wcout << L"│";
+
+	for (int j = 1; j < N; j++) {
+		SetConsoleTextAttribute(hConsole, 15);
+		if (current.urban[N - 1][0] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(5) << current.urban[N - 1][0] << " kWh";
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+	}
+
+	wcout << endl;
+	wcout << L"└─────────";
+	for (int i = 1; i < N - 1; i++) wcout << L"┴─────────";
+	wcout << L"┴─────────┘" << endl;
+	_setmode(_fileno(stdout), _O_TEXT);
+	SetConsoleTextAttribute(hConsole, 15);
+#pragma endregion
+#pragma region display0
+	_setmode(_fileno(stdout), _O_U16TEXT);
+
+
+	// Upper Line
+	SetConsoleTextAttribute(hConsole, 12);
+	wcout << "Rural" << endl;
+	SetConsoleTextAttribute(hConsole, 8);
+	wcout << L"┌─────────";
+	for (int i = 1; i < N - 1; i++)
+		wcout << L"┬─────────";
+	wcout << L"┬─────────┐" << endl;
+
+	wcout << L"│";
+	SetConsoleTextAttribute(hConsole, 6);
+
+	// 0,0
+	if (current.rural[0][0] == -1)
+		wcout << setw(9) << " ";
+	else
+		wcout << setw(9) << current.rural[0][0];
+	SetConsoleTextAttribute(hConsole, 8);
+	wcout << L"│";
+
+	// Line 1
+	for (int i = 1; i < N; i++) {
+		SetConsoleTextAttribute(hConsole, 6);
+		if (current.rural[0][i] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(6) << current.rural[0][i] << " KV";
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+	}
+	wcout << endl;
+
+	// Middle Line
+	wcout << L"├─────────";
+	for (int i = 1; i < N - 1; i++)
+		wcout << L"┼─────────";
+	wcout << L"┼─────────┤" << endl;
+
+	// Content
+	for (int i = 1; i < N - 1; i++) {
+		wcout << L"│";
+		SetConsoleTextAttribute(hConsole, 6);
+		if (current.rural[i][0] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(5) << current.rural[i][0] << " Ver";
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+		for (int j = 1; j < N; j++) {
+			SetConsoleTextAttribute(hConsole, 15);
+			if (current.rural[i][j] == -1)
+				wcout << setw(9) << " ";
+			else
+				wcout << setw(9) << current.rural[i][j];
+			SetConsoleTextAttribute(hConsole, 8);
+			wcout << L"│";
+		}
+
+		wcout << endl;
+		wcout << L"├─────────";
+		for (int i = 1; i < N - 1; i++)
+			wcout << L"┼─────────";
+		wcout << L"┼─────────┤" << endl;
+
+	}
+
+	wcout << L"│";
+	SetConsoleTextAttribute(hConsole, 6);
+	if (current.rural[N - 1][0] == -1)
+		wcout << setw(9) << " ";
+	else
+		wcout << setw(5) << current.rural[N - 1][0] << " Ver";
+	SetConsoleTextAttribute(hConsole, 8);
+	wcout << L"│";
+
+
+	for (int j = 1; j < N; j++) {
+		SetConsoleTextAttribute(hConsole, 15);
+		if (current.rural[N - 1][j] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(9) << current.rural[N - 1][j];
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+	}
+
+
+	wcout << endl;
+	wcout << L"└─────────";
+	for (int i = 1; i < N - 1; i++)
+		wcout << L"┴─────────";
+	wcout << L"┴─────────┘" << endl;
+	_setmode(_fileno(stdout), _O_TEXT);
+	SetConsoleTextAttribute(hConsole, 15);
+#pragma endregion
+#pragma region display0
+	_setmode(_fileno(stdout), _O_U16TEXT);
+
+	// Upper Line
+	SetConsoleTextAttribute(hConsole, 12);
+	wcout << "Enterprise" << endl;
+	SetConsoleTextAttribute(hConsole, 8);
+	wcout << L"┌─────────";
+	for (int i = 1; i < N - 1; i++) wcout << L"┬─────────";
+	wcout << L"┬─────────┐" << endl;
+
+	wcout << L"│";
+	SetConsoleTextAttribute(hConsole, 6);
+
+	// 0,0
+	if (current.ent[0][0] == -1)
+		wcout << setw(9) << " ";
+	else
+		wcout << setw(9) << current.ent[0][0];
+	SetConsoleTextAttribute(hConsole, 8);
+	wcout << L"│";
+
+	// Line 1
+	for (int i = 1; i < N; i++) {
+		SetConsoleTextAttribute(hConsole, 6);
+		if (current.ent[0][i] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(6) << current.ent[0][i] << " KV";
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+	}
+	wcout << endl;
+
+	// Middle Line
+	wcout << L"├─────────";
+	for (int i = 1; i < N - 1; i++) wcout << L"┼─────────";
+	wcout << L"┼─────────┤" << endl;
+
+	// Content
+	for (int i = 1; i < N - 1; i++) {
+		wcout << L"│";
+		SetConsoleTextAttribute(hConsole, 6);
+		if (current.ent[i][0] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(5) << current.ent[i][0] << " Ver";
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+		for (int j = 1; j < N; j++) {
+			SetConsoleTextAttribute(hConsole, 15);
+			if (current.ent[i][j] == -1)
+				wcout << setw(9) << " ";
+			else
+				wcout << setw(9) << current.ent[i][j];
+			SetConsoleTextAttribute(hConsole, 8);
+			wcout << L"│";
+		}
+
+		wcout << endl;
+		wcout << L"├─────────";
+		for (int i = 1; i < N - 1; i++) wcout << L"┼─────────";
+		wcout << L"┼─────────┤" << endl;
+	}
+
+	wcout << L"│";
+	SetConsoleTextAttribute(hConsole, 6);
+	if (current.ent[N - 1][0] == -1)
+		wcout << setw(9) << " ";
+	else
+		wcout << setw(9) << current.ent[N - 1][0];
+	SetConsoleTextAttribute(hConsole, 8);
+	wcout << L"│";
+
+	for (int j = 1; j < N; j++) {
+		SetConsoleTextAttribute(hConsole, 15);
+		if (current.ent[N - 1][0] == -1)
+			wcout << setw(9) << " ";
+		else
+			wcout << setw(5) << current.ent[N - 1][0] << " Ver";
+		SetConsoleTextAttribute(hConsole, 8);
+		wcout << L"│";
+	}
+
+	wcout << endl;
+	wcout << L"└─────────";
+	for (int i = 1; i < N - 1; i++) wcout << L"┴─────────";
+	wcout << L"┴─────────┘" << endl;
+	_setmode(_fileno(stdout), _O_TEXT);
+	SetConsoleTextAttribute(hConsole, 15);
+#pragma endregion
+	system("pause");
 }
