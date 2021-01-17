@@ -284,6 +284,31 @@ void defineUnread() {
 	}
 	file.close();
 }
+void definePowercut() {
+	date current_time = getCurrentTime();
+	userinfo info;
+	fstream file;
+	file.open(FLOC_USERBASICINFO, ios::binary | ios::in | ios::out);
+	while (file.read((char*)&info, sizeof(userinfo))) {
+		if (info.balance < 0) {
+			info.powercut = true;
+			int size = sizeof(userinfo);
+			int now = file.tellg();
+			file.seekp(-size, ios::cur);
+			file.write((char*)&info, sizeof(userinfo));
+			file.seekp(now, ios::beg);
+		}
+		if (info.balance >= 0) {
+			info.powercut = false;
+			int size = sizeof(userinfo);
+			int now = file.tellg();
+			file.seekp(-size, ios::cur);
+			file.write((char*)&info, sizeof(userinfo));
+			file.seekp(now, ios::beg);
+		}
+	}
+	file.close();
+}
 int getUnread() {
 	int unread = 0;
 	userinfo basicInfo;
