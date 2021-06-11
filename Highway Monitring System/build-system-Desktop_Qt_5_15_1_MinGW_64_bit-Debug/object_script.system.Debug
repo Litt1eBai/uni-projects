@@ -1,0 +1,13 @@
+debug/cctvrecord.o
+debug/cctvsurveillancedevice.o
+debug/cellularrecord.o
+debug/cellularsurveillancedevice.o
+debug/highwaypole.o
+debug/main.o
+debug/mainwindow.o
+debug/record.o
+debug/surveillancedevice.o
+debug/trafficflowrecord.o
+debug/trafficflowsurveillancedevice.o
+debug/qrc_resource_icon.o
+debug/moc_mainwindow.o
