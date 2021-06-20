@@ -7,10 +7,10 @@
 class Monitor
 {
 protected:
-    char deviceCode[11];
+    char deviceCode[c_DeviceCodeDiget];
     MonitorDeviceType deviceType;
     DeviceWorkStatus deviceWorkStatus;
-    char deviceDescription[100];
+    char deviceDescription[c_DescriptionLength];
     QDateTime dateOfInstallation;
 public:
     Monitor();

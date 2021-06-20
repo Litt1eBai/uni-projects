@@ -139,10 +139,8 @@ Qt::ItemFlags MonitorModel::flags(const QModelIndex &index) const
 void MonitorModel::appedRow(Monitor newRow, const QModelIndex &parent)
 {
     int row = this->rowCount();
-    qDebug() << "before" << this->m_monitorData.size();
     beginInsertRows(parent, row, row);
-    this->m_monitorData.push_back(newRow);
-    qDebug() << "after" << this->m_monitorData.size();
+    this->m_monitorData.append(newRow);
     endInsertRows();
 }
 
@@ -287,17 +285,11 @@ void MonitorModel::updateCurrentData(Monitor updatedData, int index)
 
 void MonitorModel::setUpdatedData(Monitor updatedData, const QModelIndex &indexOfData)
 {
-    qDebug() << "update model called";
-    qDebug() << indexOfData.row();
-    qDebug() << "MaxIndex" << (this->m_monitorData.size() - 1) << ", Index" << indexOfData.row();
-    qDebug() << "------------------------------------";
-
     if (indexOfData.row() >= this->m_monitorData.size()) {
-        qDebug() << "Size too big" << (this->m_monitorData.size() - 1) << " < " << indexOfData.row();
-        qDebug() << "------------------------------------";
-        qDebug() << "";
         return;
     }
+
+
     if (this->m_monitorData[indexOfData.row()].getDeviceCode() != updatedData.getDeviceCode()) {
         char *newDeviceCode = new char[10];
         updatedData.getDeviceCode(newDeviceCode);

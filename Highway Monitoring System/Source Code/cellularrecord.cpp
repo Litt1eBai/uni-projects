@@ -3,35 +3,58 @@
 #include <string.h>
 
 CellularRecord::CellularRecord() {
-    strcpy_s(this->IMEI, 12, "NoIMEI");
+    strcpy_s(this->IMEI, c_IMEIDigit, "NoIMEI");
     this->recordTime.currentDateTime();
 }
 
-CellularRecord::CellularRecord(char* deviceCode, char* poleCode)
-    : Record(deviceCode, poleCode) {}
+CellularRecord::CellularRecord(char* deviceCode, char* poleCode, char* recordNo)
+    : Record(deviceCode, poleCode, recordNo) {}
+
 CellularRecord::CellularRecord(const CellularRecord& cellularRec)
-    : Record((char*)cellularRec.deviceCode, (char*)cellularRec.poleCode) {
-    strcpy_s(this->IMEI, 12, cellularRec.IMEI);
+    : Record((char*)cellularRec.deviceCode, (char*)cellularRec.poleCode, (char*)cellularRec.recordNo) {
+
+    strcpy_s(this->IMEI, c_IMEIDigit, cellularRec.IMEI);
     this->recordTime = cellularRec.recordTime;
+
 }
 
 void CellularRecord::setIMEI(char* IMEI) {
-    strcpy_s(this->IMEI, 12, IMEI);
+
+    strcpy_s(this->IMEI, c_IMEIDigit, IMEI);
+
 }
 
 void CellularRecord::setRecordTime(QDateTime time) {
+
     this->recordTime = time;
+
 }
 
 void CellularRecord::getIMEI(char* dest) {
-    strcpy_s(dest, 12, this->IMEI);
+
+    strcpy_s(dest, c_IMEIDigit, this->IMEI);
+
 }
 
-QString CellularRecord::getIMEI() {
+QString CellularRecord::getIMEI() const {
+
+    return QString(this->IMEI);
+
+}
+
+QString CellularRecord::getIMEI()
+{
     return QString(this->IMEI);
 }
 
 QDateTime CellularRecord::getRecordTime() {
+
     return this->recordTime;
+
+}
+QDateTime CellularRecord::getRecordTime() const {
+
+    return this->recordTime;
+
 }
 

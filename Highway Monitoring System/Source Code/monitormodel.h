@@ -21,6 +21,7 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value,
                  int role = Qt::EditRole) override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
 public:
     // custom
@@ -35,7 +36,6 @@ public:
     int findMonitor_getIndex(MonitorDeviceType type, QString monitorCode);
     Monitor getCurrentData(const QModelIndex &index) const;
 
-    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
     void updateCurrentData(Monitor updatedData, int index);
 

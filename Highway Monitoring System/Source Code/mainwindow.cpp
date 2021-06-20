@@ -26,7 +26,7 @@ void MainWindow::init()
     ui->generalTab->setCurrentIndex(0);
     ui->headerLabel->setText("Your Dashboard");
 
-    ui->statisticsWidget->initialise(&(this->poleModel), &(this->monitorModel));
+    ui->statisticsWidget->initialise(&(this->poleModel), &(this->monitorModel), &(this->cellularRecordModel));
 
     // click tab to change header label
     connect(ui->generalTab, &QTabWidget::currentChanged, ui->headerLabel, [=](int index){
@@ -44,8 +44,6 @@ void MainWindow::init()
             }
         }
     });
-
-
 
 }
 

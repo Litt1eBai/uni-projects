@@ -4,22 +4,22 @@
 
 Pole::Pole(double longitude, double latitude, char*poleCode)
     : longitude(longitude), latitude(latitude) {
-    strcpy(this->poleCode, poleCode);
+    strcpy_s(this->poleCode, c_PoleCodeDigit, poleCode);
     for (int i = 0; i < 3; i++) {
-        strcpy_s(this->deviceInstallation[i], 10, "");
+        strcpy_s(this->deviceInstallation[i], c_DeviceCodeDiget, "");
     }
 }
 Pole::Pole(double longitude, double latitude)
     : longitude(longitude), latitude(latitude) {
-    strcpy_s(this->poleCode, 8, "000000");
+    strcpy_s(this->poleCode, c_PoleCodeDigit, "000000");
     for (int i = 0; i < 3; i++) {
         strcpy(this->deviceInstallation[i], "");
     }
 }
 Pole::Pole(double longitude, double latitude, char* poleCode, char* description)
     : longitude(longitude), latitude(latitude) {
-    strcpy_s(this->poleCode, 10, poleCode);
-    strcpy_s(this->description, 100, description);
+    strcpy_s(this->poleCode, c_PoleCodeDigit, poleCode);
+    strcpy_s(this->description, c_DescriptionLength, description);
     for (int i = 0; i < 3; i++) {
         strcpy(this->deviceInstallation[i], "");
     }
@@ -35,34 +35,34 @@ void Pole::setLatitude(double latitude) {
     this->latitude = latitude;
 }
 void Pole::setDescription(char* description) {
-    if (strlen(description) > 100) {
+    if (strlen(description) > c_DescriptionLength) {
         QMessageBox messageBox;
         messageBox.critical(0,"Error","string length out of range");
         messageBox.setFixedSize(500,200);
         return;
     }
-    strcpy_s(this->description, 100, description);
+    strcpy_s(this->description, c_DescriptionLength, description);
 }
 void Pole::setPoleCode(char* poleCode) {
-    if (strlen(poleCode) > 8) {
+    if (strlen(poleCode) > c_PoleCodeDigit) {
         QMessageBox messageBox;
         messageBox.critical(0,"Error","string length out of range");
         messageBox.setFixedSize(500,200);
         return;
     }
-    strcpy_s(this->poleCode, 8, poleCode);
+    strcpy_s(this->poleCode, c_PoleCodeDigit, poleCode);
 }
 void Pole::addMonitor(MonitorDeviceType type, char* deviceCode) {
-    if (strlen(deviceCode) > 10) {
+    if (strlen(deviceCode) > c_DeviceCodeDiget) {
         QMessageBox messageBox;
         messageBox.critical(0,"Error","string length out of range");
         messageBox.setFixedSize(500,200);
         return;
     }
-    strcpy_s(this->deviceInstallation[(int)type], 10, deviceCode);
+    strcpy_s(this->deviceInstallation[(int)type], c_DeviceCodeDiget, deviceCode);
 }
 void Pole::removeMonitor(MonitorDeviceType type) {
-    strcpy_s(this->deviceInstallation[(int)type], 10, "");
+    strcpy_s(this->deviceInstallation[(int)type], c_DeviceCodeDiget, "");
 }
 double Pole::getLongitude() {
     return longitude;
@@ -95,11 +95,11 @@ QString Pole::getDescription() const {
     return QString(this->description);
 }
 void Pole::getPoleCode(char* dest) {
-    strcpy(dest, this->poleCode);
+    strcpy_s(dest, c_PoleCodeDigit, this->poleCode);
 }
 void Pole::getDeviceCode(MonitorDeviceType type, char* dest) {
-    strcpy(dest, this->deviceInstallation[(int)type]);
+    strcpy_s(dest, c_DeviceCodeDiget, this->deviceInstallation[(int)type]);
 }
 void Pole::getDescription(char* dest) {
-    strcpy(dest, this->description);
+    strcpy_s(dest, c_DescriptionLength, this->description);
 }

@@ -35,6 +35,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="cellularRecordButton">
+        <property name="text">
+         <string>Cellular Record</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -53,7 +60,7 @@
    <item>
     <widget class="QStackedWidget" name="dataStackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="poleDataPage">
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -66,6 +73,13 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="MonitorTableViewWidget" name="monitorTableViewWidget" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="cellularRecordPage">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="CellularRecordTableViewWidget" name="cellularRecordTableViewWidget" native="true"/>
        </item>
       </layout>
      </widget>
@@ -84,6 +98,12 @@
    <class>MonitorTableViewWidget</class>
    <extends>QWidget</extends>
    <header>monitortableviewwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CellularRecordTableViewWidget</class>
+   <extends>QWidget</extends>
+   <header>cellularrecordtableviewwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

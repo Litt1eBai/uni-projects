@@ -36,13 +36,11 @@
        <attribute name="title">
         <string>Dashboard</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3"/>
       </widget>
       <widget class="QWidget" name="whereAreYouTab">
        <attribute name="title">
         <string>Where Are You</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_4"/>
       </widget>
       <widget class="QWidget" name="statisticsTab">
        <attribute name="title">

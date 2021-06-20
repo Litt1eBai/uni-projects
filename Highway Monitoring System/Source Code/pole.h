@@ -8,9 +8,9 @@ class Pole
 {
     double longitude;
     double latitude;
-    char poleCode[8];
-    char deviceInstallation[3][10];
-    char description[200];
+    char poleCode[c_PoleCodeDigit];
+    char deviceInstallation[3][c_DeviceCodeDiget];
+    char description[c_DescriptionLength];
 public:
     Pole(double longitude, double latitude);
     Pole(double longitude, double latitude, char*poleCode);

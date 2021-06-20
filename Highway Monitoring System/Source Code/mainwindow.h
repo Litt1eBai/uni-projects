@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "polemodel.h"
 #include "monitormodel.h"
+#include "cellularrecordmodel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,6 +28,7 @@ private:
     // models
     PoleModel poleModel;
     MonitorModel monitorModel;
+    CellularRecordModel cellularRecordModel;
 
 };
 #endif // MAINWINDOW_H

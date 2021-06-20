@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     cellularrecord.cpp \
     cellularrecordmodel.cpp \
+    cellularrecordtableviewwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     monitor.cpp \
@@ -31,6 +32,7 @@ HEADERS += \
     basicheader.h \
     cellularrecord.h \
     cellularrecordmodel.h \
+    cellularrecordtableviewwidget.h \
     mainwindow.h \
     monitor.h \
     monitoreditwindow.h \
@@ -47,6 +49,7 @@ HEADERS += \
     whereareyouwidget.h
 
 FORMS += \
+    cellularrecordtableviewwidget.ui \
     mainwindow.ui \
     monitoreditwindow.ui \
     monitorsetupwindow.ui \

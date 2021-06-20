@@ -14,15 +14,15 @@ Monitor::Monitor
     deviceType(deviceType), deviceWorkStatus(workStatus),
     dateOfInstallation(dateOfInstallation){
 
-    strcpy_s(this->deviceCode, 11, deviceCode);
-    strcpy_s(this->deviceDescription, 100, deviceDescription);
+    strcpy_s(this->deviceCode, c_DeviceCodeDiget, deviceCode);
+    strcpy_s(this->deviceDescription, c_DescriptionLength, deviceDescription);
 
 }
 
 Monitor::Monitor(const Monitor& device) {
 
-    strcpy_s(this->deviceCode, 11, device.deviceCode);
-    strcpy_s(this->deviceDescription, 100, device.deviceDescription);
+    strcpy_s(this->deviceCode, c_DeviceCodeDiget, device.deviceCode);
+    strcpy_s(this->deviceDescription, c_DescriptionLength, device.deviceDescription);
     this->deviceWorkStatus = device.deviceWorkStatus;
     this->deviceType = device.deviceType;
 
@@ -31,13 +31,13 @@ Monitor::Monitor(const Monitor& device) {
 void Monitor::setDevice(MonitorDeviceType type, char* code) {
 
     this->deviceType = type;
-    strcpy_s(this->deviceCode, 11, code);
+    strcpy_s(this->deviceCode, c_DeviceCodeDiget, code);
 
 }
 
 void Monitor::setDeviceCode(char* deviceCode) {
 
-    strcpy_s(this->deviceCode, 11, deviceCode);
+    strcpy_s(this->deviceCode, c_DeviceCodeDiget, deviceCode);
 
 }
 
@@ -61,7 +61,7 @@ void Monitor::running() {
 
 void Monitor::setDescription(char* description) {
 
-    strcpy_s(this->deviceDescription, 100, description);
+    strcpy_s(this->deviceDescription, c_DescriptionLength, description);
 
 }
 
@@ -91,7 +91,7 @@ QString Monitor::getDeviceCode() const {
 
 void Monitor::getDeviceCode(char* dest) {
 
-    strcpy(dest, this->deviceCode);
+    strcpy_s(dest, c_DeviceCodeDiget, this->deviceCode);
 
 }
 

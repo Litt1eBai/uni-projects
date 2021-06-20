@@ -2,6 +2,7 @@
 #define CELLULARRECORDMODEL_H
 
 #include <QAbstractTableModel>
+#include "basicheader.h"
 #include "cellularrecord.h"
 
 class CellularRecordModel : public QAbstractTableModel
@@ -19,15 +20,11 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value,
                  int role = Qt::EditRole) override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
-    // Add data:
-    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
+private:
 
-    // Remove data:
-    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool removeColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
-
+    void setupModel();
 
 public:
     // custom
@@ -36,14 +33,17 @@ public:
     void appendRow(CellularRecord newRow, const QModelIndex &parent = QModelIndex());
     void removeRow(int row, const QModelIndex &parent = QModelIndex());
 
-    CellularRecord getCurrentData(const QModelIndex &index) const;
-    int getNextRecordNo();
+//    CellularRecord getCurrentData(const QModelIndex &index) const;
+//    int getNextRecordNo();
 
-    bool findRecord_recordNo(QString recordNo);
-    CellularRecord findRecord_getSingleRecord(QString recordNo);
-    int findRecord_getIndex(QString recordNo);
-    QVector<CellularRecord> findRecord_getRecords_poleCode(QString poleCode);
-    QVector<CellularRecord> findRecord_getRecords_deviceCode(QString deviceCode);
+//    bool findRecord_recordNo(QString recordNo);
+//    CellularRecord findRecord_getSingleRecord(QString recordNo);
+//    int findRecord_getIndex(QString recordNo);
+//    QVector<CellularRecord> findRecord_getRecords_poleCode(QString poleCode);
+//    QVector<CellularRecord> findRecord_getRecords_deviceCode(QString deviceCode);
+
+
+
 
 public slots:
     void setUpdatedData(CellularRecord updatedData, const QModelIndex &indexOfData);
