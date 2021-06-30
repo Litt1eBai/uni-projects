@@ -1,9 +1,11 @@
 #include "cellularrecordtableviewwidget.h"
 #include "ui_cellularrecordtableviewwidget.h"
 #include "cellularrecord.h"
+#include "cellularrecordimportwindow.h"
 #include <QAbstractButton>
 #include <QModelIndex>
 #include <QCheckBox>
+#include <QMessageBox>
 
 
 CellularRecordTableViewWidget::CellularRecordTableViewWidget(QWidget *parent) :
@@ -55,4 +57,23 @@ void CellularRecordTableViewWidget::init()
         QModelIndex currentIndex = ui->cellularModelTableView->currentIndex();
         this->cellularRecordModel->removeRow(currentIndex.row());
     });
+
+    ui->findEdit->setText("Type pole code to search");
+    connect(ui->findButton, &QAbstractButton::clicked, this->cellularRecordModel, [=](){
+       int columnIndex = cellularRecordModel->findRecord_getIndex(ui->findEdit->text());
+       if (columnIndex >= 0 && columnIndex < cellularRecordModel->rowCount()) {
+           ui->cellularModelTableView->selectRow(columnIndex);
+       } else {
+           QMessageBox messageBox;
+           messageBox.warning(0,"Warning","Device Not Found!");
+           messageBox.setFixedSize(500,200);
+       }
+    });
+
+    connect(ui->importButton, &QAbstractButton::clicked, this, [=](){
+        CellularRecordImportWindow *importWindow = new CellularRecordImportWindow(this->cellularRecordModel, this);
+        importWindow->exec();
+    });
+
+    ui->cellularModelTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }

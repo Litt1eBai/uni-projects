@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/example">
+        <file>pics/example/cellular-record-import-data-format-example.PNG</file>
+    </qresource>
+</RCC>

@@ -77,7 +77,9 @@ QVariant MonitorModel::data(const QModelIndex &index, int role) const
                     }
                 }
                 case MonitorModel::Description: return m_monitorData.at(index.row()).getDescription();
-                case MonitorModel::InstallationDate: return m_monitorData.at(index.row()).getInstallationDate().toString();
+                case MonitorModel::InstallationDate: {
+                    return m_monitorData.at(index.row()).getInstallationDate();
+                }
             }
         }
     }
@@ -224,11 +226,35 @@ void MonitorModel::sort(int column, Qt::SortOrder order)
                 break;
             }
             case (int)MonitorModel::DeviceType: {
-                return false;
+                if (order == Qt::AscendingOrder) {
+                    if (m1.getDeviceType() > m2.getDeviceType()) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else if (order == Qt::DescendingOrder) {
+                    if (m1.getDeviceType() < m2.getDeviceType()) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
                 break;
             }
             case (int)MonitorModel::WorkStatus: {
-                return false;
+                if (order == Qt::AscendingOrder) {
+                    if (m1.getWorkStatus() > m2.getWorkStatus()) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else if (order == Qt::DescendingOrder) {
+                    if (m1.getWorkStatus() < m2.getWorkStatus()) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
                 break;
             }
             case (int)MonitorModel::Description: {

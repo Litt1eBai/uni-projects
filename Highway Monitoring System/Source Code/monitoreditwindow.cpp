@@ -93,6 +93,7 @@ void MonitorEditWindow::init()
     // saveButton click to store data
     connect(ui->saveButton, &QAbstractButton::clicked, this, [=](){
         qDebug() << "set data function called";
+        m_currentMonitorData.setInstallationTime(ui->installationDataEdit->dateTime());
         m_currentMonitorData.setDeviceCode((char*)(ui->deviceCodeEdit->text().toStdString().c_str()));
         m_currentMonitorData.setDescription((char*)ui->descriptionEdit->toPlainText().toStdString().c_str());
         if (ui->CCTVButton->isChecked()) {

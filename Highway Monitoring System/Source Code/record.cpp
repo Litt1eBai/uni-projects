@@ -7,6 +7,11 @@ Record::Record() {
     strcpy_s(this->poleCode, c_PoleCodeDigit, "NoPole");
     strcpy_s(this->recordNo, c_recordCodeDigit, "0");
 }
+Record::Record(char* deviceCode, char* poleCode) {
+    strcpy_s(this->deviceCode, c_DeviceCodeDiget, deviceCode);
+    strcpy_s(this->poleCode, c_PoleCodeDigit, poleCode);
+    strcpy_s(this->recordNo, c_recordCodeDigit, "0");
+}
 Record::Record(char* deviceCode, char* poleCode, char* recordNo) {
     strcpy_s(this->deviceCode, c_DeviceCodeDiget, deviceCode);
     strcpy_s(this->poleCode, c_PoleCodeDigit, poleCode);

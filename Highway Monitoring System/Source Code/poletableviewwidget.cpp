@@ -103,6 +103,6 @@ void PoleTableViewWidget::init()
     });
 
     ui->poleTableView->setSortingEnabled(true);
-    ui->poleTableView->resizeColumnsToContents();
-//    ui->poleTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//    ui->poleTableView->resizeColumnsToContents();
+    ui->poleTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }

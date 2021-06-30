@@ -15,6 +15,8 @@ public:
     explicit WhereAreYouWidget(QWidget *parent = nullptr);
     ~WhereAreYouWidget();
 
+    void initialise();
+
 private:
     Ui::WhereAreYouWidget *ui;
 };

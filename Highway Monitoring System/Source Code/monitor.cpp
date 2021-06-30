@@ -1,11 +1,11 @@
 #include "monitor.h"
 
-Monitor::Monitor() {
+Monitor::Monitor():
+    dateOfInstallation(QDateTime().currentDateTime()) {
     strcpy(this->deviceCode, "NoCode");
     strcpy(this->deviceDescription, "NoDescription");
     this->deviceType = MonitorDeviceType::Abstract;
     this->deviceWorkStatus = DeviceWorkStatus::NotInstalled;
-    this->dateOfInstallation.currentDateTime();
 }
 
 Monitor::Monitor
@@ -25,6 +25,7 @@ Monitor::Monitor(const Monitor& device) {
     strcpy_s(this->deviceDescription, c_DescriptionLength, device.deviceDescription);
     this->deviceWorkStatus = device.deviceWorkStatus;
     this->deviceType = device.deviceType;
+    this->dateOfInstallation = device.dateOfInstallation;
 
 }
 
@@ -139,12 +140,12 @@ void Monitor::getDescription(char* dest) {
 
 QDateTime Monitor::getInstallationDate() {
 
-    return dateOfInstallation;
+    return this->dateOfInstallation;
 
 }
 
 QDateTime Monitor::getInstallationDate() const {
 
-    return dateOfInstallation;
+    return this->dateOfInstallation;
 
 }

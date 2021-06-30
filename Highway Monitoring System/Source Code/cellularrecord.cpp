@@ -2,9 +2,10 @@
 
 #include <string.h>
 
-CellularRecord::CellularRecord() {
+CellularRecord::CellularRecord()
+    :recordTime(QDateTime().currentDateTime())
+{
     strcpy_s(this->IMEI, c_IMEIDigit, "NoIMEI");
-    this->recordTime.currentDateTime();
 }
 
 CellularRecord::CellularRecord(char* deviceCode, char* poleCode, char* recordNo)

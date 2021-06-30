@@ -12,7 +12,6 @@ class CellularRecordModel : public QAbstractTableModel
 public:
     explicit CellularRecordModel(QObject *parent = nullptr);
 
-    // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -33,16 +32,17 @@ public:
     void appendRow(CellularRecord newRow, const QModelIndex &parent = QModelIndex());
     void removeRow(int row, const QModelIndex &parent = QModelIndex());
 
+    QVector<CellularRecord> getRecordData();
+
 //    CellularRecord getCurrentData(const QModelIndex &index) const;
 //    int getNextRecordNo();
 
 //    bool findRecord_recordNo(QString recordNo);
 //    CellularRecord findRecord_getSingleRecord(QString recordNo);
-//    int findRecord_getIndex(QString recordNo);
+    int findRecord_getIndex(QString recordNo);
 //    QVector<CellularRecord> findRecord_getRecords_poleCode(QString poleCode);
 //    QVector<CellularRecord> findRecord_getRecords_deviceCode(QString deviceCode);
-
-
+    int totalRecords();
 
 
 public slots:
@@ -52,8 +52,6 @@ private:
     QVector<CellularRecord> m_cellularRecordData;
 
 
-
-private:
 };
 
 #endif // CELLULARRECORDMODEL_H

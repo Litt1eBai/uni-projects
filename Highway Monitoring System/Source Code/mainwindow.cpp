@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QAbstractButton>
 #include <QTabWidget>
+#include <QSortFilterProxyModel>
+#include "locationfilterproxymodel.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,13 +22,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::init()
 {
-    QMainWindow::showMaximized();
+//    QMainWindow::showMaximized();
 
     // set headerlabel and tab
     ui->generalTab->setCurrentIndex(0);
     ui->headerLabel->setText("Your Dashboard");
 
-    ui->statisticsWidget->initialise(&(this->poleModel), &(this->monitorModel), &(this->cellularRecordModel));
+    ui->statisticsWidget->initialise(&(this->poleModel), &(this->monitorModel), &(this->cellularRecordModel), &(this->cctvRecordModel));
 
     // click tab to change header label
     connect(ui->generalTab, &QTabWidget::currentChanged, ui->headerLabel, [=](int index){

@@ -26,6 +26,7 @@ public:
 public:
     // custom
     enum { DeviceCode = 0, DeviceType, WorkStatus, Description, InstallationDate };
+
     void appedRow(Monitor newRow, const QModelIndex &parent = QModelIndex());
     void removeRow(int row, const QModelIndex &parent = QModelIndex());
 

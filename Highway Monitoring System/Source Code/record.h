@@ -13,6 +13,7 @@ protected:
 
 public:
     Record();
+    Record(char* deviceCode, char* poleCode);
     Record(char* deviceCode, char* poleCode, char* recordNo);
     Record(const Record& rec);
     void setRecoedNo(char *recordNo);

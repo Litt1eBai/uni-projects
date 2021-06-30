@@ -104,7 +104,7 @@ void MonitorTableViewWidget::init()
     });
 
     ui->monitorTableView->setSortingEnabled(true);
-    ui->monitorTableView->resizeColumnsToContents();
-//    ui->monitorTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//    ui->monitorTableView->resizeColumnsToContents();
+    ui->monitorTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
 }

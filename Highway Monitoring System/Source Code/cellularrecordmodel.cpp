@@ -101,7 +101,7 @@ bool CellularRecordModel::setData(const QModelIndex &index, const QVariant &valu
                 }
 
                 case CellularRecordModel::RecordTime: {
-                    QDateTime val = value.toDateTime();
+                    QDateTime val = QDateTime::fromString(value.toString(), "dd/MM/yyyy hh:mm");
                     this->m_cellularRecordData[index.row()].setRecordTime(val);
                     break;
                 }
@@ -244,6 +244,25 @@ void CellularRecordModel::removeRow(int row, const QModelIndex &parent)
         this->m_cellularRecordData.erase(this->m_cellularRecordData.begin() + row);
     }
     endRemoveRows();
+}
+
+QVector<CellularRecord> CellularRecordModel::getRecordData()
+{
+    QVector<CellularRecord> record = this->m_cellularRecordData;
+    return record;
+}
+
+int CellularRecordModel::findRecord_getIndex(QString recordNo)
+{
+    for (int i = 0; i < this->m_cellularRecordData.size(); i++) {
+        if (this->m_cellularRecordData.at(i).getRecordNo() == recordNo) return i;
+    }
+    return -1;
+}
+
+int CellularRecordModel::totalRecords()
+{
+    return this->m_cellularRecordData.size();
 }
 
 void CellularRecordModel::setUpdatedData(CellularRecord updatedData, const QModelIndex &indexOfData)

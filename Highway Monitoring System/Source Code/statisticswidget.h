@@ -4,6 +4,7 @@
 #include "polemodel.h"
 #include "monitormodel.h"
 #include "cellularrecordmodel.h"
+#include "cctvrecordmodel.h"
 #include <QWidget>
 
 namespace Ui {
@@ -16,7 +17,8 @@ class StatisticsWidget : public QWidget
 
 public:
     explicit StatisticsWidget(QWidget *parent = nullptr);
-    void initialise(PoleModel* poleModel, MonitorModel *monitorModel, CellularRecordModel *cellularModelRecord);
+    void initialise(PoleModel* poleModel, MonitorModel *monitorModel, CellularRecordModel *cellularRecordModel,
+                    CCTVRecordModel *CCTVRecordModel);
     ~StatisticsWidget();
 
 private:
@@ -29,6 +31,7 @@ private:
     PoleModel *poleModel;
     MonitorModel *monitorModel;
     CellularRecordModel *cellularRecordModel;
+    CCTVRecordModel *cctvRecordModel;
 
 };
 

@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QWidget" name="buttonBoxWidget" native="true">
@@ -38,6 +41,13 @@
        <widget class="QPushButton" name="cellularRecordButton">
         <property name="text">
          <string>Cellular Record</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="CCTVRecordButton">
+        <property name="text">
+         <string>CCTV Record</string>
         </property>
        </widget>
       </item>
@@ -76,6 +86,13 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="CCTVDataPage">
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="CCTVRecordTableViewWidget" name="cctvRecordTableViewWidget" native="true"/>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="cellularRecordPage">
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
@@ -104,6 +121,12 @@
    <class>CellularRecordTableViewWidget</class>
    <extends>QWidget</extends>
    <header>cellularrecordtableviewwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CCTVRecordTableViewWidget</class>
+   <extends>QWidget</extends>
+   <header>cctvrecordtableviewwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
