@@ -222,8 +222,8 @@ void CellularRecordModel::sort(int column, Qt::SortOrder order)
 
 void CellularRecordModel::setupModel()
 {
-    CellularRecord record1("L0831807012", "K31+950", "0");
-    record1.setIMEI("460115455495254");
+    CellularRecord record1((char*)"L0831807012", (char*)"K31+950", (char*)"0");
+    record1.setIMEI((char*)"460115455495254");
     this->m_cellularRecordData.append(record1);
 }
 
@@ -237,19 +237,71 @@ void CellularRecordModel::appendRow(CellularRecord newRow, const QModelIndex &pa
 
 void CellularRecordModel::removeRow(int row, const QModelIndex &parent)
 {
-    beginRemoveRows(parent, row, row);
     if (row < 0 || row > this->m_cellularRecordData.size()) {
         qDebug() << "Invalid Index";
     } else {
+        beginRemoveRows(parent, row, row);
         this->m_cellularRecordData.erase(this->m_cellularRecordData.begin() + row);
+        endRemoveRows();
     }
-    endRemoveRows();
 }
 
 QVector<CellularRecord> CellularRecordModel::getRecordData()
 {
     QVector<CellularRecord> record = this->m_cellularRecordData;
     return record;
+}
+
+QVector<QCPGraphData> CellularRecordModel::getTimeData(QDateTime start, QDateTime end, double interval, QString poleCode,
+                                                       int &Max)
+{
+    if(start>end)return QVector<QCPGraphData>();
+    int number= start.secsTo(end) / 60;
+    QVector<QCPGraphData> timeData(number);
+
+    QVector<QDateTime> recData;
+
+
+    QDateTime now=start;
+    for(int i=0;i<number;i++)
+    {
+        timeData[i].key=now.toMSecsSinceEpoch()/1000.0;
+        timeData[i].value=0;
+        now=now.addSecs(60 * interval);
+    }
+
+    qDebug() << "start" << start;
+    qDebug() << "end" << end;
+
+    for (int i = 0; i < this->m_cellularRecordData.size(); i++) {
+        QDateTime rec = this->m_cellularRecordData.at(i).getRecordTime();
+        QDateTime recTime = this->m_cellularRecordData.at(i).getRecordTime();
+        QString recPole = this->m_cellularRecordData.at(i).getPoleCode();
+        if (poleCode == "" || recPole == poleCode) {
+            if (recTime >= start && recTime <= end) {
+                recData.append(rec);
+            }
+        }
+    }
+
+    if (recData.size() <= 0) {
+        qDebug() << "Cannot find data";
+        return timeData;
+    }
+
+
+    Max=0;
+    int curnumber=0;
+    for(int i=0;i<recData.size();i++)
+    {
+        curnumber=start.secsTo(recData[i])/60/interval;
+        int val = timeData[curnumber].value++;
+        Max=std::max(Max, val);
+    }
+
+
+
+    return timeData;
 }
 
 int CellularRecordModel::findRecord_getIndex(QString recordNo)

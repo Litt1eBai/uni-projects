@@ -2,8 +2,8 @@
 
 Monitor::Monitor():
     dateOfInstallation(QDateTime().currentDateTime()) {
-    strcpy(this->deviceCode, "NoCode");
-    strcpy(this->deviceDescription, "NoDescription");
+    strcpy_s(this->deviceCode,c_DeviceCodeDiget, "NoCode");
+    strcpy_s(this->deviceDescription, c_DescriptionLength, "NoDescription");
     this->deviceType = MonitorDeviceType::Abstract;
     this->deviceWorkStatus = DeviceWorkStatus::NotInstalled;
 }
@@ -134,7 +134,7 @@ QString Monitor::getDescription() const {
 
 void Monitor::getDescription(char* dest) {
 
-    strcpy(dest, this->deviceDescription);
+    strcpy_s(dest, c_DescriptionLength, this->deviceDescription);
 
 }
 

@@ -1,5 +1,6 @@
 #include "monitormodel.h"
 #include <QDebug>
+#include <QIcon>
 
 MonitorModel::MonitorModel(QObject *parent)
     : QAbstractTableModel(parent)
@@ -82,6 +83,32 @@ QVariant MonitorModel::data(const QModelIndex &index, int role) const
                 }
             }
         }
+        case Qt::DecorationRole: {
+            if (index.column() == MonitorModel::DeviceType) {
+                MonitorDeviceType type = m_monitorData.at(index.row()).getDeviceType();
+                if (type == MonitorDeviceType::CCTV) {
+                    return QIcon(":/Icons/MonitorType/CCTV");
+                } else if (type == MonitorDeviceType::Cellular) {
+                    return QIcon(":/Icons/MonitorType/Cellular");
+                } else if (type == MonitorDeviceType::TrafficFlow) {
+                    return QIcon(":/Icons/MonitorType/Traffic");
+                } else {
+                    return QVariant();
+                }
+            }
+            else if (index.column() == MonitorModel::WorkStatus) {
+                DeviceWorkStatus workStatus = m_monitorData.at(index.row()).getWorkStatus();
+                if (workStatus == DeviceWorkStatus::Running) {
+                    return QIcon(":/Icons/MonitorStatus/Running");
+                } else if (workStatus == DeviceWorkStatus::Down) {
+                    return QIcon(":/Icons/MonitorStatus/Down");
+                } else if (workStatus == DeviceWorkStatus::NotInstalled) {
+                    return QIcon(":/Icons/MonitorStatus/NotInstalled");
+                } else {
+                    return QVariant();
+                }
+            }
+        }
     }
 
     return QVariant();
@@ -148,13 +175,13 @@ void MonitorModel::appedRow(Monitor newRow, const QModelIndex &parent)
 
 void MonitorModel::removeRow(int row, const QModelIndex &parent)
 {
-    beginRemoveRows(parent, row, row);
     if (row < 0 || row > this->m_monitorData.size()) {
         qDebug() << "Invalid Index";
     } else {
+        beginRemoveRows(parent, row, row);
         this->m_monitorData.erase(this->m_monitorData.begin() + row);
+        endRemoveRows();
     }
-    endRemoveRows();
 }
 
 bool MonitorModel::findMonitor(QString monitorCode)
@@ -342,59 +369,58 @@ void MonitorModel::setUpdatedData(Monitor updatedData, const QModelIndex &indexO
 void MonitorModel::setupModel()
 {
     Monitor monitor1;
-    monitor1.setDevice(MonitorDeviceType::CCTV, "001CCTV");
+    monitor1.setDevice(MonitorDeviceType::CCTV, (char*)"001CCTV");
     monitor1.setDeviceWorkStatus(DeviceWorkStatus::Running);
-    monitor1.setDescription("Monitor at Service Centre Right");
+    monitor1.setDescription((char*)"Monitor at Service Centre Right");
     this->m_monitorData.push_back(monitor1);
 
     Monitor monitor2;
-    monitor2.setDevice(MonitorDeviceType::Cellular, "001Cel");
+    monitor2.setDevice(MonitorDeviceType::Cellular, (char*)"001Cel");
     monitor2.setDeviceWorkStatus(DeviceWorkStatus::Running);
-    monitor2.setDescription("Monitor at Service Centre Right");
+    monitor2.setDescription((char*)"Monitor at Service Centre Right");
     this->m_monitorData.push_back(monitor2);
 
     Monitor monitor3;
-    monitor3.setDevice(MonitorDeviceType::TrafficFlow, "001Traf");
+    monitor3.setDevice(MonitorDeviceType::TrafficFlow, (char*)"001Traf");
     monitor3.setDeviceWorkStatus(DeviceWorkStatus::Running);
-    monitor3.setDescription("Monitor at Service Centre Right");
+    monitor3.setDescription((char*)"Monitor at Service Centre Right");
     this->m_monitorData.push_back(monitor3);
 
 
     Monitor monitor4;
-    monitor4.setDevice(MonitorDeviceType::CCTV, "002CCTV");
+    monitor4.setDevice(MonitorDeviceType::CCTV, (char*)"002CCTV");
     monitor4.setDeviceWorkStatus(DeviceWorkStatus::Running);
-    monitor4.setDescription("Monitor at Interchange1");
+    monitor4.setDescription((char*)"Monitor at Interchange1");
     this->m_monitorData.push_back(monitor4);
 
     Monitor monitor5;
-    monitor5.setDevice(MonitorDeviceType::Cellular, "002Cel");
+    monitor5.setDevice(MonitorDeviceType::Cellular, (char*)"002Cel");
     monitor5.setDeviceWorkStatus(DeviceWorkStatus::Running);
-    monitor5.setDescription("Monitor at Interchange1");
+    monitor5.setDescription((char*)"Monitor at Interchange1");
     this->m_monitorData.push_back(monitor5);
 
     Monitor monitor6;
-    monitor6.setDevice(MonitorDeviceType::TrafficFlow, "002Traf");
+    monitor6.setDevice(MonitorDeviceType::TrafficFlow, (char*)"002Traf");
     monitor6.setDeviceWorkStatus(DeviceWorkStatus::Running);
-    monitor6.setDescription("Monitor at Interchange1");
+    monitor6.setDescription((char*)"Monitor at Interchange1");
     this->m_monitorData.push_back(monitor6);
 
     Monitor monitor7;
-    monitor7.setDevice(MonitorDeviceType::CCTV, "003CCTV");
+    monitor7.setDevice(MonitorDeviceType::CCTV, (char*)"003CCTV");
     monitor7.setDeviceWorkStatus(DeviceWorkStatus::Running);
-    monitor7.setDescription("Monitor at Interchange2");
+    monitor7.setDescription((char*)"Monitor at Interchange2");
     this->m_monitorData.push_back(monitor7);
 
     Monitor monitor8;
-    monitor8.setDevice(MonitorDeviceType::Cellular, "003Cel");
+    monitor8.setDevice(MonitorDeviceType::Cellular, (char*)"003Cel");
     monitor8.setDeviceWorkStatus(DeviceWorkStatus::Running);
-    monitor8.setDescription("Monitor at Interchange2");
+    monitor8.setDescription((char*)"Monitor at Interchange2");
     this->m_monitorData.push_back(monitor8);
 
     Monitor monitor9;
-    monitor9.setDevice(MonitorDeviceType::TrafficFlow, "003Traf");
+    monitor9.setDevice(MonitorDeviceType::TrafficFlow, (char*)"003Traf");
     monitor9.setDeviceWorkStatus(DeviceWorkStatus::Running);
-    monitor9.setDescription("Monitor at Interchange2");
+    monitor9.setDescription((char*)"Monitor at Interchange2");
     this->m_monitorData.push_back(monitor9);
-
 
 }

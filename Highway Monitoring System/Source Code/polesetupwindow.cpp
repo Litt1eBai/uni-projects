@@ -81,17 +81,17 @@ void PoleSetupWindow::init()
                     if (ui->CCTVCheck_devicePage->isChecked()) {
                         this->m_poleData.addMonitor(MonitorDeviceType::CCTV, (char*)ui->CCTVEditor_devicePage->text().toStdString().c_str());
                     } else {
-                        this->m_poleData.addMonitor(MonitorDeviceType::CCTV, "");
+                        this->m_poleData.addMonitor(MonitorDeviceType::CCTV, (char*)"");
                     }
                     if (ui->cellularCheck_devicePage->isChecked()) {
                         this->m_poleData.addMonitor(MonitorDeviceType::Cellular, (char*)ui->cellularMonitorEditor_devicePage->text().toStdString().c_str());
                     } else {
-                        this->m_poleData.addMonitor(MonitorDeviceType::Cellular, "");
+                        this->m_poleData.addMonitor(MonitorDeviceType::Cellular, (char*)"");
                     }
                     if (ui->trafficMonitorCheck_devicePage->isChecked()) {
                         this->m_poleData.addMonitor(MonitorDeviceType::TrafficFlow, (char*)ui->trafficMonitorEditor_devicePage->text().toStdString().c_str());
                     } else {
-                        this->m_poleData.addMonitor(MonitorDeviceType::TrafficFlow, "");
+                        this->m_poleData.addMonitor(MonitorDeviceType::TrafficFlow, (char*)"");
                     }
 
                     // prepare for next page

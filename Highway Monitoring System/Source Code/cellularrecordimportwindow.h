@@ -1,8 +1,8 @@
 #ifndef CELLULARRECORDIMPORTWINDOW_H
 #define CELLULARRECORDIMPORTWINDOW_H
 
-#include <cellularrecord.h>
-#include <cellularrecordmodel.h>
+#include "cellularrecord.h"
+#include "cellularrecordmodel.h"
 #include <QVector>
 #include <QDialog>
 #include <QFileSystemModel>
@@ -19,10 +19,10 @@ public:
     explicit CellularRecordImportWindow(QWidget *parent = nullptr);
     explicit CellularRecordImportWindow(CellularRecordModel *cellularRecordModel, QWidget *parent = nullptr);
     ~CellularRecordImportWindow();
+    void initialise(CellularRecordModel *cellularRecordModel);
 
 private:
     void init();
-    void initialise(CellularRecordModel *cellularRecordModel);
     void importDataFromXlsx(QString filePath, int row);
 
 

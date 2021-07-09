@@ -103,6 +103,10 @@
              <property name="text">
               <string>CCTV</string>
              </property>
+             <property name="icon">
+              <iconset resource="pics.qrc">
+               <normaloff>:/Icons/MonitorType/CCTV</normaloff>:/Icons/MonitorType/CCTV</iconset>
+             </property>
             </widget>
            </item>
            <item>
@@ -110,12 +114,20 @@
              <property name="text">
               <string>Cellular Monitor</string>
              </property>
+             <property name="icon">
+              <iconset resource="pics.qrc">
+               <normaloff>:/Icons/MonitorType/Cellular</normaloff>:/Icons/MonitorType/Cellular</iconset>
+             </property>
             </widget>
            </item>
            <item>
             <widget class="QRadioButton" name="trafficMonitorButton">
              <property name="text">
               <string>Traffic Monitor</string>
+             </property>
+             <property name="icon">
+              <iconset resource="pics.qrc">
+               <normaloff>:/Icons/MonitorType/Traffic</normaloff>:/Icons/MonitorType/Traffic</iconset>
              </property>
             </widget>
            </item>
@@ -133,6 +145,10 @@
              <property name="text">
               <string>Running</string>
              </property>
+             <property name="icon">
+              <iconset resource="pics.qrc">
+               <normaloff>:/Icons/MonitorStatus/Running</normaloff>:/Icons/MonitorStatus/Running</iconset>
+             </property>
             </widget>
            </item>
            <item>
@@ -140,12 +156,20 @@
              <property name="text">
               <string>Down</string>
              </property>
+             <property name="icon">
+              <iconset resource="pics.qrc">
+               <normaloff>:/Icons/MonitorStatus/Down</normaloff>:/Icons/MonitorStatus/Down</iconset>
+             </property>
             </widget>
            </item>
            <item>
             <widget class="QRadioButton" name="notInstalledStateButton">
              <property name="text">
               <string>Not Installed</string>
+             </property>
+             <property name="icon">
+              <iconset resource="pics.qrc">
+               <normaloff>:/Icons/MonitorStatus/NotInstalled</normaloff>:/Icons/MonitorStatus/NotInstalled</iconset>
              </property>
             </widget>
            </item>
@@ -203,6 +227,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="pics.qrc"/>
+ </resources>
  <connections/>
 </ui>

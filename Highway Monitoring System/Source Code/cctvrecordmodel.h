@@ -2,6 +2,7 @@
 #define CCTVRECORDMODEL_H
 
 #include "cctvrecord.h"
+#include "qcustomplot.h"
 #include <QVector>
 #include <QAbstractTableModel>
 
@@ -31,6 +32,7 @@ public:
 
     QVector<CCTVRecord> getRecordData();
     int findRecord_getIndex(QString recordNo);
+    CCTVRecord getCurrentRecord(int row);
 
     int totalRecords();
 

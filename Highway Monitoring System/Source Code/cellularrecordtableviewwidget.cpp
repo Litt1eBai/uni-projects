@@ -50,6 +50,7 @@ void CellularRecordTableViewWidget::init()
 
     connect(ui->addButton, &QAbstractButton::clicked, this, [=](){
         CellularRecord newRow;
+        newRow.setRecoedNo((char*)QString("%1").arg(QVariant(this->cellularRecordModel->totalRecords() + 1).toString()).toStdString().c_str());
         this->cellularRecordModel->appendRow(newRow);
     });
 

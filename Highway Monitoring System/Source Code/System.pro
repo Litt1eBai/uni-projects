@@ -1,6 +1,6 @@
-QT       += core gui
+QT       += core gui multimedia multimediawidgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++11
 
@@ -19,15 +19,22 @@ include(./QXlsx/QXlsx.pri)
 
 SOURCES += \
     cctvrecord.cpp \
+    cctvrecorddisplaywidget.cpp \
+    cctvrecordimportwindow.cpp \
     cctvrecordmodel.cpp \
+    cctvrecordproxymodel.cpp \
     cctvrecordtableviewwidget.cpp \
     cellularrecord.cpp \
+    cellularrecordcurvewidget.cpp \
     cellularrecordimportwindow.cpp \
     cellularrecordmodel.cpp \
+    cellularrecordproxymodel.cpp \
     cellularrecordtableviewwidget.cpp \
+    dashboardwidget.cpp \
     locationfilterproxymodel.cpp \
     main.cpp \
     mainwindow.cpp \
+    mediaplayer.cpp \
     monitor.cpp \
     monitoreditwindow.cpp \
     monitormodel.cpp \
@@ -38,23 +45,35 @@ SOURCES += \
     polemodel.cpp \
     polesetupwindow.cpp \
     poletableviewwidget.cpp \
+    qcustomplot.cpp \
     record.cpp \
     statisticswidget.cpp \
     trafficrecord.cpp \
+    trafficrecordcurvewidget.cpp \
+    trafficrecordimportwindow.cpp \
     trafficrecordmodel.cpp \
+    trafficrecordproxymodel.cpp \
+    trafficrecordtableviewwidget.cpp \
     whereareyouwidget.cpp
 
 HEADERS += \
     basicheader.h \
     cctvrecord.h \
+    cctvrecorddisplaywidget.h \
+    cctvrecordimportwindow.h \
     cctvrecordmodel.h \
+    cctvrecordproxymodel.h \
     cctvrecordtableviewwidget.h \
     cellularrecord.h \
+    cellularrecordcurvewidget.h \
     cellularrecordimportwindow.h \
     cellularrecordmodel.h \
+    cellularrecordproxymodel.h \
     cellularrecordtableviewwidget.h \
+    dashboardwidget.h \
     locationfilterproxymodel.h \
     mainwindow.h \
+    mediaplayer.h \
     monitor.h \
     monitoreditwindow.h \
     monitormodel.h \
@@ -65,17 +84,27 @@ HEADERS += \
     polemodel.h \
     polesetupwindow.h \
     poletableviewwidget.h \
+    qcustomplot.h \
     record.h \
     statisticswidget.h \
     trafficrecord.h \
+    trafficrecordcurvewidget.h \
+    trafficrecordimportwindow.h \
     trafficrecordmodel.h \
+    trafficrecordproxymodel.h \
+    trafficrecordtableviewwidget.h \
     whereareyouwidget.h
 
 FORMS += \
+    cctvrecorddisplaywidget.ui \
+    cctvrecordimportwindow.ui \
     cctvrecordtableviewwidget.ui \
+    cellularrecordcurvewidget.ui \
     cellularrecordimportwindow.ui \
     cellularrecordtableviewwidget.ui \
+    dashboardwidget.ui \
     mainwindow.ui \
+    mediaplayer.ui \
     monitoreditwindow.ui \
     monitorsetupwindow.ui \
     monitortableviewwidget.ui \
@@ -83,6 +112,9 @@ FORMS += \
     polesetupwindow.ui \
     poletableviewwidget.ui \
     statisticswidget.ui \
+    trafficrecordcurvewidget.ui \
+    trafficrecordimportwindow.ui \
+    trafficrecordtableviewwidget.ui \
     whereareyouwidget.ui
 
 # Default rules for deployment.

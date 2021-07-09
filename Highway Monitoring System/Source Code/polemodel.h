@@ -19,15 +19,16 @@ public:
                  int role = Qt::EditRole) override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-    // Add data:
-    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
+//    // Add data:
+//    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+//    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
 
-    // Remove data:
-    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool removeColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
+//    // Remove data:
+//    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+//    bool removeColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
     void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
+//    void loadDataFromFile();
 
 private:
     void setupModel();

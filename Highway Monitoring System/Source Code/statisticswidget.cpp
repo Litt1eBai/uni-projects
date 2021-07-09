@@ -10,12 +10,14 @@ StatisticsWidget::StatisticsWidget(QWidget *parent) :
 }
 
 void StatisticsWidget::initialise(PoleModel *poleModel, MonitorModel *monitorModel,
-                                  CellularRecordModel *cellularRecordModel, CCTVRecordModel *cctvRecordModel)
+                                  CellularRecordModel *cellularRecordModel, CCTVRecordModel *cctvRecordModel,
+                                  TrafficRecordModel *trafficRecordModel)
 {
     this->poleModel = poleModel;
     this->monitorModel = monitorModel;
     this->cellularRecordModel = cellularRecordModel;
     this->cctvRecordModel = cctvRecordModel;
+    this->trafficRecordModel = trafficRecordModel;
     init();
 }
 
@@ -32,6 +34,7 @@ void StatisticsWidget::init()
     ui->monitorTableViewWidget->initialise(this->poleModel, this->monitorModel);
     ui->cellularRecordTableViewWidget->initialise(this->cellularRecordModel);
     ui->cctvRecordTableViewWidget->initialise(this->cctvRecordModel);
+    ui->trafficRecordTableViewWidget->initialise(this->trafficRecordModel);
 
     connect(ui->poleDataButton, &QAbstractButton::clicked, this, [=](){
        ui->dataStackedWidget->setCurrentIndex(0);
@@ -44,5 +47,8 @@ void StatisticsWidget::init()
     });
     connect(ui->cellularRecordButton, &QAbstractButton::clicked, this, [=](){
        ui->dataStackedWidget->setCurrentIndex(3);
+    });
+    connect(ui->trafficRecordButton, &QAbstractButton::clicked, this, [=](){
+       ui->dataStackedWidget->setCurrentIndex(4);
     });
 }

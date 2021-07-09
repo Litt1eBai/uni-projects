@@ -153,6 +153,10 @@
                 <property name="text">
                  <string>CCTV</string>
                 </property>
+                <property name="icon">
+                 <iconset resource="pics.qrc">
+                  <normaloff>:/Icons/MonitorType/CCTV</normaloff>:/Icons/MonitorType/CCTV</iconset>
+                </property>
                </widget>
               </item>
               <item row="0" column="1">
@@ -170,6 +174,10 @@
                 <property name="text">
                  <string>Cellular Monitor</string>
                 </property>
+                <property name="icon">
+                 <iconset resource="pics.qrc">
+                  <normaloff>:/Icons/MonitorType/Cellular</normaloff>:/Icons/MonitorType/Cellular</iconset>
+                </property>
                </widget>
               </item>
               <item row="1" column="1">
@@ -186,6 +194,10 @@
                <widget class="QCheckBox" name="trafficMonitorCheck">
                 <property name="text">
                  <string>Traffic Monitor</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="pics.qrc">
+                  <normaloff>:/Icons/MonitorType/Traffic</normaloff>:/Icons/MonitorType/Traffic</iconset>
                 </property>
                </widget>
               </item>
@@ -542,6 +554,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="pics.qrc"/>
+ </resources>
  <connections/>
 </ui>

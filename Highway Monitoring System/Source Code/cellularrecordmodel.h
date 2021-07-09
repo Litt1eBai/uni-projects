@@ -4,6 +4,7 @@
 #include <QAbstractTableModel>
 #include "basicheader.h"
 #include "cellularrecord.h"
+#include "qcustomplot.h"
 
 class CellularRecordModel : public QAbstractTableModel
 {
@@ -33,6 +34,9 @@ public:
     void removeRow(int row, const QModelIndex &parent = QModelIndex());
 
     QVector<CellularRecord> getRecordData();
+
+    QVector<QCPGraphData> getTimeData(QDateTime start, QDateTime end, double interval, QString poleCode, int &Max);
+
 
 //    CellularRecord getCurrentData(const QModelIndex &index) const;
 //    int getNextRecordNo();

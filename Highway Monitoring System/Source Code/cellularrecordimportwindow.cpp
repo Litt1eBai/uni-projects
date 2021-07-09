@@ -35,7 +35,7 @@ CellularRecordImportWindow::~CellularRecordImportWindow()
 
 void CellularRecordImportWindow::init()
 {
-    ui->exampleFormatTableWidget->setEnabled(QTableWidget::NoEditTriggers);
+//    ui->exampleFormatTableWidget->setEnabled(QTableWidget::NoEditTriggers);
     ui->exampleFormatTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     // set up temp model
@@ -120,7 +120,7 @@ void CellularRecordImportWindow::importDataFromXlsx(QString filePath, int rowCou
                         qDebug() << date;
                         data.setRecordTime(date);
                     } else if (col == 2) {
-                        data.setPoleCode((char*)var.toString().toStdString().c_str());
+                        data.setPoleCode((char*)var.toString().simplified().toStdString().c_str());
                     } else if (col == 3) {
                         data.setDeviceCode((char*)var.toString().toStdString().c_str());
                     } else if (col == 4) {

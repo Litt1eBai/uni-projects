@@ -1,5 +1,6 @@
 #include "cctvrecordtableviewwidget.h"
 #include "ui_cctvrecordtableviewwidget.h"
+#include "cctvrecordimportwindow.h"
 #include <QMessageBox>
 #include <QCheckBox>
 
@@ -27,11 +28,11 @@ void CCTVRecordTableViewWidget::init()
     ui->CCTVRecordTableView->setSortingEnabled(true);
 
     ui->CCTVRecordTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->addButton->setDisabled(true);
+//    ui->addButton->setDisabled(true);
     ui->removeButton->setDisabled(true);
     ui->importButton->setDisabled(true);
 
-    connect(ui->recordEditableCheck, &QCheckBox::clicked, ui->addButton, &QAbstractButton::setEnabled);
+//    connect(ui->recordEditableCheck, &QCheckBox::clicked, ui->addButton, &QAbstractButton::setEnabled);
     connect(ui->recordEditableCheck, &QCheckBox::clicked, ui->removeButton, &QAbstractButton::setEnabled);
     connect(ui->recordEditableCheck, &QCheckBox::clicked, ui->importButton, &QAbstractButton::setEnabled);
     connect(ui->recordEditableCheck, &QCheckBox::clicked, ui->CCTVRecordTableView, [=](bool checked){
@@ -42,10 +43,10 @@ void CCTVRecordTableViewWidget::init()
        }
     });
 
-    connect(ui->addButton, &QAbstractButton::clicked, this, [=](){
-        CCTVRecord newRow;
-        this->cctvRecordModel->appendRow(newRow);
-    });
+//    connect(ui->addButton, &QAbstractButton::clicked, this, [=](){
+//        CCTVRecord newRow;
+//        this->cctvRecordModel->appendRow(newRow);
+//    });
 
     connect(ui->removeButton, &QAbstractButton::clicked, this, [=](){
         QModelIndex currentIndex = ui->CCTVRecordTableView->currentIndex();
@@ -65,8 +66,8 @@ void CCTVRecordTableViewWidget::init()
     });
 
     connect(ui->importButton, &QAbstractButton::clicked, this, [=](){
-
-
+        CCTVRecordImportWindow *importWindow = new CCTVRecordImportWindow(this->cctvRecordModel, this);
+        importWindow->exec();
     });
 
     ui->CCTVRecordTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);

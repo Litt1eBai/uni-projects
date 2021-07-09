@@ -6,6 +6,7 @@
 #include "monitormodel.h"
 #include "cellularrecordmodel.h"
 #include "cctvrecordmodel.h"
+#include "trafficrecordmodel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -31,6 +32,7 @@ private:
     MonitorModel monitorModel;
     CellularRecordModel cellularRecordModel;
     CCTVRecordModel cctvRecordModel;
+    TrafficRecordModel trafficRecordModel;
 
 };
 #endif // MAINWINDOW_H

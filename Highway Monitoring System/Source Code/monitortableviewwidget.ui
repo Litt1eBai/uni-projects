@@ -39,6 +39,10 @@
          <property name="text">
           <string>Find</string>
          </property>
+         <property name="icon">
+          <iconset resource="pics.qrc">
+           <normaloff>:/Icons/Actions/Find</normaloff>:/Icons/Actions/Find</iconset>
+         </property>
         </widget>
        </item>
       </layout>
@@ -53,12 +57,20 @@
          <property name="text">
           <string>Add</string>
          </property>
+         <property name="icon">
+          <iconset resource="pics.qrc">
+           <normaloff>:/Icons/Actions/Add</normaloff>:/Icons/Actions/Add</iconset>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="removeButton">
          <property name="text">
           <string>Remove</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pics.qrc">
+           <normaloff>:/Icons/Actions/Remove</normaloff>:/Icons/Actions/Remove</iconset>
          </property>
         </widget>
        </item>
@@ -81,6 +93,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="pics.qrc"/>
+ </resources>
  <connections/>
 </ui>

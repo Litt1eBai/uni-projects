@@ -42,7 +42,7 @@ int CCTVRecordModel::columnCount(const QModelIndex &parent) const
     if (parent.isValid())
         return 0;
 
-    return 6;
+    return 7;
 }
 
 QVariant CCTVRecordModel::data(const QModelIndex &index, int role) const
@@ -265,13 +265,13 @@ void CCTVRecordModel::appendRow(CCTVRecord newRow, const QModelIndex &parent)
 
 void CCTVRecordModel::removeRow(int row, const QModelIndex &parent)
 {
-    beginRemoveRows(parent, row, row);
     if (row < 0 || row > this->m_CCTVRecordData.size()) {
         qDebug() << "Invalid Index";
     } else {
+        beginRemoveRows(parent, row, row);
         this->m_CCTVRecordData.erase(this->m_CCTVRecordData.begin() + row);
+        endRemoveRows();
     }
-    endRemoveRows();
 }
 
 QVector<CCTVRecord> CCTVRecordModel::getRecordData()
@@ -286,6 +286,18 @@ int CCTVRecordModel::findRecord_getIndex(QString recordNo)
         if (this->m_CCTVRecordData.at(i).getRecordNo() == recordNo) return i;
     }
     return -1;
+}
+
+CCTVRecord CCTVRecordModel::getCurrentRecord(int row)
+{
+    CCTVRecord record;
+    if (row >= 0 && row < this->m_CCTVRecordData.size()) {
+        record = this->m_CCTVRecordData.at(row);
+    } else {
+        record.setFilePath((char*)"");
+    }
+
+    return record;
 }
 
 int CCTVRecordModel::totalRecords()

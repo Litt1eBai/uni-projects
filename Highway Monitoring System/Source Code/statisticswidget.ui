@@ -24,30 +24,137 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Preferred</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QPushButton" name="poleDataButton">
         <property name="text">
          <string>Pole Data</string>
         </property>
+        <property name="icon">
+         <iconset resource="pics.qrc">
+          <normaloff>:/Icons/GeneralDevice/Pole</normaloff>:/Icons/GeneralDevice/Pole</iconset>
+        </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QPushButton" name="monitorDataButton">
         <property name="text">
          <string>Monitor Data</string>
         </property>
+        <property name="icon">
+         <iconset resource="pics.qrc">
+          <normaloff>:/Icons/GeneralDevice/Monitor</normaloff>:/Icons/GeneralDevice/Monitor</iconset>
+        </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QPushButton" name="cellularRecordButton">
         <property name="text">
          <string>Cellular Record</string>
         </property>
+        <property name="icon">
+         <iconset resource="pics.qrc">
+          <normaloff>:/Icons/MonitorType/Cellular</normaloff>:/Icons/MonitorType/Cellular</iconset>
+        </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QPushButton" name="CCTVRecordButton">
         <property name="text">
          <string>CCTV Record</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pics.qrc">
+          <normaloff>:/Icons/MonitorType/CCTV</normaloff>:/Icons/MonitorType/CCTV</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="trafficRecordButton">
+        <property name="text">
+         <string>Traffic Record</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pics.qrc">
+          <normaloff>:/Icons/MonitorType/Traffic</normaloff>:/Icons/MonitorType/Traffic</iconset>
         </property>
        </widget>
       </item>
@@ -55,6 +162,9 @@
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Expanding</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -70,7 +180,7 @@
    <item>
     <widget class="QStackedWidget" name="dataStackedWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="poleDataPage">
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -97,6 +207,13 @@
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
         <widget class="CellularRecordTableViewWidget" name="cellularRecordTableViewWidget" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="trafficRecordPage">
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="TrafficRecordTableViewWidget" name="trafficRecordTableViewWidget" native="true"/>
        </item>
       </layout>
      </widget>
@@ -129,7 +246,15 @@
    <header>cctvrecordtableviewwidget.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>TrafficRecordTableViewWidget</class>
+   <extends>QWidget</extends>
+   <header>trafficrecordtableviewwidget.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="pics.qrc"/>
+ </resources>
  <connections/>
 </ui>

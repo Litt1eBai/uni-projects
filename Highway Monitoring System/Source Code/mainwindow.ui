@@ -30,17 +30,17 @@
     <item>
      <widget class="QTabWidget" name="generalTab">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="dashboardTab">
+      <widget class="QWidget" name="whereAreYouTab">
        <attribute name="title">
         <string>Dashboard</string>
        </attribute>
-      </widget>
-      <widget class="QWidget" name="whereAreYouTab">
-       <attribute name="title">
-        <string>Where Are You</string>
-       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="WhereAreYouWidget" name="whereAreYouWidget" native="true"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="statisticsTab">
        <attribute name="title">
@@ -73,6 +73,12 @@
    <class>StatisticsWidget</class>
    <extends>QWidget</extends>
    <header>statisticswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WhereAreYouWidget</class>
+   <extends>QWidget</extends>
+   <header>whereareyouwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

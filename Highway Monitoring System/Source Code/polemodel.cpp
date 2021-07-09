@@ -1,15 +1,26 @@
 #include "polemodel.h"
 #include <QFont>
 #include <QDebug>
+#include <QIcon>
+#include <fstream>
+#include <QDir>
 
 PoleModel::PoleModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
+//    loadDataFromFile();
     setupModel();
 }
 
 QVariant PoleModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+    if (role == Qt::DecorationRole) {
+        switch (section) {
+            case PoleModel::CCTVInstall: return QIcon(":/Icons/MonitorType/CCTV");
+            case PoleModel::CellularMonitorInstall: return QIcon(":/Icons/MonitorType/Cellular");
+            case PoleModel::TrafficMinitorInstall: return QIcon(":/Icons/MonitorType/Traffic");
+        }
+    }
     if (role != Qt::DisplayRole)
         return QVariant();
     if (orientation == Qt::Horizontal) {
@@ -262,33 +273,6 @@ void PoleModel::setUpdatedData(Pole updatedData, const QModelIndex &indexOfData)
     emit dataChanged(indexOfData, indexOfData, QVector<int>() << Qt::EditRole);
 }
 
-bool PoleModel::insertRows(int row, int count, const QModelIndex &parent)
-{
-    beginInsertRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
-    endInsertRows();
-}
-
-bool PoleModel::insertColumns(int column, int count, const QModelIndex &parent)
-{
-    beginInsertColumns(parent, column, column + count - 1);
-    // FIXME: Implement me!
-    endInsertColumns();
-}
-
-bool PoleModel::removeRows(int row, int count, const QModelIndex &parent)
-{
-    beginRemoveRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
-    endRemoveRows();
-}
-
-bool PoleModel::removeColumns(int column, int count, const QModelIndex &parent)
-{
-    beginRemoveColumns(parent, column, column + count - 1);
-    // FIXME: Implement me!
-    endRemoveColumns();
-}
 
 void PoleModel::sort(int column, Qt::SortOrder order)
 {
@@ -418,6 +402,13 @@ void PoleModel::sort(int column, Qt::SortOrder order)
     endResetModel();
 }
 
+//void PoleModel::loadDataFromFile()
+//{
+//    std::fstream poleDataFile;
+//    poleDataFile.open(poleData_filePath.toStdString(), std::ios::binary | std::ios::in);
+
+//}
+
 void PoleModel::appedRow(Pole newRow, const QModelIndex &parent)
 {
     int row = this->rowCount();
@@ -428,40 +419,40 @@ void PoleModel::appedRow(Pole newRow, const QModelIndex &parent)
 
 void PoleModel::removeRow(int row, const QModelIndex &parent)
 {
-    beginRemoveRows(parent, row, row);
     if (row < 0 || row > this->m_poleData.size()) {
         qDebug() << "Invalid Index";
     } else {
+        beginRemoveRows(parent, row, row);
         this->m_poleData.erase(this->m_poleData.begin() + row);
+        endRemoveRows();
     }
-    endRemoveRows();
 }
 
 
 void PoleModel::setupModel()
 {
     Pole pole1(102.214814, 24.704153);
-    pole1.setPoleCode("K96+430");
-    pole1.addMonitor(MonitorDeviceType::CCTV, "001CCTV");
-    pole1.addMonitor(MonitorDeviceType::Cellular, "001Cel");
-    pole1.addMonitor(MonitorDeviceType::TrafficFlow, "001Traf");
-    pole1.setDescription("Service Centre Right");
+    pole1.setPoleCode((char*)"K96+430");
+    pole1.addMonitor(MonitorDeviceType::CCTV, (char*)"001CCTV");
+    pole1.addMonitor(MonitorDeviceType::Cellular, (char*)"001Cel");
+    pole1.addMonitor(MonitorDeviceType::TrafficFlow, (char*)"001Traf");
+    pole1.setDescription((char*)"Service Centre Right");
     this->m_poleData.push_back(pole1);
 
     Pole pole2(120.057727, 32.156814 );
-    pole2.setPoleCode("K56+400");
-    pole2.addMonitor(MonitorDeviceType::CCTV, "002CCTV");
-    pole2.addMonitor(MonitorDeviceType::Cellular, "002Cel");
-    pole2.addMonitor(MonitorDeviceType::TrafficFlow, "002Traf");
-    pole2.setDescription("Interchange1");
+    pole2.setPoleCode((char*)"K56+400");
+    pole2.addMonitor(MonitorDeviceType::CCTV, (char*)"002CCTV");
+    pole2.addMonitor(MonitorDeviceType::Cellular, (char*)"002Cel");
+    pole2.addMonitor(MonitorDeviceType::TrafficFlow, (char*)"002Traf");
+    pole2.setDescription((char*)"Interchange1");
     this->m_poleData.push_back(pole2);
 
     Pole pole3(104.114286, 30.698975);
-    pole3.setPoleCode("K32+950");
-    pole3.addMonitor(MonitorDeviceType::CCTV, "003CCTV");
-    pole3.addMonitor(MonitorDeviceType::Cellular, "003Cel");
-    pole3.addMonitor(MonitorDeviceType::TrafficFlow, "003Traf");
-    pole3.setDescription("Interchange2");
+    pole3.setPoleCode((char*)"K31+950");
+    pole3.addMonitor(MonitorDeviceType::CCTV, (char*)"003CCTV");
+    pole3.addMonitor(MonitorDeviceType::Cellular, (char*)"003Cel");
+    pole3.addMonitor(MonitorDeviceType::TrafficFlow, (char*)"003Traf");
+    pole3.setDescription((char*)"Interchange2");
     this->m_poleData.push_back(pole3);
 
 }

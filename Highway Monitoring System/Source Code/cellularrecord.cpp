@@ -9,7 +9,7 @@ CellularRecord::CellularRecord()
 }
 
 CellularRecord::CellularRecord(char* deviceCode, char* poleCode, char* recordNo)
-    : Record(deviceCode, poleCode, recordNo) {}
+    : Record(deviceCode, poleCode, recordNo), recordTime(QDateTime().currentDateTime()) {}
 
 CellularRecord::CellularRecord(const CellularRecord& cellularRec)
     : Record((char*)cellularRec.deviceCode, (char*)cellularRec.poleCode, (char*)cellularRec.recordNo) {

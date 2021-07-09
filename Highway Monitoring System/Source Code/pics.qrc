@@ -1,5 +1,30 @@
 <RCC>
-    <qresource prefix="/example">
-        <file>pics/example/cellular-record-import-data-format-example.PNG</file>
+    <qresource prefix="/Icons/MonitorStatus">
+        <file alias="Running">pics/Icons/MonitorStatus/Running.svg</file>
+        <file alias="Down">pics/Icons/MonitorStatus/Down.svg</file>
+        <file alias="NotInstalled">pics/Icons/MonitorStatus/NotInstalled.svg</file>
+    </qresource>
+    <qresource prefix="/Icons/MonitorType">
+        <file alias="CCTV">pics/Icons/MonitorType/CCTV.svg</file>
+        <file alias="Cellular">pics/Icons/MonitorType/Cellular.svg</file>
+        <file alias="Traffic">pics/Icons/MonitorType/Traffic.svg</file>
+    </qresource>
+    <qresource prefix="/Icons/MediaPlayer">
+        <file alias="Play">pics/Icons/MediaPlayer/Play.svg</file>
+        <file alias="Pause">pics/Icons/MediaPlayer/Pause.svg</file>
+    </qresource>
+    <qresource prefix="/Icons/GeneralDevice">
+        <file alias="Pole">pics/Icons/MonitorType/Pole.svg</file>
+        <file alias="Monitor">pics/Icons/MonitorType/Monitor.svg</file>
+    </qresource>
+    <qresource prefix="/Icons/Actions">
+        <file alias="Add">pics/Icons/Buttons/Add.svg</file>
+        <file alias="Import">pics/Icons/Buttons/Import.svg</file>
+        <file alias="Remove">pics/Icons/Buttons/Remove.svg</file>
+        <file alias="Find">pics/Icons/Buttons/Find.svg</file>
+    </qresource>
+    <qresource prefix="/Icons/WidgetRepresent">
+        <file alias="Data">pics/Icons/Buttons/Data.svg</file>
+        <file alias="Curve">pics/Icons/Buttons/Curve.svg</file>
     </qresource>
 </RCC>
