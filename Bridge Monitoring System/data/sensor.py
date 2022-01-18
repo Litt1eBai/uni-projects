@@ -14,6 +14,8 @@ import socket
 import threading
 import struct
 import datetime
+import types
+
 from utils.server_req_util import ServerRequestUtil
 from data.sensor_type import SnsrType
 from data.record import Record
@@ -113,9 +115,9 @@ class SensorConnect(object):
         self.__time_interval = time_interval
         self.__start = False
         self.__receivingThread = None
-        self.__data_callback_function = None
-        self.__start_threading_callback_function = None
-        self.__stop_threading_callback_function = None
+        self.__data_callback_functions = {}
+        self.__start_threading_callback_functions = {}
+        self.__stop_threading_callback_functions = {}
         self.__rec_cache = []
         self.__max_rec_cache = 32
 
@@ -198,7 +200,6 @@ class SensorConnect(object):
         ((inst_name, inst_val), (assoc_name, assoc_val)) = data
         rec_time = datetime.datetime.now()
         rec = Record(None, self.snsr, inst_val, assoc_val, rec_time)
-        print(rec)
         return rec
 
     def __do_udp_receive(self):
@@ -258,7 +259,7 @@ class SensorConnect(object):
             print("[DEBUG]: TCP socket closed for sensor " + str(self.snsr.snsr_id))
             tcp_sock.close()
 
-    def start_receiving(self):
+    def start_threading(self):
         """
         this function starts receiving data of the sensor, it starts a receiving thread
         :return:
@@ -270,8 +271,9 @@ class SensorConnect(object):
             self.__receivingThread.start()
             print("[DEBUG]: UDP receiving thread for sensor " + str(self.snsr.snsr_id) + " has started")
             self.__do_start_threading_callback()
+
         elif self.snsr.snsr_type.snsr_req_cp == 'TCP':
-            self.__receivingThread = threading.Thread(target=self.__do_tcp_receive(), args=())
+            self.__receivingThread = threading.Thread(target=self.__do_tcp_receive, args=())
             self.__receivingThread.setDaemon(True)
             self.__receivingThread.start()
             print("[DEBUG]: TCP receiving thread for sensor " + str(self.snsr.snsr_id) + " has started")
@@ -296,56 +298,54 @@ class SensorConnect(object):
         :return:
         """
         print("[DEBGU]: got data for sensor " + str(self.snsr.snsr_id) + ": ", data)
-        if self.__data_callback_function is not None:
-            self.__data_callback_function(data)
+        if len(self.__data_callback_functions) > 0:
+            for key in self.__data_callback_functions:
+                self.__data_callback_functions[key](data)
 
     def __do_start_threading_callback(self):
         """
         this function calls callback function after thread starts
         :return:
         """
-        if self.__start_threading_callback_function is not None:
-            self.__start_threading_callback_function()
+        if len(self.__start_threading_callback_functions) > 0:
+            for key in self.__start_threading_callback_functions:
+                self.__start_threading_callback_functions[key]()
 
     def __do_stop_threading_callback(self):
         """
         this function calls callback function after thread stops
         :return:
         """
-        if self.__stop_threading_callback_function is not None:
-            self.__stop_threading_callback_function()
+        if len(self.__stop_threading_callback_functions) > 0:
+            for key in self.__stop_threading_callback_functions:
+                self.__stop_threading_callback_functions[key]()
+
+    def add_data_callback_function(self, fun: types.FunctionType):
+        self.__data_callback_functions[str(fun.__hash__())] = fun
+
+    def remove_data_callback_function(self, fun: types.FunctionType):
+        if str(fun.__hash__()) in self.__data_callback_functions:
+            self.__data_callback_functions.pop(str(fun.__hash__()))
+
+    def add_start_threading_callback_function(self, fun: types.FunctionType):
+        self.__start_threading_callback_functions[str(fun.__hash__())] = fun
+
+    def remove_start_threading_callback_function(self, fun: types.FunctionType):
+        if str(fun.__hash__()) in self.__data_callback_functions:
+            self.__start_threading_callback_functions.pop(str(fun.__hash__()))
+
+    def add_stop_threading_callback_function(self, fun: types.FunctionType):
+        self.__stop_threading_callback_functions[str(fun.__hash__())] = fun
+
+    def remove_stop_threading_callback_function(self, fun: types.FunctionType):
+        if str(fun.__hash__()) in self.__data_callback_functions:
+            self.__stop_threading_callback_functions.pop(str(fun.__hash__()))
+
 
     def __str__(self):
         return "{snsr=" + self.snsr.__str__() + \
         ", connected=" + str(self.__start) + "}"
 
-    @property
-    def start(self):
-        return self.__start
-
-    @property
-    def data_callback_function(self):
-        return self.__data_callback_function
-
-    @data_callback_function.setter
-    def data_callback_function(self, func):
-        self.__data_callback_function = func
-
-    @property
-    def start_threading_callback_function(self):
-        return self.__start_threading_callback_function
-
-    @start_threading_callback_function.setter
-    def start_threading_callback_function(self, func):
-        self.start_threading_callback_function = func
-
-    @property
-    def stop_threading_callback_function(self):
-        return self.__stop_threading_callback_function
-
-    @stop_threading_callback_function.setter
-    def stop_threading_callback_function(self, func):
-        self.stop_threading_callback_function = func
 
 
 if __name__ == '__main__':
@@ -355,7 +355,7 @@ if __name__ == '__main__':
     print(snsrs)
     for snsr in snsrs:
         sc = SensorConnect(snsr)
-        sc.start_receiving()
+        sc.start_threading()
 
     while True:
         continue
